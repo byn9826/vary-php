@@ -1,0 +1,21 @@
+{
+  "name": "vary-php",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "php ./tests/index.php",
+    "valgrind": "ZEND_DONT_UNLOAD_MODULES=1 USE_ZEND_ALLOC=0 valgrind --tool=memcheck --leak-check=full --show-reachable=no --track-origins=yes php ./tests/index.php"
+  },
+  "pre-commit": [
+    "valgrind"
+  ],
+  "author": "Baozier",
+  "license": "MIT",
+  "devDependencies": {
+    "pre-commit": "^1.2.2"
+  }
+}

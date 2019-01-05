@@ -1,0 +1,7 @@
+ARG_ENABLE('vary', 'vary support', 'no');
+
+if (PHP_VARY != 'no') {
+	AC_DEFINE('HAVE_VARY', 1, 'vary support enabled');
+
+	EXTENSION('vary', 'vary.c', null, '/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
+}

@@ -5,27 +5,34 @@
 
 #include "php.h"
 #include "ext/standard/info.h"
-#include "php_vary.h"
 
+#include "php_vary.h"
 #include "./helpers/params.c"
 
 #include "./_array/_array.c"
 extern zend_class_entry *_array_handle;
-
-#include "./_array/stack.c"
-extern zend_class_entry *stack_handle;
-
 const zend_function_entry _array_funcs[] = {
   PHP_ME(_array, __construct, arginfo_array, ZEND_ACC_PUBLIC)
   PHP_ME(_array, size, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(_array, _addToBack, arginfo_single, ZEND_ACC_PROTECTED)
+	PHP_ME(_array, _deleteFromFront, arginfo_void, ZEND_ACC_PROTECTED)
   PHP_ME(_array, _deleteFromBack, arginfo_void, ZEND_ACC_PROTECTED)
 	PHP_FE_END
 };
 
+#include "./_array/stack.c"
+extern zend_class_entry *stack_handle;
 const zend_function_entry stack_funcs[] = {
   PHP_ME(Stack, push, arginfo_single, ZEND_ACC_PUBLIC)
   PHP_ME(Stack, pop, arginfo_void, ZEND_ACC_PUBLIC)
+	PHP_FE_END
+};
+
+#include "./_array/queue.c"
+extern zend_class_entry *queue_handle;
+const zend_function_entry queue_funcs[] = {
+  PHP_ME(Queue, enqueue, arginfo_single, ZEND_ACC_PUBLIC)
+	PHP_ME(Queue, dequeue, arginfo_void, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 
@@ -38,6 +45,10 @@ PHP_MINIT_FUNCTION(vary)
   zend_class_entry stack_ce;
   INIT_NS_CLASS_ENTRY(stack_ce, "Vary", "Stack", stack_funcs);
   stack_handle = zend_register_internal_class_ex(&stack_ce, _array_handle);
+
+	zend_class_entry queue_ce;
+  INIT_NS_CLASS_ENTRY(queue_ce, "Vary", "Queue", queue_funcs);
+  queue_handle = zend_register_internal_class_ex(&queue_ce, _array_handle);
   
   return SUCCESS;
 }

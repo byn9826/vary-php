@@ -77,6 +77,41 @@ PHP_METHOD(_array, _addToBack)
   RETURN_TRUE;
 }
 
+PHP_METHOD(_array, _deleteFromFront)
+{
+  zval *_items, *rv;
+  _items = zend_read_property(
+    _array_handle,
+    getThis(),
+    "_items",
+    sizeof("_items") - 1,
+    0,
+    rv TSRMLS_CC
+  );
+  uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
+  if (items_size == 0) {
+		RETURN_NULL();
+	}
+  Bucket *first_item = Z_ARRVAL_P(_items)->arData;
+  zval return_item;
+  ZVAL_COPY(&return_item, &first_item->val);
+  zend_hash_del_bucket(Z_ARRVAL_P(_items), first_item);
+  Bucket *carry;
+  uint32_t k = 0;
+  for (uint32_t i = 1; i < items_size; i++) {
+    carry = Z_ARRVAL_P(_items)->arData + i;
+    Bucket *holder = Z_ARRVAL_P(_items)->arData + i - 1;
+    holder->h = i - 1;
+    holder->key = NULL;
+    ZVAL_COPY_VALUE(&holder->val, &carry->val);
+    ZVAL_UNDEF(&carry->val);
+  }
+  Z_ARRVAL_P(_items)->nNumUsed = items_size - 1;
+  Z_ARRVAL_P(_items)->nNextFreeElement = items_size - 1;
+  zend_hash_internal_pointer_reset(Z_ARRVAL_P(_items));
+  RETURN_ZVAL(&return_item, 0, 0);
+}
+
 PHP_METHOD(_array, _deleteFromBack)
 {
   zval *_items, *rv;

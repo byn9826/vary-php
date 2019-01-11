@@ -14,8 +14,8 @@ extern zend_class_entry *_array_handle;
 const zend_function_entry _array_funcs[] = {
   PHP_ME(_array, __construct, arginfo_array, ZEND_ACC_PUBLIC)
   PHP_ME(_array, size, arginfo_void, ZEND_ACC_PUBLIC)
-	PHP_ME(_array, _addToFront, arginfo_single, ZEND_ACC_PROTECTED)
-  PHP_ME(_array, _addToBack, arginfo_single, ZEND_ACC_PROTECTED)
+	PHP_ME(_array, _addToFront, arginfo_any, ZEND_ACC_PROTECTED)
+  PHP_ME(_array, _addToBack, arginfo_any, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, _deleteFromFront, arginfo_void, ZEND_ACC_PROTECTED)
   PHP_ME(_array, _deleteFromBack, arginfo_void, ZEND_ACC_PROTECTED)
 	PHP_FE_END
@@ -24,7 +24,7 @@ const zend_function_entry _array_funcs[] = {
 #include "./_array/stack.c"
 extern zend_class_entry *stack_handle;
 const zend_function_entry stack_funcs[] = {
-  PHP_ME(Stack, push, arginfo_single, ZEND_ACC_PUBLIC)
+  PHP_ME(Stack, push, arginfo_any, ZEND_ACC_PUBLIC)
   PHP_ME(Stack, pop, arginfo_void, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
@@ -32,7 +32,7 @@ const zend_function_entry stack_funcs[] = {
 #include "./_array/queue.c"
 extern zend_class_entry *queue_handle;
 const zend_function_entry queue_funcs[] = {
-  PHP_ME(Queue, enqueue, arginfo_single, ZEND_ACC_PUBLIC)
+  PHP_ME(Queue, enqueue, arginfo_any, ZEND_ACC_PUBLIC)
 	PHP_ME(Queue, dequeue, arginfo_void, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
@@ -40,10 +40,17 @@ const zend_function_entry queue_funcs[] = {
 #include "./_array/deque.c"
 extern zend_class_entry *deque_handle;
 const zend_function_entry deque_funcs[] = {
-	PHP_ME(Deque, addFront, arginfo_single, ZEND_ACC_PUBLIC)
-	PHP_ME(Deque, addRear, arginfo_single, ZEND_ACC_PUBLIC)
+	PHP_ME(Deque, addFront, arginfo_any, ZEND_ACC_PUBLIC)
+	PHP_ME(Deque, addRear, arginfo_any, ZEND_ACC_PUBLIC)
 	PHP_ME(Deque, removeFront, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(Deque, removeRear, arginfo_void, ZEND_ACC_PUBLIC)
+	PHP_FE_END
+};
+
+#include "./algorithm/algorithm.c"
+extern zend_class_entry *algorithm_handle;
+const zend_function_entry algorithm_funcs[] = {
+	PHP_ME(Algorithm, binarySearch, arginfo_array_integer, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 	PHP_FE_END
 };
 
@@ -69,7 +76,15 @@ PHP_MINIT_FUNCTION(vary)
 	zend_class_entry deque_ce;
 	INIT_NS_CLASS_ENTRY(deque_ce, "Vary", "Deque", deque_funcs);
 	deque_handle = zend_register_internal_class_ex(&deque_ce, _array_handle);
-  return SUCCESS;
+  
+	/*
+	 * Algorithm Classes: Algorithm
+	 */
+	zend_class_entry algorithm_ce;
+  INIT_NS_CLASS_ENTRY(algorithm_ce, "Vary", "Algorithm", algorithm_funcs);
+  algorithm_handle = zend_register_internal_class(&algorithm_ce TSRMLS_CC);
+
+	return SUCCESS;
 }
 
 PHP_RINIT_FUNCTION(vary)

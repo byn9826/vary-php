@@ -13,9 +13,6 @@ PHP_METHOD(_array, __construct)
   if (num_args == 0) {
     array_init(&_items);
   } else {
-    if (num_args > 1) {
-      warning_params_max_one("\\Vary\\Stack");
-    }
     ZVAL_COPY(&_items, param);
   }
   zend_update_property(
@@ -31,9 +28,8 @@ PHP_METHOD(_array, __construct)
 
 PHP_METHOD(_array, size)
 {
-  if (zend_parse_parameters_none() == FAILURE) {
-    warning_params_exact_zero("\\Vary\\Stack size() method");
-  }
+  ZEND_PARSE_PARAMETERS_START(0, 0)
+  ZEND_PARSE_PARAMETERS_END();
   zval *rv, *_items;
   _items = zend_read_property(
     _array_handle,

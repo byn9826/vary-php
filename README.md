@@ -4,13 +4,26 @@ Various PHP classes in C
 Installation
 -
 ```
+sudo apt-get install php7.2-cli
 git clone https://github.com/php/php-src.git
 cd ./ext
 git clone https://github.com/byn9826/vary-php.git
 cd ./vary
 phpize
-sh ./tests.sh
+./configure
+sudo make
+sudo make install
+[set extension=vary.so in php.ini]
+php ./tests/index.php
 ```
+[Testing & Examples](https://github.com/byn9826/vary-php/tree/master/tests)
+```
+sudo apt-get install valgrind
+npm install
+npm run test
+npm run valgrind
+```
+
 Classes for Data Structure
 --
 Stack
@@ -41,10 +54,17 @@ $deque1->removeRear(); // 1
 $deque1->size(); // 0
 ```
 
-Tests
--
-[Test Cases & Examples](https://github.com/byn9826/vary-php/tree/master/tests)
+Algorithm Class
+--
+Binary Search
 ```
-npm run test
-npm run valgrind
+$binarySearch1 = \Vary\Algorithm::binarySearch([-1, 1, 2], 2); // ['index': 2, 'exist': true]
+
+$binarySearch2 = \Vary\Algorithm::binarySearch([-1, 1, 2], 3); // ['index': 2, 'exist': false]
+
+$binarySearch3 = \Vary\Algorithm::binarySearch([-1, 1, 2], -1); // ['index': 0, 'exist': true]
+
+$binarySearch4 = \Vary\Algorithm::binarySearch([-1, 1, 2], -2); // ['index': 0, 'exist': false]
+
+$binarySearch5 = \Vary\Algorithm::binarySearch([-1, 1, 2], 1); // ['index': 1, 'exist': true]
 ```

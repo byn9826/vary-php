@@ -12,20 +12,9 @@ PHP_METHOD(Queue, enqueue)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_ZVAL(_value)
   ZEND_PARSE_PARAMETERS_END();
-  zval _addToBack_name, _addToBack_retval;
-  ZVAL_STRING(&_addToBack_name, "_addToBack");
-  zval params[1];
-  ZVAL_COPY(&params[0], _value);
-  call_user_function(
-    EG(function_table),
-    getThis(),
-    &_addToBack_name,
-    &_addToBack_retval,
-    1,
-    params TSRMLS_CC
-  );
-  zval_ptr_dtor(&_addToBack_name);
-  RETURN_BOOL(&_addToBack_retval);
+  zval *this = getThis();
+  zval retval = _array_addToBack(this, _value);
+  RETURN_BOOL(&retval);
 }
 
 PHP_METHOD(Queue, dequeue)
@@ -34,16 +23,7 @@ PHP_METHOD(Queue, dequeue)
   if (num_args != 0) {
     warning_params_exact_zero("\\Vary\\Queue dequeue() method");
   }
-  zval _deleteFromFront_name, _deleteFromFront_retval;
-  ZVAL_STRING(&_deleteFromFront_name, "_deleteFromFront");
-  call_user_function(
-    EG(function_table),
-    getThis(),
-    &_deleteFromFront_name,
-    &_deleteFromFront_retval,
-    0,
-    NULL TSRMLS_CC
-  );
-  zval_ptr_dtor(&_deleteFromFront_name);
-  RETURN_ZVAL(&_deleteFromFront_retval, 1, 1);
+  zval *this = getThis();
+  zval retval = _array__deleteFromFront(this);
+  RETURN_ZVAL(&retval, 1, 1);
 }

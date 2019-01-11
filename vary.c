@@ -14,6 +14,7 @@ extern zend_class_entry *_array_handle;
 const zend_function_entry _array_funcs[] = {
   PHP_ME(_array, __construct, arginfo_array, ZEND_ACC_PUBLIC)
   PHP_ME(_array, size, arginfo_void, ZEND_ACC_PUBLIC)
+	PHP_ME(_array, _addToFront, arginfo_single, ZEND_ACC_PROTECTED)
   PHP_ME(_array, _addToBack, arginfo_single, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, _deleteFromFront, arginfo_void, ZEND_ACC_PROTECTED)
   PHP_ME(_array, _deleteFromBack, arginfo_void, ZEND_ACC_PROTECTED)
@@ -36,8 +37,23 @@ const zend_function_entry queue_funcs[] = {
 	PHP_FE_END
 };
 
+#include "./_array/deque.c"
+extern zend_class_entry *deque_handle;
+const zend_function_entry deque_funcs[] = {
+	PHP_ME(Deque, addFront, arginfo_single, ZEND_ACC_PUBLIC)
+	PHP_ME(Deque, addRear, arginfo_single, ZEND_ACC_PUBLIC)
+	PHP_ME(Deque, removeFront, arginfo_void, ZEND_ACC_PUBLIC)
+  PHP_ME(Deque, removeRear, arginfo_void, ZEND_ACC_PUBLIC)
+	PHP_FE_END
+};
+
 PHP_MINIT_FUNCTION(vary)
 {
+	/*
+	 * Data Structures Classes
+	 * Parent: _array
+	 * Childs: Stack, Queue, Deque
+	 */
 	zend_class_entry _array_ce;
   INIT_NS_CLASS_ENTRY(_array_ce, "Vary", "_array", _array_funcs);
   _array_handle = zend_register_internal_class(&_array_ce TSRMLS_CC);
@@ -50,6 +66,9 @@ PHP_MINIT_FUNCTION(vary)
   INIT_NS_CLASS_ENTRY(queue_ce, "Vary", "Queue", queue_funcs);
   queue_handle = zend_register_internal_class_ex(&queue_ce, _array_handle);
   
+	zend_class_entry deque_ce;
+	INIT_NS_CLASS_ENTRY(deque_ce, "Vary", "Deque", deque_funcs);
+	deque_handle = zend_register_internal_class_ex(&deque_ce, _array_handle);
   return SUCCESS;
 }
 

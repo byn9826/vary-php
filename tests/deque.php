@@ -1,7 +1,7 @@
 <?php
 $test_array1 = [
   0, 1, 2, null, true, false, [], [1], [1, '1', false], 
-  [1, ['1']], new \Vary\Stack(), [1, [new \Vary\Stack()]] 
+  [1, ['1']], new \Vary\Deque(), [1, [new \Vary\Deque()]] 
 ];
 $deque1 = new \Vary\Deque();
 if ($deque1->size() !== 0) {
@@ -18,7 +18,7 @@ if ($deque1->size() !== 12) {
 
 $test_array2 = [
   0, 1, 2, null, true, false, [], [1], [1, '1', false], 
-  [1, ['1']], new \Vary\Stack(), [1, [new \Vary\Stack()]] 
+  [1, ['1']], new \Vary\Deque(), [1, [new \Vary\Deque()]] 
 ];
 $deque2 = new \Vary\Deque();
 if ($deque2->size() !== 0) {
@@ -179,19 +179,15 @@ foreach($test_array13 as $key => $case) {
     }
   }
 }
-$return = $deque13->removeRear();
-if ($return !== null) {
+if ($deque13->removeRear() !== null) {
   throw new Exception('Deque13 removeRear error');
 }
-$return = $deque13->removeFront();
-if ($return !== 2) {
+if ($deque13->removeFront() !== 2) {
   throw new Exception('Deque13 removeRear error');
 }
-$return = $deque13->removeRear();
-if ($return !== 1) {
+if ($deque13->removeRear() !== 1) {
   throw new Exception('Deque13 removeRear error');
 }
-$return = $deque13->removeFront();
-if ($return !== 0) {
+if ($deque13->removeFront() !== 0) {
   throw new Exception('Deque13 removeRear error');
 }

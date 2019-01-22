@@ -30,32 +30,17 @@ PHP_METHOD(_array, size)
 {
   ZEND_PARSE_PARAMETERS_START(0, 0)
   ZEND_PARSE_PARAMETERS_END();
-  zval *rv, *_items;
-  _items = zend_read_property(
-    _array_handle,
-    getThis(),
-    "_items",
-    sizeof("_items") - 1,
-    0,
-    rv TSRMLS_CC
-  );
+  zval *_items = vary_getItems(getThis());
   RETURN_LONG(zend_hash_num_elements(Z_ARRVAL_P(_items)));
 }
 
 PHP_METHOD(_array, _addToFront)
 {
-  zval *_value, *rv, *_items, value;
+  zval *_value, value;
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_ZVAL(_value)
   ZEND_PARSE_PARAMETERS_END();
-  _items = zend_read_property(
-    _array_handle,
-    getThis(),
-    "_items",
-    sizeof("_items") - 1,
-    0,
-    rv TSRMLS_CC
-  );
+  zval *_items = vary_getItems(getThis());
   uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
   if (items_size == 0) {
     ZVAL_COPY(&value, _value);
@@ -95,18 +80,11 @@ PHP_METHOD(_array, _addToFront)
 
 PHP_METHOD(_array, _addToBack)
 {
-  zval *_value, *rv, *_items, value;
+  zval *_value, value;
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_ZVAL(_value)
   ZEND_PARSE_PARAMETERS_END();
-  _items = zend_read_property(
-    _array_handle,
-    getThis(),
-    "_items",
-    sizeof("_items") - 1,
-    0,
-    rv TSRMLS_CC
-  );
+  zval *_items = vary_getItems(getThis());
   ZVAL_COPY(&value, _value);
   if (zend_hash_next_index_insert(Z_ARRVAL_P(_items), &value) == NULL) {
     zval_ptr_dtor(&value);
@@ -116,17 +94,39 @@ PHP_METHOD(_array, _addToBack)
   RETURN_TRUE;
 }
 
+PHP_METHOD(_array, _deleteFromIndex)
+{
+  zend_long target_index;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_LONG(target_index)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_items = vary_getItems(getThis());
+  uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
+  if (items_size <= target_index) {
+		RETURN_NULL();
+	}
+  Bucket *first_item = Z_ARRVAL_P(_items)->arData + target_index;
+  zval return_item;
+  ZVAL_COPY(&return_item, &first_item->val);
+  zend_hash_del_bucket(Z_ARRVAL_P(_items), first_item);
+  Bucket *carry;
+  for (uint32_t i = target_index + 1; i < items_size; i++) {
+    carry = Z_ARRVAL_P(_items)->arData + i;
+    Bucket *holder = Z_ARRVAL_P(_items)->arData + i - 1;
+    holder->h = i - 1;
+    holder->key = NULL;
+    ZVAL_COPY_VALUE(&holder->val, &carry->val);
+    ZVAL_UNDEF(&carry->val);
+  }
+  Z_ARRVAL_P(_items)->nNumUsed = items_size - 1;
+  Z_ARRVAL_P(_items)->nNextFreeElement = items_size - 1;
+  zend_hash_internal_pointer_reset(Z_ARRVAL_P(_items));
+  RETURN_ZVAL(&return_item, 0, 0);
+}
+
 PHP_METHOD(_array, _deleteFromFront)
 {
-  zval *_items, *rv;
-  _items = zend_read_property(
-    _array_handle,
-    getThis(),
-    "_items",
-    sizeof("_items") - 1,
-    0,
-    rv TSRMLS_CC
-  );
+  zval *_items = vary_getItems(getThis());
   uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
   if (items_size == 0) {
 		RETURN_NULL();
@@ -152,15 +152,7 @@ PHP_METHOD(_array, _deleteFromFront)
 
 PHP_METHOD(_array, _deleteFromBack)
 {
-  zval *_items, *rv;
-  _items = zend_read_property(
-    _array_handle,
-    getThis(),
-    "_items",
-    sizeof("_items") - 1,
-    0,
-    rv TSRMLS_CC
-  );
+  zval *_items = vary_getItems(getThis());
   uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
   if (items_size == 0) {
 		RETURN_NULL();
@@ -169,11 +161,14 @@ PHP_METHOD(_array, _deleteFromBack)
   zval return_item;
   ZVAL_COPY(&return_item, &last_item->val);
   zend_hash_del_bucket(Z_ARRVAL_P(_items), last_item);
+  Z_ARRVAL_P(_items)->nNumUsed = items_size - 1;
+  Z_ARRVAL_P(_items)->nNextFreeElement = items_size - 1;
   zend_hash_internal_pointer_reset(Z_ARRVAL_P(_items));
   RETURN_ZVAL(&return_item, 0, 0);
 }
 
-zval _array_addToFront(zval *this, zval *_value) {
+zval _array_addToFront(zval *this, zval *_value)
+{
   zval _addToFront_name, _addToFront_retval;
   ZVAL_STRING(&_addToFront_name, "_addToFront");
   zval params[1];
@@ -190,7 +185,8 @@ zval _array_addToFront(zval *this, zval *_value) {
   return _addToFront_retval;
 }
 
-zval _array_addToBack(zval *this, zval *_value) {
+zval _array_addToBack(zval *this, zval *_value)
+{
   zval _addToBack_name, _addToBack_retval;
   ZVAL_STRING(&_addToBack_name, "_addToBack");
   zval params[1];
@@ -207,7 +203,26 @@ zval _array_addToBack(zval *this, zval *_value) {
   return _addToBack_retval;
 }
 
-zval _array__deleteFromFront(zval *this) {
+zval _array__deleteFromIndex(zval *this, zend_long target_index)
+{
+  zval _deleteFromIndex_name, _deleteFromIndex_retval;
+  ZVAL_STRING(&_deleteFromIndex_name, "_deleteFromIndex");
+  zval params[1];
+  ZVAL_LONG(&params[0], target_index);
+  call_user_function(
+    EG(function_table),
+    this,
+    &_deleteFromIndex_name,
+    &_deleteFromIndex_retval,
+    1,
+    params TSRMLS_CC
+  );
+  zval_ptr_dtor(&_deleteFromIndex_name);
+  return _deleteFromIndex_retval;
+}
+
+zval _array__deleteFromFront(zval *this)
+{
   zval _deleteFromFront_name, _deleteFromFront_retval;
   ZVAL_STRING(&_deleteFromFront_name, "_deleteFromFront");
   call_user_function(
@@ -222,7 +237,8 @@ zval _array__deleteFromFront(zval *this) {
   return _deleteFromFront_retval;
 }
 
-zval _array_deleteFromBack(zval *this) {
+zval _array_deleteFromBack(zval *this)
+{
   zval _deleteFromBack_name, _deleteFromBack_retval;
   ZVAL_STRING(&_deleteFromBack_name, "_deleteFromBack");
   call_user_function(

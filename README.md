@@ -53,6 +53,28 @@ $deque1->removeFront(); // 2
 $deque1->removeRear(); // 1
 $deque1->size(); // 0
 ```
+OrderedList
+```
+$ordered_list = new \Vary\OrderedList();
+foreach([1, 0, 3, -1, 50] as $value) {
+  $ordered_list->add($value);
+}
+var_dump($ordered_list->_items); // [-1, 0, 1, 3, 50]
+$ordered_list->removeFront(); // -1
+$ordered_list->removeFront(); // 0
+$ordered_list->removeRear(); // 50
+$ordered_list->removeRear(); // 3
+$ordered_list->size(); // 1
+$ordered_list->add(0); // 0
+$ordered_list->add(2); // 2
+$ordered_list->add(1); // false
+$ordered_list->removeIndex(0); // 0
+$ordered_list->removeIndex(3); // null
+$ordered_list->remove(0); // false
+$ordered_list->remove(2); // 1
+$ordered_list->indexOf(1); // 0
+$ordered_list->indexOf(2); // false
+```
 
 Algorithm Class
 --

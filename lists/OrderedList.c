@@ -2,6 +2,23 @@
 
 zend_class_entry *orderedList_handle;
 
+PHP_METHOD(OrderedList, __construct)
+{
+  ZEND_PARSE_PARAMETERS_START(0, 0)
+  ZEND_PARSE_PARAMETERS_END();
+  zval _items;
+  array_init(&_items);
+  zend_update_property(
+    _array_handle,
+    getThis(),
+    "_items",
+    sizeof("_items") - 1,
+    &_items TSRMLS_CC
+  );
+  zval_ptr_dtor(&_items);
+  RETURN_TRUE;
+}
+
 PHP_METHOD(OrderedList, add)
 {
   zend_long new_value;

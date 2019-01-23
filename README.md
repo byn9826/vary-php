@@ -26,44 +26,60 @@ npm run valgrind
 
 Classes for Data Structure
 --
-Stack
+ArrayList: Array type Collections
 ```
-$stack1 = new \Vary\Stack();
-$stack1->push(1); // true
-$stack1->pop(); // 1
-$stack2 = new \Vary\Stack([1, 2]);
-$stack2->size(); // 2
-$stack2->pop(); // 2
+$array = new \Vary\ArrayList();
+$array->push(2); // true
+$array->unshift(1); // true
+$array->push(3); // true
+$array->size(); // 3
+$array->removeIndex(1); // 2
+$array->pop(); // 3
+$array->shift(); // 1
+$array->size(); // 0
+$array = new \Vary\ArrayList(['a', 0, -1, true, null, false, 100]);
+$array->size(); // 7
 ```
-Queue
+Stack: Last-In-First-Out type ArrayList
 ```
-$queue1 = new \Vary\Queue();
-$queue1->enqueue(1); // true
-$queue1->dequeue(); // 1
-$queue2 = new \Vary\Queue([1, 2]);
-$queue2->dequeue(); // 1
-$queue2->size(); // 1
+$stack = new \Vary\Stack();
+$stack->push(1); // true
+$stack->pop(); // 1
+$stack->size(); // 2
+$stack = new \Vary\Stack([1, 2]);
+$stack->size(); // 2
+$stack->pop(); // 2
 ```
-Deque
+Queue: First-In-First-Out type ArrayList
 ```
-$deque1 = new \Vary\Deque();
-$deque1->addRear(1); // true
-$deque1->addFront(2); // true
-$deque1->removeFront(); // 2
-$deque1->removeRear(); // 1
-$deque1->size(); // 0
+$queue = new \Vary\Queue();
+$queue->push(1); // true
+$queue->shift(); // 1
+$queue = new \Vary\Queue([1, 2]);
+$queue->shift(); // 1
+$queue->size(); // 1
 ```
-OrderedList
+Deque: Double-Ended type ArrayList
+```
+$deque = new \Vary\Deque();
+$deque->push(1); // true
+$deque->unshift(2); // true
+$deque->size(); // 2
+$deque->shift(); // 2
+$deque->pop(); // 1
+$deque->size(); // 0
+```
+OrderedList: Ordered ArrayList
 ```
 $ordered_list = new \Vary\OrderedList();
 foreach([1, 0, 3, -1, 50] as $value) {
   $ordered_list->add($value);
 }
-var_dump($ordered_list->_items); // [-1, 0, 1, 3, 50]
-$ordered_list->removeFront(); // -1
-$ordered_list->removeFront(); // 0
-$ordered_list->removeRear(); // 50
-$ordered_list->removeRear(); // 3
+$ordered_list->size(); // 5
+$ordered_list->shift(); // -1
+$ordered_list->shift(); // 0
+$ordered_list->pop(); // 50
+$ordered_list->pop(); // 3
 $ordered_list->size(); // 1
 $ordered_list->add(0); // 0
 $ordered_list->add(2); // 2
@@ -74,19 +90,21 @@ $ordered_list->remove(0); // false
 $ordered_list->remove(2); // 1
 $ordered_list->indexOf(1); // 0
 $ordered_list->indexOf(2); // false
+$ordered_list->add(2); // 1
+$ordered_list->indexOf(2); // 1
 ```
 
 Algorithm Class
 --
 Binary Search
 ```
-$binarySearch1 = \Vary\Algorithm::binarySearch([-1, 1, 2], 2); // ['index': 2, 'exist': true]
+\Vary\Algorithm::binarySearch([-1, 1, 2], 2); // ['index': 2, 'exist': true]
 
-$binarySearch2 = \Vary\Algorithm::binarySearch([-1, 1, 2], 3); // ['index': 2, 'exist': false]
+\Vary\Algorithm::binarySearch([-1, 1, 2], 3); // ['index': 2, 'exist': false]
 
-$binarySearch3 = \Vary\Algorithm::binarySearch([-1, 1, 2], -1); // ['index': 0, 'exist': true]
+\Vary\Algorithm::binarySearch([-1, 1, 2], -1); // ['index': 0, 'exist': true]
 
-$binarySearch4 = \Vary\Algorithm::binarySearch([-1, 1, 2], -2); // ['index': 0, 'exist': false]
+\Vary\Algorithm::binarySearch([-1, 1, 2], -2); // ['index': 0, 'exist': false]
 
-$binarySearch5 = \Vary\Algorithm::binarySearch([-1, 1, 2], 1); // ['index': 1, 'exist': true]
+\Vary\Algorithm::binarySearch([-1, 1, 2], 1); // ['index': 1, 'exist': true]
 ```

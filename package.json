@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "php ./tests/index.php",
-    "valgrind": "ZEND_DONT_UNLOAD_MODULES=1 USE_ZEND_ALLOC=0 valgrind --leak-check=full --show-leak-kinds=all --show-reachable=no --track-origins=yes php ./tests/index.php"
+    "valgrind": "ZEND_DONT_UNLOAD_MODULES=1 USE_ZEND_ALLOC=0 valgrind --leak-check=full --show-leak-kinds=all --show-reachable=no --track-origins=yes php ./tests/index.php",
+    "build": "sudo sh ./build.sh"
   },
   "pre-commit": [
     "test", "valgrind"

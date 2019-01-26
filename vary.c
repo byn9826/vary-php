@@ -28,11 +28,14 @@ const zend_function_entry algorithm_funcs[] = {
 const zend_function_entry _array_funcs[] = {
   PHP_ME(_array, __construct, arginfo_array, ZEND_ACC_PUBLIC)
   PHP_ME(_array, size, arginfo_void, ZEND_ACC_PUBLIC)
+	PHP_ME(_array, value, arginfo_void, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, unshift, arginfo_any, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, shift, arginfo_void, ZEND_ACC_PROTECTED)
   PHP_ME(_array, push, arginfo_any, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, pop, arginfo_void, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, removeIndex, arginfo_integer, ZEND_ACC_PROTECTED)
+	PHP_ME(_array, indexOf, arginfo_any, ZEND_ACC_PROTECTED)
+	PHP_ME(_array, lastIndexOf, arginfo_any, ZEND_ACC_PROTECTED)
 	PHP_FE_END
 };
 
@@ -42,6 +45,8 @@ const zend_function_entry arrayList_funcs[] = {
   PHP_ME(_array, push, arginfo_any, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, pop, arginfo_void, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, removeIndex, arginfo_integer, ZEND_ACC_PUBLIC)
+	PHP_ME(_array, indexOf, arginfo_any, ZEND_ACC_PUBLIC)
+	PHP_ME(_array, lastIndexOf, arginfo_any, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 

@@ -6,7 +6,8 @@ zend_class_entry *stack_handle;
 zend_class_entry *queue_handle;
 zend_class_entry *deque_handle;
 
-zval *array_getItems(zval *this) {
+zval *array_getItems(zval *this)
+{
   zval *rv;
   return zend_read_property(
     arrayList_handle,
@@ -58,6 +59,16 @@ PHP_METHOD(_array, __construct)
   );
   zval_ptr_dtor(&_items);
   RETURN_TRUE;
+}
+
+PHP_METHOD(_array, value)
+{
+  ZEND_PARSE_PARAMETERS_START(0, 0)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_items = array_getItems(getThis());
+  zval rtval;
+  ZVAL_COPY(&rtval, _items);
+  RETURN_ZVAL(&rtval, 1, 1);
 }
 
 PHP_METHOD(_array, size)
@@ -200,4 +211,41 @@ PHP_METHOD(_array, pop)
   Z_ARRVAL_P(_items)->nNextFreeElement = items_size - 1;
   zend_hash_internal_pointer_reset(Z_ARRVAL_P(_items));
   RETURN_ZVAL(&return_item, 1, 1);
+}
+
+static void vary_array_indexOf(INTERNAL_FUNCTION_PARAMETERS, int behavior)
+{
+  zval *_value;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ZVAL(_value)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_items = array_getItems(getThis());
+  uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
+  int targetIndex = -1;
+  Bucket *carry;
+  for (int i = 0; i < items_size; i++) {
+    int holder_index;
+    if (behavior == 0) {
+      holder_index = i;
+      carry = Z_ARRVAL_P(_items)->arData + holder_index;
+    } else {
+      holder_index = items_size - 1 - i;
+      carry = Z_ARRVAL_P(_items)->arData + holder_index;
+    }
+    if (fast_is_identical_function(_value, &carry->val) == 1) {
+      targetIndex = holder_index;
+      break;
+    }
+  }
+  RETURN_LONG(targetIndex);
+}
+
+PHP_METHOD(_array, indexOf)
+{
+  vary_array_indexOf(INTERNAL_FUNCTION_PARAM_PASSTHRU, 0);
+}
+
+PHP_METHOD(_array, lastIndexOf)
+{
+  vary_array_indexOf(INTERNAL_FUNCTION_PARAM_PASSTHRU, 1);
 }

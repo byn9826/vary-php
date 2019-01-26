@@ -32,13 +32,15 @@ $array = new \Vary\ArrayList();
 $array->push(2); // true
 $array->unshift(1); // true
 $array->push(3); // true
-$array->size(); // 3
+$array->value(); // [1, 2, 3]
 $array->removeIndex(1); // 2
 $array->pop(); // 3
 $array->shift(); // 1
 $array->size(); // 0
-$array = new \Vary\ArrayList(['a', 0, -1, true, null, false, 100]);
+$array = new \Vary\ArrayList(['ab', 0, -1, 'ab', 0, -1, 100]);
 $array->size(); // 7
+$array->indexOf('ab'); // 0
+$array->lastIndexOf('ab'); // 3
 ```
 Stack: Last-In-First-Out type ArrayList
 ```
@@ -47,7 +49,7 @@ $stack->push(1); // true
 $stack->pop(); // 1
 $stack->size(); // 2
 $stack = new \Vary\Stack([1, 2]);
-$stack->size(); // 2
+$stack->value(); // [1, 2]
 $stack->pop(); // 2
 ```
 Queue: First-In-First-Out type ArrayList
@@ -55,6 +57,7 @@ Queue: First-In-First-Out type ArrayList
 $queue = new \Vary\Queue();
 $queue->push(1); // true
 $queue->shift(); // 1
+$queue->value(); // []
 $queue = new \Vary\Queue([1, 2]);
 $queue->shift(); // 1
 $queue->size(); // 1
@@ -64,7 +67,7 @@ Deque: Double-Ended type ArrayList
 $deque = new \Vary\Deque();
 $deque->push(1); // true
 $deque->unshift(2); // true
-$deque->size(); // 2
+$deque->value(); // [2, 1]
 $deque->shift(); // 2
 $deque->pop(); // 1
 $deque->size(); // 0
@@ -80,7 +83,7 @@ $ordered_list->shift(); // -1
 $ordered_list->shift(); // 0
 $ordered_list->pop(); // 50
 $ordered_list->pop(); // 3
-$ordered_list->size(); // 1
+$ordered_list->value(); // [1]
 $ordered_list->add(0); // 0
 $ordered_list->add(2); // 2
 $ordered_list->add(1); // false

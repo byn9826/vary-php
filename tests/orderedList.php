@@ -4,7 +4,7 @@ $test = new \Vary\OrderedList();
 foreach([1, 0, 3, -1, 50] as $value) {
   $test->add($value);
 }
-if ($test->size() !== 5 || $test->_items[0] !== -1 || $test->_items[4] !== 50) {
+if ($test->size() !== 5 || $test->value()[0] !== -1 || $test->value()[4] !== 50) {
   throw new Exception('OrderedList add error');
 }
 if ($test->shift() !== -1) {
@@ -19,7 +19,7 @@ if ($test->pop() !== 50) {
 if ($test->pop() !== 3) {
   throw new Exception('OrderedList pop error');
 }
-if ($test->size() !== 1 || $test->_items[0] !== 1) {
+if ($test->size() !== 1 || $test->value()[0] !== 1) {
   throw new Exception('OrderedList size error');
 }
 if ($test->add(0) !== 0) {
@@ -62,15 +62,15 @@ if ($add1 !== 0 || $test1->size() !== 1) {
   throw new Exception('OrderedList1 add error');
 }
 $add1 = $test1->add(3);
-if ($add1 !== 1 || $test1->_items[0] !== 1 || $test1->_items[1] !== 3) {
+if ($add1 !== 1 || $test1->value()[0] !== 1 || $test1->value()[1] !== 3) {
   throw new Exception('OrderedList1 add error');
 }
 $add1 = $test1->add(2);
-if ($add1 !== 1 || $test1->_items[0] !== 1 || $test1->_items[1] !== 2 || $test1->_items[2] !== 3) {
+if ($add1 !== 1 || $test1->value()[0] !== 1 || $test1->value()[1] !== 2 || $test1->value()[2] !== 3) {
   throw new Exception('OrderedList1 add error');
 }
 $add1 = $test1->add(-1);
-if ($add1 !== 0 || $test1->_items[0] !== -1) {
+if ($add1 !== 0 || $test1->value()[0] !== -1) {
   throw new Exception('OrderedList1 add error');
 }
 $add1 = $test1->add(-1);
@@ -78,15 +78,15 @@ if ($add1 !== false) {
   throw new Exception('OrderedList1 add error');
 }
 $add1 = $test1->add(4);
-if ($add1 !== 4 && $test1->_items[4] !== 4) {
+if ($add1 !== 4 && $test1->value()[4] !== 4) {
   throw new Exception('OrderedList1 add error');
 }
 $add1 = $test1->add(100);
-if ($add1 !== 5 && $test1->_items[5] !== 100) {
+if ($add1 !== 5 && $test1->value()[5] !== 100) {
   throw new Exception('OrderedList1 add error');
 }
 $add1 = $test1->add(0);
-if ($add1 !== 1 && $test1->_items[1] !== 0) {
+if ($add1 !== 1 && $test1->value()[1] !== 0) {
   throw new Exception('OrderedList1 add error');
 }
 $remove1 = $test1->shift();
@@ -105,7 +105,7 @@ $remove1 = $test1->pop();
 if ($remove1 !== 4) {
   throw new Exception('OrderedList1 pop error');
 }
-if ($test1->_items[0] !== 1 || $test1->_items[1] !== 2 || $test1->_items[2] !== 3) {
+if ($test1->value()[0] !== 1 || $test1->value()[1] !== 2 || $test1->value()[2] !== 3) {
   throw new Exception('OrderedList1 remove error');
 }
 $remove_index = $test1->removeIndex(0);
@@ -120,7 +120,7 @@ $remove_index = $test1->removeIndex(1);
 if ($remove_index !== null) {
   throw new Exception('OrderedList1 remove index error');
 }
-if ($test1->size() !== 1 || $test1->_items[0] !== 2) {
+if ($test1->size() !== 1 || $test1->value()[0] !== 2) {
   throw new Exception('OrderedList1 remove index error');
 }
 $remove = $test1->remove(1);

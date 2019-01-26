@@ -9,8 +9,14 @@ if ($array->unshift(1) !== true) {
 if ($array->push(3) !== true) {
   throw new Exception('ArrayList push error');
 }
-if ($array->size() !== 3) {
-  throw new Exception('ArrayList size error');
+if ($array->value() != [1, 2, 3]) {
+  throw new Exception('ArrayList value error');
+}
+if ($array->indexOf(2) !== 1) {
+  throw new Exception('ArrayList indexOf error');
+}
+if ($array->lastIndexOf(2) !== 1) {
+  throw new Exception('ArrayList lastIndexOf error');
 }
 if ($array->removeIndex(1) !== 2) {
   throw new Exception('ArrayList removeIndex error');
@@ -24,9 +30,15 @@ if ($array->shift() !== 1) {
 if ($array->size() !== 0) {
   throw new Exception('ArrayList size error');
 }
-$array = new \Vary\ArrayList(['a', 0, -1, true, null, false, 100]);
+$array = new \Vary\ArrayList(['ab', 0, -1, 'ab', 0, -1, 100]);
 if ($array->size() !== 7) {
   throw new Exception('ArrayList size error');
+}
+if ($array->indexOf('ab') !== 0) {
+  throw new Exception('ArrayList indexOf error');
+}
+if ($array->lastIndexOf('ab') !== 3) {
+  throw new Exception('ArrayList lastIndexOf error');
 }
 
 $array1 = new \Vary\ArrayList();
@@ -66,7 +78,25 @@ $array3 = new \Vary\ArrayList([
   0, 1, 2, null, true, false, [], [1], [1, '1', false], 
   [1, ['1']], new \Vary\ArrayList(), [1, [new \Vary\ArrayList()]] 
 ]);
-if ($array3->size() !== count($array3->_items) || $array3->size() !== 12) {
+if (
+  $array3->indexOf(0) !== 0 || $array3->indexOf(1) !== 1 || $array3->indexOf(2) !== 2
+  || $array3->indexOf(null) !== 3 || $array3->indexOf(true) !== 4 || $array3->indexOf(false) !== 5
+  || $array3->indexOf([]) !== 6 || $array3->indexOf([1]) !== 7 || $array3->indexOf([1, '1', false]) !== 8
+  || $array3->indexOf([1, ['1']]) !== 9 || $array3->indexOf(-2) !== -1 || $array3->indexOf(3) !== -1
+  || $array3->indexOf(new \Vary\ArrayList()) !== -1 || $array3->indexOf([1, [new \Vary\ArrayList()]]) !== -1
+) {
+  throw new Exception('ArrayList3 indexOf error');
+}
+if (
+  $array3->lastIndexOf(0) !== 0 || $array3->lastIndexOf(1) !== 1 || $array3->lastIndexOf(2) !== 2
+  || $array3->lastIndexOf(null) !== 3 || $array3->lastIndexOf(true) !== 4 || $array3->lastIndexOf(false) !== 5
+  || $array3->lastIndexOf([]) !== 6 || $array3->lastIndexOf([1]) !== 7 || $array3->lastIndexOf([1, '1', false]) !== 8
+  || $array3->lastIndexOf([1, ['1']]) !== 9 || $array3->lastIndexOf(-2) !== -1 || $array3->lastIndexOf(3) !== -1
+  || $array3->lastIndexOf(new \Vary\ArrayList()) !== -1 || $array3->lastIndexOf([1, [new \Vary\ArrayList()]]) !== -1
+) {
+  throw new Exception('ArrayList3 lastIndexOf error');
+}
+if ($array3->size() !== count($array3->value()) || $array3->size() !== 12) {
   throw new Exception('ArrayList3 initial error');
 }
 
@@ -86,6 +116,12 @@ $array5 = new \Vary\ArrayList();
 foreach($test5 as $key => $case) {
   if ($array5->push($case) == false) {
     throw new Exception('ArrayList5 push error');
+  }
+  if ($array5->indexOf($case) !== 0) {
+    throw new Exception('ArrayList5 indexOf error');
+  }
+  if ($array5->lastIndexOf($case) !== 0) {
+    throw new Exception('ArrayList5 lastIndexOf error');
   }
   if ($array5->pop() !== $case) {
     throw new Exception('ArrayList5 pop error');
@@ -156,7 +192,7 @@ foreach($test10 as $key => $case) {
   }
 }
 foreach($test10 as $key => $case) {
-  if ($array10->_items[11 - $key] != $case) {
+  if ($array10->value()[11 - $key] != $case) {
     throw new Exception('ArrayList10 unshift error');
   }
 }
@@ -232,8 +268,8 @@ if ($stack->size() !== 0) {
   throw new Exception('Stack size error');
 }
 $stack = new \Vary\Stack([1, 2]);
-if ($stack->size() !== 2) {
-  throw new Exception('Stack size error');
+if ($stack->value() !== [1, 2]) {
+  throw new Exception('Stack value error');
 }
 if ($stack->pop() !== 2) {
   throw new Exception('Stack pop error');
@@ -245,6 +281,9 @@ if ($queue->push(1) !== true) {
 }
 if ($queue->shift() !== 1) {
   throw new Exception('Queue shift error');
+}
+if ($queue->value() !== []) {
+  throw new Exception('Queue value error');
 }
 $queue = new \Vary\Queue([1, 2]);
 if ($queue->shift() !== 1) {
@@ -261,8 +300,8 @@ if ($deque->push(1) !== true) {
 if ($deque->unshift(2) !== true) {
   throw new Exception('Deque unshift error');
 }
-if ($deque->size() !== 2) {
-  throw new Exception('Deque size error');
+if ($deque->value() !== [2, 1]) {
+  throw new Exception('Deque value error');
 }
 if ($deque->shift() !== 2) {
   throw new Exception('Deque shift error');

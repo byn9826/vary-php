@@ -54,3 +54,44 @@ PHP_METHOD(Algorithm, binarySearch)
   add_assoc_bool(&rtval, "exist", found);
   RETURN_ZVAL(&rtval, 0, 1);
 }
+
+void _insertion_sort(zval *array, int start, int gap, int size)
+{
+  
+}
+
+PHP_METHOD(Algorithm, shellSort)
+{
+  zval *_array;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ARRAY(_array)
+  ZEND_PARSE_PARAMETERS_END();
+  uint32_t full_size = zend_hash_num_elements(Z_ARRVAL_P(_array));
+  uint32_t sub_size = full_size / 2;
+  zval carry;
+  zend_long current_value;
+  while (sub_size > 0) {
+    for (uint32_t start = 0; start < sub_size; start++) {
+      for (uint32_t i = start + sub_size; i < full_size; i += sub_size) {
+        uint32_t position = i;
+        Bucket *current_item = Z_ARRVAL_P(_array)->arData + position;
+        Bucket *target_item = Z_ARRVAL_P(_array)->arData + position - sub_size;
+        current_value = Z_LVAL_P(&current_item->val);
+        while (position >= sub_size && Z_LVAL_P(&target_item->val) > current_value) {
+          ZVAL_COPY_VALUE(&carry, &target_item->val);
+          ZVAL_COPY_VALUE(&target_item->val, &current_item->val);
+          ZVAL_COPY_VALUE(&current_item->val, &carry);
+          position -= sub_size;
+          current_item = Z_ARRVAL_P(_array)->arData + position;
+          target_item = Z_ARRVAL_P(_array)->arData + position - sub_size;
+        }
+      }
+    }
+    sub_size /= 2;
+  }
+  zend_hash_internal_pointer_reset(Z_ARRVAL_P(_array));
+  if (full_size != 0) {
+    zval_ptr_dtor(&carry);
+  }
+  RETURN_TRUE;
+}

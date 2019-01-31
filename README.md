@@ -4,21 +4,21 @@ Various PHP classes in C
 Installation
 -
 ```
-sudo apt-get install php7.2-cli
+sudo apt-get install php7.2-cli php7.2-dev valgrind
 git clone https://github.com/php/php-src.git
 cd ./ext
 git clone https://github.com/byn9826/vary-php.git
-cd ./vary
+cd ./vary-php
 phpize
 ./configure
 sudo make
 sudo make install
-[set extension=vary.so in php.ini]
+sudo nano /etc/php/7.2/cli/php.ini
+[Add extension=vary.so]
 php ./tests/index.php
 ```
 [Testing & Examples](https://github.com/byn9826/vary-php/tree/master/tests)
 ```
-sudo apt-get install valgrind
 npm install
 npm run test
 npm run valgrind

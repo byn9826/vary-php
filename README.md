@@ -111,3 +111,10 @@ Binary Search
 
 \Vary\Algorithm::binarySearch([-1, 1, 2], 1); // ['index': 1, 'exist': true]
 ```
+
+Shell Sort
+```
+$array = new \Vary\ArrayList([100, 10, -30, 0, -1, 1]);
+\Vary\Algorithm::shellSort($array->value());
+var_dump($array->value()) // [-30, -1, 0, 1, 10, 100]
+```

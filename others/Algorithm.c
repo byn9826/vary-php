@@ -68,30 +68,36 @@ PHP_METHOD(Algorithm, shellSort)
   ZEND_PARSE_PARAMETERS_END();
   uint32_t full_size = zend_hash_num_elements(Z_ARRVAL_P(_array));
   uint32_t sub_size = full_size / 2;
-  zval carry;
-  zend_long current_value;
   while (sub_size > 0) {
     for (uint32_t start = 0; start < sub_size; start++) {
       for (uint32_t i = start + sub_size; i < full_size; i += sub_size) {
         uint32_t position = i;
         Bucket *current_item = Z_ARRVAL_P(_array)->arData + position;
         Bucket *target_item = Z_ARRVAL_P(_array)->arData + position - sub_size;
-        current_value = Z_LVAL_P(&current_item->val);
-        while (position >= sub_size && Z_LVAL_P(&target_item->val) > current_value) {
-          ZVAL_COPY_VALUE(&carry, &target_item->val);
+        zval current_value;
+        ZVAL_COPY_UNREF(&current_value, &current_item->val);
+        while (position >= sub_size) {
+          zval target_value, compare_result;
+          ZVAL_COPY_UNREF(&target_value, &target_item->val);
+          compare_function(&compare_result, &target_value, &current_value);
+          if (Z_LVAL_P(&compare_result) < 0) {
+            zval_ptr_dtor(&compare_result);
+            zval_ptr_dtor(&target_value);
+            break;
+          }
           ZVAL_COPY_VALUE(&target_item->val, &current_item->val);
-          ZVAL_COPY_VALUE(&current_item->val, &carry);
+          ZVAL_COPY_VALUE(&current_item->val, &target_value);
           position -= sub_size;
           current_item = Z_ARRVAL_P(_array)->arData + position;
           target_item = Z_ARRVAL_P(_array)->arData + position - sub_size;
+          zval_ptr_dtor(&target_value);
+          zval_ptr_dtor(&compare_result);
         }
+        zval_ptr_dtor(&current_value);
       }
     }
     sub_size /= 2;
   }
   zend_hash_internal_pointer_reset(Z_ARRVAL_P(_array));
-  if (full_size != 0) {
-    zval_ptr_dtor(&carry);
-  }
   RETURN_TRUE;
 }

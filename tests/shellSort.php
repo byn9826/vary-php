@@ -31,3 +31,33 @@ if ($test4 != [-2, 2]) {
 
 $test5 = [100, -11, 0, -1, '3', 'a', '44', '2', 1, 'b', 'abc', 'cc'];
 \Vary\Algorithm::shellSort($test5);
+
+$test6 = new \Vary\ArrayList([20, 10, 30, 100, 40, -20, 0, -10]);
+\Vary\Algorithm::shellSort($test6->value(), function($a, $b) { return $a < $b; });
+if ($test6->value()!= [-20, -10, 0, 10, 20, 30, 40, 100]) {
+  throw new Exception('shellSort6 error');
+}
+
+$test7 = new \Vary\ArrayList(['a', 1, 0, -2, -3, -1, 2, 'aa', 'b', 'bb', 'c', 'aaa']);
+\Vary\Algorithm::shellSort($test7->value(), function($a, $b) {
+  if (is_long($a) && is_long($b)) { return $a < $b; }
+  if (is_string($a) && is_string($b)) {
+    return strlen($a) === strlen($b) ? $a < $b : strlen($a) < strlen($b);
+  }
+  return is_string($b);
+});
+if ($test7->value()!= [-3, -2, -1, 0, 1, 2, 'a', 'b', 'c', 'aa', 'bb', 'aaa']) {
+  throw new Exception('shellSort7 error');
+}
+
+$test8 = new \Vary\ArrayList(['a', 2, 0, -1, 'b', 'aa', 1]);
+\Vary\Algorithm::shellSort($test8->value(), function($a, $b) {
+  if (is_long($a) && is_long($b)) { return $a < $b; }
+  if (is_string($a) && is_string($b)) {
+    return strlen($a) === strlen($b) ? $a < $b : strlen($a) < strlen($b);
+  }
+  return is_string($b);
+});
+if ($test8->value()!= [-1, 0, 1, 2, 'a', 'b', 'aa']) {
+  throw new Exception('shellSort8 error');
+}

@@ -63,8 +63,12 @@ void _insertion_sort(zval *array, int start, int gap, int size)
 PHP_METHOD(Algorithm, shellSort)
 {
   zval *_array;
-  ZEND_PARSE_PARAMETERS_START(1, 1)
+  zend_fcall_info user_compare_func;
+	zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
+  ZEND_PARSE_PARAMETERS_START(1, 2)
     Z_PARAM_ARRAY(_array)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
   ZEND_PARSE_PARAMETERS_END();
   uint32_t full_size = zend_hash_num_elements(Z_ARRVAL_P(_array));
   uint32_t sub_size = full_size / 2;
@@ -79,11 +83,36 @@ PHP_METHOD(Algorithm, shellSort)
         while (position >= sub_size) {
           zval target_value, compare_result;
           ZVAL_COPY_UNREF(&target_value, &target_item->val);
-          compare_function(&compare_result, &target_value, &current_value);
-          if (Z_LVAL_P(&compare_result) < 0) {
-            zval_ptr_dtor(&compare_result);
-            zval_ptr_dtor(&target_value);
-            break;
+          if (ZEND_NUM_ARGS() == 2) {
+            zval retval;
+            zval args[2];
+            ZVAL_COPY(&args[0], &target_value);
+            ZVAL_COPY(&args[1], &current_value);
+            user_compare_func.retval = &retval;
+            user_compare_func.param_count = 2;
+            user_compare_func.no_separation = 0;
+		        user_compare_func.params = args;
+            if (
+              zend_call_function(&user_compare_func, &user_compare_func_cache) == SUCCESS
+              && Z_TYPE(retval) == IS_TRUE
+            ) {
+              zval_ptr_dtor(&args[0]);
+              zval_ptr_dtor(&args[1]);
+              zval_ptr_dtor(&target_value);
+              zval_ptr_dtor(&retval);
+              break;
+            } else {
+              zval_ptr_dtor(&args[0]);
+              zval_ptr_dtor(&args[1]);
+              zval_ptr_dtor(&retval);
+            }
+          } else {
+            compare_function(&compare_result, &target_value, &current_value);
+            if (Z_LVAL_P(&compare_result) < 0) {
+              zval_ptr_dtor(&compare_result);
+              zval_ptr_dtor(&target_value);
+              break;
+            }
           }
           ZVAL_COPY_VALUE(&target_item->val, &current_item->val);
           ZVAL_COPY_VALUE(&current_item->val, &target_value);

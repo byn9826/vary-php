@@ -1,5 +1,6 @@
 # Vary-PHP
 Various PHP classes in C
+Supported Version: php7.2  
 
 Installation
 -
@@ -7,6 +8,7 @@ Installation
 sudo apt-get install php7.2-cli php7.2-dev valgrind
 git clone https://github.com/php/php-src.git
 cd ./ext
+git checkout PHP-7.2.15
 git clone https://github.com/byn9826/vary-php.git
 cd ./vary-php
 phpize
@@ -116,5 +118,15 @@ Shell Sort
 ```
 $array = new \Vary\ArrayList([100, 10, -30, 0, -1, 1]);
 \Vary\Algorithm::shellSort($array->value());
-var_dump($array->value()) // [-30, -1, 0, 1, 10, 100]
+$array->value() // [-30, -1, 0, 1, 10, 100]
+
+$array = new \Vary\ArrayList(['a', 2, 0, -1, 'b', 'aa', 1]);
+\Vary\Algorithm::shellSort($array->value(), function($a, $b) {
+  if (is_long($a) && is_long($b)) { return $a < $b; }
+  if (is_string($a) && is_string($b)) {
+    return strlen($a) === strlen($b) ? $a < $b : strlen($a) < strlen($b);
+  }
+  return is_string($b);
+});
+$array->value() // [-1, 0, 1, 2, 'a', 'b', 'aa']
 ```

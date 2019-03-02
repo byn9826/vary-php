@@ -43,6 +43,11 @@ $array = new \Vary\ArrayList(['ab', 0, -1, 'ab', 0, -1, 100]);
 $array->size(); // 7
 $array->indexOf('ab'); // 0
 $array->lastIndexOf('ab'); // 3
+$array = new \Vary\ArrayList([-1, 1, 0]);
+$array->sort();
+$array->value(); // [-1, 0, 1]
+$array->sort(function($a, $b) { return $a > $b; });
+$array->value(); // [1, 0, -1]
 ```
 Stack: Last-In-First-Out type ArrayList
 ```

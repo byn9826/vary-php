@@ -55,21 +55,28 @@ PHP_METHOD(Algorithm, binarySearch)
   RETURN_ZVAL(&rtval, 0, 1);
 }
 
-void _insertion_sort(zval *array, int start, int gap, int size)
-{
-  
-}
+// zval algorithm_shellSort(INTERNAL_FUNCTION_PARAMETERS) {
+//   zval _shellSort_name, _shellSort_retval;
+//   ZVAL_STRING(&_shellSort_name, "\\Vary\\Algorithm::shellSort");
+//   call_user_function(
+//     EG(function_table),
+//     NULL,
+//     &_shellSort_name,
+//     &_shellSort_retval,
+//     2,
+//     INTERNAL_FUNCTION_PARAM_PASSTHRU TSRMLS_CC
+//   );
+//   zval_ptr_dtor(&_shellSort_name);
+//   return _shellSort_retval;
+// }
 
-PHP_METHOD(Algorithm, shellSort)
+void vary_algorithm_shellSort(
+  zval *_array,
+  zend_fcall_info user_compare_func,
+  zend_fcall_info_cache user_compare_func_cache,
+  int params_num
+)
 {
-  zval *_array;
-  zend_fcall_info user_compare_func;
-	zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
-  ZEND_PARSE_PARAMETERS_START(1, 2)
-    Z_PARAM_ARRAY(_array)
-    Z_PARAM_OPTIONAL
-    Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
-  ZEND_PARSE_PARAMETERS_END();
   uint32_t full_size = zend_hash_num_elements(Z_ARRVAL_P(_array));
   uint32_t sub_size = full_size / 2;
   while (sub_size > 0) {
@@ -83,7 +90,7 @@ PHP_METHOD(Algorithm, shellSort)
         while (position >= sub_size) {
           zval target_value, compare_result;
           ZVAL_COPY_UNREF(&target_value, &target_item->val);
-          if (ZEND_NUM_ARGS() == 2) {
+          if (params_num == 2) {
             zval retval;
             zval args[2];
             ZVAL_COPY(&args[0], &target_value);
@@ -128,5 +135,17 @@ PHP_METHOD(Algorithm, shellSort)
     sub_size /= 2;
   }
   zend_hash_internal_pointer_reset(Z_ARRVAL_P(_array));
-  RETURN_TRUE;
+}
+
+PHP_METHOD(Algorithm, shellSort)
+{
+  zval *_array;
+  zend_fcall_info user_compare_func = empty_fcall_info;
+	zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
+  ZEND_PARSE_PARAMETERS_START(1, 2)
+    Z_PARAM_ARRAY(_array)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
+  ZEND_PARSE_PARAMETERS_END();
+  vary_algorithm_shellSort(_array, user_compare_func, user_compare_func_cache, ZEND_NUM_ARGS());
 }

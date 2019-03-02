@@ -40,6 +40,15 @@ if ($array->indexOf('ab') !== 0) {
 if ($array->lastIndexOf('ab') !== 3) {
   throw new Exception('ArrayList lastIndexOf error');
 }
+$array = new \Vary\ArrayList([1, -1, 0]);
+$array->sort();
+if ($array->value() !== [-1, 0, 1]) {
+  throw new Exception('ArrayList sort error');
+}
+$array->sort(function($a, $b) { return $a > $b; });
+if ($array->value() !== [1, 0, -1]) {
+  throw new Exception('ArrayList sort error');
+}
 
 $array1 = new \Vary\ArrayList();
 if ($array1->size() !== 0) {
@@ -256,6 +265,29 @@ if ($array13->shift() !== 0) {
   throw new Exception('ArrayList13 pop error');
 }
 
+$array14 = new \Vary\ArrayList([6, 2, -3, 0, 3, 1, 4, -4, 5, -1, -2]);
+$array14->sort();
+if ($array14->value() != [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]) {
+  throw new Exception('Array14 sort error');
+}
+
+$array15 = new \Vary\ArrayList([6, 2, -3, 0, 3, 1, 4, -4, 5, -1, -2]);
+$array15->sort(function($a, $b) { return $a > $b; });
+if ($array15->value() != [6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4]) {
+  throw new Exception('Array15 sort error');
+}
+
+$array16 = new \Vary\ArrayList(['a', 2, 0, -1, 'b', 'aa', 1]);
+\Vary\Algorithm::shellSort($array16->value(), function($a, $b) {
+  if (is_long($a) && is_long($b)) { return $a < $b; }
+  if (is_string($a) && is_string($b)) {
+    return strlen($a) === strlen($b) ? $a < $b : strlen($a) < strlen($b);
+  }
+  return is_string($b);
+});
+if ($array16->value()!= [-1, 0, 1, 2, 'a', 'b', 'aa']) {
+  throw new Exception('shellSort8 error');
+}
 
 $stack = new \Vary\Stack();
 if ($stack->push(1) !== true) {

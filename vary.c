@@ -20,7 +20,7 @@ extern zend_class_entry *orderedList_handle;
 #include "./others/Algorithm.c"
 const zend_function_entry algorithm_funcs[] = {
 	PHP_ME(Algorithm, binarySearch, arginfo_array_integer, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-	PHP_ME(Algorithm, shellSort, arginfo_optional_function, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+	PHP_ME(Algorithm, shellSort, arginfo_array_function, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 	PHP_FE_END
 };
 
@@ -37,6 +37,7 @@ const zend_function_entry _array_funcs[] = {
 	PHP_ME(_array, removeIndex, arginfo_integer, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, indexOf, arginfo_any, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, lastIndexOf, arginfo_any, ZEND_ACC_PROTECTED)
+	PHP_ME(_array, sort, arginfo_function, ZEND_ACC_PROTECTED)
 	PHP_FE_END
 };
 
@@ -48,6 +49,7 @@ const zend_function_entry arrayList_funcs[] = {
 	PHP_ME(_array, removeIndex, arginfo_integer, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, indexOf, arginfo_any, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, lastIndexOf, arginfo_any, ZEND_ACC_PUBLIC)
+	PHP_ME(_array, sort, arginfo_function, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 

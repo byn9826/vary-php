@@ -213,6 +213,18 @@ PHP_METHOD(_array, pop)
   RETURN_ZVAL(&return_item, 1, 1);
 }
 
+PHP_METHOD(_array, sort)
+{
+  zval *_items = array_getItems(getThis());
+  zend_fcall_info user_compare_func = empty_fcall_info;
+	zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
+  ZEND_PARSE_PARAMETERS_START(0, 1)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
+  ZEND_PARSE_PARAMETERS_END();
+  vary_algorithm_shellSort(_items, user_compare_func, user_compare_func_cache, ZEND_NUM_ARGS() + 1);
+}
+
 static void vary_array_indexOf(INTERNAL_FUNCTION_PARAMETERS, int behavior)
 {
   zval *_value;

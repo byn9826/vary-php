@@ -74,7 +74,7 @@ const zend_function_entry deque_funcs[] = {
 };
 
 const zend_function_entry orderedList_funcs[] = {
-	PHP_ME(OrderedList, __construct, arginfo_void, ZEND_ACC_PUBLIC)
+	PHP_ME(OrderedList, __construct, arginfo_array, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, removeIndex, arginfo_integer, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, shift, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(_array, pop, arginfo_void, ZEND_ACC_PUBLIC)

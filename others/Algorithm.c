@@ -55,21 +55,6 @@ PHP_METHOD(Algorithm, binarySearch)
   RETURN_ZVAL(&rtval, 0, 1);
 }
 
-// zval algorithm_shellSort(INTERNAL_FUNCTION_PARAMETERS) {
-//   zval _shellSort_name, _shellSort_retval;
-//   ZVAL_STRING(&_shellSort_name, "\\Vary\\Algorithm::shellSort");
-//   call_user_function(
-//     EG(function_table),
-//     NULL,
-//     &_shellSort_name,
-//     &_shellSort_retval,
-//     2,
-//     INTERNAL_FUNCTION_PARAM_PASSTHRU TSRMLS_CC
-//   );
-//   zval_ptr_dtor(&_shellSort_name);
-//   return _shellSort_retval;
-// }
-
 void vary_algorithm_shellSort(
   zval *_array,
   zend_fcall_info user_compare_func,

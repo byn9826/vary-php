@@ -85,6 +85,7 @@ $ordered_list = new \Vary\OrderedList();
 foreach([1, 0, 3, -1, 50] as $value) {
   $ordered_list->add($value);
 }
+$ordered_list->value(); // [-1, 0, 1, 3, 50]
 $ordered_list->size(); // 5
 $ordered_list->shift(); // -1
 $ordered_list->shift(); // 0
@@ -102,6 +103,8 @@ $ordered_list->indexOf(1); // 0
 $ordered_list->indexOf(2); // false
 $ordered_list->add(2); // 1
 $ordered_list->indexOf(2); // 1
+$ordered_list = new \Vary\OrderedList([1, 0, 3, -1, 50]);
+$ordered_list->value(); // [-1, 0, 1, 3, 50]
 ```
 
 Algorithm Class

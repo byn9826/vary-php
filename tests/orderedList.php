@@ -37,6 +37,7 @@ if ($test->add(1) !== false) {
 if ($test->removeIndex(0) !== 0) {
   throw new Exception('OrderedList removeIndex error');
 }
+
 if ($test->removeIndex(3) !== null) {
   throw new Exception('OrderedList removeIndex error');
 }

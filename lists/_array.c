@@ -19,22 +19,56 @@ zval *array_getItems(zval *this)
   );
 }
 
-zval array_removeIndex(zval *this, zend_long target_index)
+void vary_array_indexOf(INTERNAL_FUNCTION_PARAMETERS, int behavior)
 {
-  zval removeIndex_name, removeIndex_retval;
-  ZVAL_STRING(&removeIndex_name, "removeIndex");
-  zval params[1];
-  ZVAL_LONG(&params[0], target_index);
-  call_user_function(
-    EG(function_table),
-    this,
-    &removeIndex_name,
-    &removeIndex_retval,
-    1,
-    params TSRMLS_CC
-  );
-  zval_ptr_dtor(&removeIndex_name);
-  return removeIndex_retval;
+  zval *_value;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ZVAL(_value)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_items = array_getItems(getThis());
+  uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
+  int targetIndex = -1;
+  Bucket *carry;
+  for (int i = 0; i < items_size; i++) {
+    int holder_index;
+    if (behavior == 0) {
+      holder_index = i;
+      carry = Z_ARRVAL_P(_items)->arData + holder_index;
+    } else {
+      holder_index = items_size - 1 - i;
+      carry = Z_ARRVAL_P(_items)->arData + holder_index;
+    }
+    if (fast_is_identical_function(_value, &carry->val) == 1) {
+      targetIndex = holder_index;
+      break;
+    }
+  }
+  RETURN_LONG(targetIndex);
+}
+
+zval vary_array_removeIndex(zval *_items, zend_long target_index)
+{
+  zval return_item;
+  ZVAL_NULL(&return_item);
+  uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
+  if (items_size > target_index) {
+    Bucket *first_item = Z_ARRVAL_P(_items)->arData + target_index;
+    ZVAL_COPY(&return_item, &first_item->val);
+    zend_hash_del_bucket(Z_ARRVAL_P(_items), first_item);
+    Bucket *carry;
+    for (uint32_t i = target_index + 1; i < items_size; i++) {
+      carry = Z_ARRVAL_P(_items)->arData + i;
+      Bucket *holder = Z_ARRVAL_P(_items)->arData + i - 1;
+      holder->h = i - 1;
+      holder->key = NULL;
+      ZVAL_COPY_VALUE(&holder->val, &carry->val);
+      ZVAL_UNDEF(&carry->val);
+    }
+    Z_ARRVAL_P(_items)->nNumUsed = items_size - 1;
+    Z_ARRVAL_P(_items)->nNextFreeElement = items_size - 1;
+    zend_hash_internal_pointer_reset(Z_ARRVAL_P(_items));
+	}
+  return return_item;
 }
 
 PHP_METHOD(_array, __construct)
@@ -44,8 +78,7 @@ PHP_METHOD(_array, __construct)
     Z_PARAM_OPTIONAL
     Z_PARAM_ARRAY(param)
   ZEND_PARSE_PARAMETERS_END();
-  int num_args = ZEND_CALL_NUM_ARGS(execute_data);
-  if (num_args == 0) {
+  if (ZEND_NUM_ARGS() == 0) {
     array_init(&_items);
   } else {
     ZVAL_COPY(&_items, param);
@@ -143,26 +176,7 @@ PHP_METHOD(_array, removeIndex)
     Z_PARAM_LONG(target_index)
   ZEND_PARSE_PARAMETERS_END();
   zval *_items = array_getItems(getThis());
-  uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
-  if (items_size <= target_index) {
-		RETURN_NULL();
-	}
-  Bucket *first_item = Z_ARRVAL_P(_items)->arData + target_index;
-  zval return_item;
-  ZVAL_COPY(&return_item, &first_item->val);
-  zend_hash_del_bucket(Z_ARRVAL_P(_items), first_item);
-  Bucket *carry;
-  for (uint32_t i = target_index + 1; i < items_size; i++) {
-    carry = Z_ARRVAL_P(_items)->arData + i;
-    Bucket *holder = Z_ARRVAL_P(_items)->arData + i - 1;
-    holder->h = i - 1;
-    holder->key = NULL;
-    ZVAL_COPY_VALUE(&holder->val, &carry->val);
-    ZVAL_UNDEF(&carry->val);
-  }
-  Z_ARRVAL_P(_items)->nNumUsed = items_size - 1;
-  Z_ARRVAL_P(_items)->nNextFreeElement = items_size - 1;
-  zend_hash_internal_pointer_reset(Z_ARRVAL_P(_items));
+  zval return_item = vary_array_removeIndex(_items, target_index);
   RETURN_ZVAL(&return_item, 1, 1);
 }
 
@@ -223,33 +237,6 @@ PHP_METHOD(_array, sort)
     Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
   ZEND_PARSE_PARAMETERS_END();
   vary_algorithm_shellSort(_items, user_compare_func, user_compare_func_cache, ZEND_NUM_ARGS() + 1);
-}
-
-static void vary_array_indexOf(INTERNAL_FUNCTION_PARAMETERS, int behavior)
-{
-  zval *_value;
-  ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_ZVAL(_value)
-  ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getItems(getThis());
-  uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
-  int targetIndex = -1;
-  Bucket *carry;
-  for (int i = 0; i < items_size; i++) {
-    int holder_index;
-    if (behavior == 0) {
-      holder_index = i;
-      carry = Z_ARRVAL_P(_items)->arData + holder_index;
-    } else {
-      holder_index = items_size - 1 - i;
-      carry = Z_ARRVAL_P(_items)->arData + holder_index;
-    }
-    if (fast_is_identical_function(_value, &carry->val) == 1) {
-      targetIndex = holder_index;
-      break;
-    }
-  }
-  RETURN_LONG(targetIndex);
 }
 
 PHP_METHOD(_array, indexOf)

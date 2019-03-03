@@ -33,7 +33,7 @@ PHP_METHOD(OrderedList, add)
     Z_PARAM_LONG(new_value)
   ZEND_PARSE_PARAMETERS_END();
   zval *_items = array_getItems(getThis());
-  zval _binarySearch_retval = algorithm_binarySearch(_items, new_value);
+  zval _binarySearch_retval = vary_algorithm_binarySearch(_items, new_value);
   Bucket *carry = Z_ARRVAL_P(&_binarySearch_retval)->arData + 1;
   if (zval_get_long(&carry->val) == 1) {
     zval_ptr_dtor(&_binarySearch_retval);
@@ -85,7 +85,7 @@ PHP_METHOD(OrderedList, remove)
     Z_PARAM_LONG(target_value)
   ZEND_PARSE_PARAMETERS_END();
   zval *_items = array_getItems(getThis());
-  zval _binarySearch_retval = algorithm_binarySearch(_items, target_value);
+  zval _binarySearch_retval = vary_algorithm_binarySearch(_items, target_value);
   Bucket *carry = Z_ARRVAL_P(&_binarySearch_retval)->arData + 1;
   if (zval_get_long(&carry->val) == 0) {
     zval_ptr_dtor(&_binarySearch_retval);
@@ -94,8 +94,8 @@ PHP_METHOD(OrderedList, remove)
   carry = Z_ARRVAL_P(&_binarySearch_retval)->arData;
   zend_long target_index = zval_get_long(&carry->val);
   zval_ptr_dtor(&_binarySearch_retval);
-  zval *this = getThis();
-  array_removeIndex(this, target_index);
+  zval return_item = vary_array_removeIndex(array_getItems(getThis()), target_index);
+  zval_ptr_dtor(&return_item);
   RETURN_LONG(target_index);
 }
 
@@ -106,7 +106,7 @@ PHP_METHOD(OrderedList, indexOf)
     Z_PARAM_LONG(target_value)
   ZEND_PARSE_PARAMETERS_END();
   zval *_items = array_getItems(getThis());
-  zval _binarySearch_retval = algorithm_binarySearch(_items, target_value);
+  zval _binarySearch_retval = vary_algorithm_binarySearch(_items, target_value);
   Bucket *carry = Z_ARRVAL_P(&_binarySearch_retval)->arData + 1;
   if (zval_get_long(&carry->val) == 0) {
     zval_ptr_dtor(&_binarySearch_retval);

@@ -5,7 +5,7 @@ foreach([1, 0, 3, -1, 50] as $value) {
   $test->add($value);
 }
 if ($test->value() !== [-1, 0, 1, 3, 50]) {
-  throw new Exception('OrderedList construct error');
+  throw new Exception('OrderedList add error');
 }
 if ($test->size() !== 5 || $test->value()[0] !== -1 || $test->value()[4] !== 50) {
   throw new Exception('OrderedList add error');
@@ -58,10 +58,6 @@ if ($test->add(2) !== 1) {
 }
 if ($test->indexOf(2) !== 1) {
   throw new Exception('OrderedList indexOf error');
-}
-$test = new \Vary\OrderedList([1, 0, 3, -1, 50]);
-if ($test->value() !== [-1, 0, 1, 3, 50]) {
-  throw new Exception('OrderedList construct error');
 }
 
 $test1 = new \Vary\OrderedList();

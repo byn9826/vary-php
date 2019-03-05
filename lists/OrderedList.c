@@ -4,17 +4,10 @@ zend_class_entry *orderedList_handle;
 
 PHP_METHOD(OrderedList, __construct)
 {
-  zval _items, *param;
-  ZEND_PARSE_PARAMETERS_START(0, 1)
-    Z_PARAM_OPTIONAL
-    Z_PARAM_ARRAY(param)
+  ZEND_PARSE_PARAMETERS_START(0, 0)
   ZEND_PARSE_PARAMETERS_END();
-  if (ZEND_NUM_ARGS() == 0) {
-    array_init(&_items);
-  } else {
-    ZVAL_COPY(&_items, param);
-    vary_algorithm_shellSort(&_items, empty_fcall_info, empty_fcall_info_cache, 1);
-  }
+  zval _items;
+  array_init(&_items);
   zend_update_property(
     _array_handle,
     getThis(),

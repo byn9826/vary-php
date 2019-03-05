@@ -179,57 +179,60 @@ $deque->shift(); // 1
 $deque->value(); // [2, 3]
 ```
 
-OrderedList: Ordered ArrayList
+OrderedList: Ordered ArrayList of Unique Numbers
 --
 constructor(), value(), size()
 ```
 $ordered_list = new \Vary\OrderedList();
 $ordered_list->value(); // []
 $ordered_list->size(); // 0
-$ordered_list = new \Vary\OrderedList([2, 3, 1]);
-$ordered_list->value(); // [1, 2, 3]
-$ordered_list->size(); // 3
+```
+add()
+```
+$ordered_list = new \Vary\OrderedList();
+foreach([2, 4, 1] as $value) { $ordered_list->add($value); }
+$ordered_list->add(3); // 2
+$ordered_list->add(3); // false
+$ordered_list->value(); // [1, 2, 3, 4]
+```
+remove()
+```
+$ordered_list = new \Vary\OrderedList();
+foreach([2, 3, 1] as $value) { $ordered_list->add($value); }
+$ordered_list->remove(2); // 1
+$ordered_list->remove(2); // false
+$ordered_list->value(); // [1, 3]
 ```
 removeIndex()
 ```
-$ordered_list = new \Vary\OrderedList([1, 2, 3]);
+$ordered_list = new \Vary\OrderedList();
+foreach([2, 3, 1] as $value) { $ordered_list->add($value); }
 $ordered_list->removeIndex(1); // 2
 $ordered_list->value(); // [1, 3]
 ```
 pop()
 ```
-$ordered_list = new \Vary\OrderedList([1, 2]);
-$ordered_list->pop(); // 2
-$ordered_list->value(); // [1]
+$ordered_list = new \Vary\OrderedList();
+foreach([2, 3, 1] as $value) { $ordered_list->add($value); }
+$ordered_list->pop(); // 3
+$ordered_list->value(); // [1, 2]
 ```
 shift()
 ```
-$ordered_list = new \Vary\OrderedList([1, 2, 3]);
+$ordered_list = new \Vary\OrderedList();
+foreach([2, 3, 1] as $value) { $ordered_list->add($value); }
 $ordered_list->shift(); // 1
 $ordered_list->value(); // [2, 3]
 ```
-add()
-```
-$ordered_list = new \Vary\OrderedList([1, 3]);
-$ordered_list->add(2); // 1
-$ordered_list->value(); // [1, 2, 3]
-$ordered_list->add(2); // false
-```
-remove()
-```
-$ordered_list = new \Vary\OrderedList([1, 3]);
-$ordered_list->remove(2); // false
-$ordered_list->remove(3); // 1
-$ordered_list->value(); // [1]
-```
 indexOf()
 ```
-$ordered_list = new \Vary\OrderedList([1, 2, 3]);
+$ordered_list = new \Vary\OrderedList();
+foreach([2, 3, 1] as $value) { $ordered_list->add($value); }
 $ordered_list->indexOf(3); // 2
 $ordered_list->indexOf(4); // -1
 ```
 
-Binary Search: Search In Ordered List
+Binary Search: Search in Ordered List
 --
 ```
 \Vary\Algorithm::binarySearch([-1, 1, 2], 2); // ['index': 2, 'exist': true]
@@ -239,7 +242,7 @@ Binary Search: Search In Ordered List
 \Vary\Algorithm::binarySearch([-1, 1, 2], 1); // ['index': 1, 'exist': true]
 ```
 
-Shell Sort: Sort To Ordered List
+Shell Sort: Sort to Ordered List
 --
 Sort list of numbers
 ```

@@ -26,108 +26,229 @@ npm run test
 npm run valgrind
 ```
 
-Classes for Data Structure
+Classes
 --
-ArrayList: Array type Collections
+<b>Data Structures Classes:</b>  
+ArrayList, Stack, Queue, Deque, OrderedList  
+<b>Algorithm Functions:</b>  
+binarySearch, shellShort
+
+ArrayList: Array Type Collections
+--
+constructor(), value(), size()
 ```
 $array = new \Vary\ArrayList();
-$array->push(2); // true
-$array->unshift(1); // true
+$array->value(); // []
+$array->size(); // 0
+$array = new \Vary\ArrayList([1, 2, 3]);
+$array->value(); // [1, 2, 3]
+$array->size(); // 3
+```
+removeIndex()
+```
+$array = new \Vary\ArrayList([1, 2, 3]);
+$array->removeIndex(1); // 2
+$array->value(); // [1, 3]
+```
+push()
+```
+$array = new \Vary\ArrayList([1, 2]);
 $array->push(3); // true
 $array->value(); // [1, 2, 3]
-$array->removeIndex(1); // 2
-$array->pop(); // 3
+```
+pop()
+```
+$array = new \Vary\ArrayList([1, 2]);
+$array->pop(); // 2
+$array->value(); // [1]
+```
+unshift()
+```
+$array = new \Vary\ArrayList([2, 3]);
+$array->unshift(1); // true
+$array->value(); // [1, 2, 3]
+```
+shift()
+```
+$array = new \Vary\ArrayList([1, 2, 3]);
 $array->shift(); // 1
-$array->size(); // 0
-$array = new \Vary\ArrayList(['ab', 0, -1, 'ab', 0, -1, 100]);
-$array->size(); // 7
-$array->indexOf('ab'); // 0
-$array->lastIndexOf('ab'); // 3
+$array->value(); // [2, 3]
+```
+indexOf()
+```
+$array = new \Vary\ArrayList([1, 2, 1]);
+$array->indexOf(1); // 0
+$array->indexOf(3); // -1
+```
+lastIndexOf()
+```
+$array = new \Vary\ArrayList([1, 2, 1]);
+$array->lastIndexOf(1); // 2
+$array->lastIndexOf(3); // -1
+```
+sort()
+```
 $array = new \Vary\ArrayList([-1, 1, 0]);
 $array->sort();
 $array->value(); // [-1, 0, 1]
 $array->sort(function($a, $b) { return $a > $b; });
 $array->value(); // [1, 0, -1]
 ```
-Stack: Last-In-First-Out type ArrayList
+
+Stack: Last-In-First-Out Type ArrayList
+--
+constructor(), value(), size()
 ```
 $stack = new \Vary\Stack();
-$stack->push(1); // true
-$stack->pop(); // 1
-$stack->size(); // 2
-$stack = new \Vary\Stack([1, 2]);
-$stack->value(); // [1, 2]
-$stack->pop(); // 2
+$stack->value(); // []
+$stack->size(); // 0
+$stack = new \Vary\Stack([1, 2, 3]);
+$stack->value(); // [1, 2, 3]
+$stack->size(); // 3
 ```
-Queue: First-In-First-Out type ArrayList
+push()
+```
+$stack = new \Vary\Stack([1]);
+$stack->push(2); // true
+$stack->value(); // [1, 2]
+```
+pop()
+```
+$stack = new \Vary\Stack([1, 2, 3]);
+$stack->pop(); // 3
+$stack->value(); // [1, 2]
+```
+
+Queue: First-In-First-Out Type ArrayList
+--
+constructor(), value(), size()
 ```
 $queue = new \Vary\Queue();
-$queue->push(1); // true
-$queue->shift(); // 1
 $queue->value(); // []
-$queue = new \Vary\Queue([1, 2]);
-$queue->shift(); // 1
-$queue->size(); // 1
+$queue->size(); // 0
+$queue = new \Vary\Queue([1, 2, 3]);
+$queue->value(); // [1, 2, 3]
+$queue->size(); // 3
 ```
-Deque: Double-Ended type ArrayList
+push()
+```
+$queue = new \Vary\Queue([1]);
+$queue->push(2); // true
+$queue->value(); // [1, 2]
+```
+shift()
+```
+$queue = new \Vary\Queue([1, 2, 3]);
+$queue->shift();
+$queue->value(); // [2, 3]
+```
+
+Deque: Double-Ended Type ArrayList
+--
+constructor(), value(), size()
 ```
 $deque = new \Vary\Deque();
-$deque->push(1); // true
-$deque->unshift(2); // true
-$deque->value(); // [2, 1]
-$deque->shift(); // 2
-$deque->pop(); // 1
+$deque->value(); // []
 $deque->size(); // 0
+$deque = new \Vary\Deque([1, 2, 3]);
+$deque->value(); // [1, 2, 3]
+$deque->size(); // 3
 ```
+push()
+```
+$deque = new \Vary\Deque([1]);
+$deque->push(2); // true
+$deque->value(); // [1, 2]
+```
+pop()
+```
+$deque = new \Vary\Deque([1, 2, 3]);
+$deque->pop(); // 3
+$deque->value(); // [1, 2]
+```
+unshift()
+```
+$deque = new \Vary\Deque([2]);
+$deque->unshift(1); // true
+$deque->value(); // [1, 2]
+```
+shift()
+```
+$deque = new \Vary\Deque([1, 2, 3]);
+$deque->shift(); // 1
+$deque->value(); // [2, 3]
+```
+
 OrderedList: Ordered ArrayList
+--
+constructor(), value(), size()
 ```
 $ordered_list = new \Vary\OrderedList();
-foreach([1, 0, 3, -1, 50] as $value) {
-  $ordered_list->add($value);
-}
-$ordered_list->value(); // [-1, 0, 1, 3, 50]
-$ordered_list->size(); // 5
-$ordered_list->shift(); // -1
-$ordered_list->shift(); // 0
-$ordered_list->pop(); // 50
-$ordered_list->pop(); // 3
+$ordered_list->value(); // []
+$ordered_list->size(); // 0
+$ordered_list = new \Vary\OrderedList([2, 3, 1]);
+$ordered_list->value(); // [1, 2, 3]
+$ordered_list->size(); // 3
+```
+removeIndex()
+```
+$ordered_list = new \Vary\OrderedList([1, 2, 3]);
+$ordered_list->removeIndex(1); // 2
+$ordered_list->value(); // [1, 3]
+```
+pop()
+```
+$ordered_list = new \Vary\OrderedList([1, 2]);
+$ordered_list->pop(); // 2
 $ordered_list->value(); // [1]
-$ordered_list->add(0); // 0
-$ordered_list->add(2); // 2
-$ordered_list->add(1); // false
-$ordered_list->removeIndex(0); // 0
-$ordered_list->removeIndex(3); // null
-$ordered_list->remove(0); // false
-$ordered_list->remove(2); // 1
-$ordered_list->indexOf(1); // 0
-$ordered_list->indexOf(2); // false
+```
+shift()
+```
+$ordered_list = new \Vary\OrderedList([1, 2, 3]);
+$ordered_list->shift(); // 1
+$ordered_list->value(); // [2, 3]
+```
+add()
+```
+$ordered_list = new \Vary\OrderedList([1, 3]);
 $ordered_list->add(2); // 1
-$ordered_list->indexOf(2); // 1
-$ordered_list = new \Vary\OrderedList([1, 0, 3, -1, 50]);
-$ordered_list->value(); // [-1, 0, 1, 3, 50]
+$ordered_list->value(); // [1, 2, 3]
+$ordered_list->add(2); // false
+```
+remove()
+```
+$ordered_list = new \Vary\OrderedList([1, 3]);
+$ordered_list->remove(2); // false
+$ordered_list->remove(3); // 1
+$ordered_list->value(); // [1]
+```
+indexOf()
+```
+$ordered_list = new \Vary\OrderedList([1, 2, 3]);
+$ordered_list->indexOf(3); // 2
+$ordered_list->indexOf(4); // -1
 ```
 
-Algorithm Class
+Binary Search: Search In Ordered List
 --
-Binary Search
 ```
 \Vary\Algorithm::binarySearch([-1, 1, 2], 2); // ['index': 2, 'exist': true]
-
 \Vary\Algorithm::binarySearch([-1, 1, 2], 3); // ['index': 2, 'exist': false]
-
 \Vary\Algorithm::binarySearch([-1, 1, 2], -1); // ['index': 0, 'exist': true]
-
 \Vary\Algorithm::binarySearch([-1, 1, 2], -2); // ['index': 0, 'exist': false]
-
 \Vary\Algorithm::binarySearch([-1, 1, 2], 1); // ['index': 1, 'exist': true]
 ```
 
-Shell Sort
+Shell Sort: Sort To Ordered List
+--
+Sort list of numbers
 ```
-$array = new \Vary\ArrayList([100, 10, -30, 0, -1, 1]);
+$array = new \Vary\ArrayList();
 \Vary\Algorithm::shellSort($array->value());
 $array->value() // [-30, -1, 0, 1, 10, 100]
-
+```
+Customize sorting rules
+```
 $array = new \Vary\ArrayList(['a', 2, 0, -1, 'b', 'aa', 1]);
 \Vary\Algorithm::shellSort($array->value(), function($a, $b) {
   if (is_long($a) && is_long($b)) { return $a < $b; }

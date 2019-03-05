@@ -28,13 +28,13 @@ const zend_function_entry algorithm_funcs[] = {
 #include "./lists/OrderedList.c"
 const zend_function_entry _array_funcs[] = {
   PHP_ME(_array, __construct, arginfo_array, ZEND_ACC_PUBLIC)
-  PHP_ME(_array, size, arginfo_void, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, value, arginfo_void, ZEND_ACC_PUBLIC)
+  PHP_ME(_array, size, arginfo_void, ZEND_ACC_PUBLIC)
+	PHP_ME(_array, removeIndex, arginfo_integer, ZEND_ACC_PROTECTED)
+	PHP_ME(_array, push, arginfo_any, ZEND_ACC_PROTECTED)
+	PHP_ME(_array, pop, arginfo_void, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, unshift, arginfo_any, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, shift, arginfo_void, ZEND_ACC_PROTECTED)
-  PHP_ME(_array, push, arginfo_any, ZEND_ACC_PROTECTED)
-	PHP_ME(_array, pop, arginfo_void, ZEND_ACC_PROTECTED)
-	PHP_ME(_array, removeIndex, arginfo_integer, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, indexOf, arginfo_any, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, lastIndexOf, arginfo_any, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, sort, arginfo_function, ZEND_ACC_PROTECTED)
@@ -42,11 +42,11 @@ const zend_function_entry _array_funcs[] = {
 };
 
 const zend_function_entry arrayList_funcs[] = {
+	PHP_ME(_array, removeIndex, arginfo_integer, ZEND_ACC_PUBLIC)
+	PHP_ME(_array, push, arginfo_any, ZEND_ACC_PUBLIC)
+	PHP_ME(_array, pop, arginfo_void, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, unshift, arginfo_any, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, shift, arginfo_void, ZEND_ACC_PUBLIC)
-  PHP_ME(_array, push, arginfo_any, ZEND_ACC_PUBLIC)
-	PHP_ME(_array, pop, arginfo_void, ZEND_ACC_PUBLIC)
-	PHP_ME(_array, removeIndex, arginfo_integer, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, indexOf, arginfo_any, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, lastIndexOf, arginfo_any, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, sort, arginfo_function, ZEND_ACC_PUBLIC)
@@ -66,18 +66,18 @@ const zend_function_entry queue_funcs[] = {
 };
 
 const zend_function_entry deque_funcs[] = {
-	PHP_ME(_array, unshift, arginfo_any, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, push, arginfo_any, ZEND_ACC_PUBLIC)
+	PHP_ME(_array, pop, arginfo_void, ZEND_ACC_PUBLIC)
+	PHP_ME(_array, unshift, arginfo_any, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, shift, arginfo_void, ZEND_ACC_PUBLIC)
-  PHP_ME(_array, pop, arginfo_void, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 
 const zend_function_entry orderedList_funcs[] = {
 	PHP_ME(OrderedList, __construct, arginfo_array, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, removeIndex, arginfo_integer, ZEND_ACC_PUBLIC)
+	PHP_ME(_array, pop, arginfo_void, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, shift, arginfo_void, ZEND_ACC_PUBLIC)
-  PHP_ME(_array, pop, arginfo_void, ZEND_ACC_PUBLIC)
 	PHP_ME(OrderedList, add, arginfo_integer, ZEND_ACC_PUBLIC)
 	PHP_ME(OrderedList, remove, arginfo_integer, ZEND_ACC_PUBLIC)
 	PHP_ME(OrderedList, indexOf, arginfo_integer, ZEND_ACC_PUBLIC)
@@ -116,7 +116,8 @@ PHP_MINIT_FUNCTION(vary)
   orderedList_handle = zend_register_internal_class_ex(&orderedList_ce, _array_handle);
 
 	/*
-	 * Algorithm Classes: Algorithm
+	 * Algorithm Functions
+	 * binarySearch, shellShort
 	 */
 	zend_class_entry algorithm_ce;
   INIT_NS_CLASS_ENTRY(algorithm_ce, "Vary", "Algorithm", algorithm_funcs);

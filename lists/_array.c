@@ -169,6 +169,23 @@ PHP_METHOD(_array, push)
   RETURN_TRUE;
 }
 
+PHP_METHOD(_array, index)
+{
+  zend_long target_index;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_LONG(target_index)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_items = array_getItems(getThis());
+  uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
+  if (target_index + 1 > items_size || target_index < 0) {
+    RETURN_NULL();
+  }
+  zval return_item;
+  Bucket *target_item = Z_ARRVAL_P(_items)->arData + target_index;
+  ZVAL_COPY(&return_item, &target_item->val);
+  RETURN_ZVAL(&return_item, 1, 1);
+}
+
 PHP_METHOD(_array, removeIndex)
 {
   zend_long target_index;

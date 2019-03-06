@@ -35,7 +35,7 @@ binarySearch, shellShort
 
 ArrayList: Array Type Collections
 --
-constructor(), value(), size()
+constructor(), value(), size(), index()
 ```
 $array = new \Vary\ArrayList();
 $array->value(); // []
@@ -43,6 +43,8 @@ $array->size(); // 0
 $array = new \Vary\ArrayList([1, 2, 3]);
 $array->value(); // [1, 2, 3]
 $array->size(); // 3
+$array->index(1); // 2
+$array->index(3); // null
 ```
 removeIndex()
 ```
@@ -97,7 +99,7 @@ $array->value(); // [1, 0, -1]
 
 Stack: Last-In-First-Out Type ArrayList
 --
-constructor(), value(), size()
+constructor(), value(), size(), index()
 ```
 $stack = new \Vary\Stack();
 $stack->value(); // []
@@ -105,6 +107,7 @@ $stack->size(); // 0
 $stack = new \Vary\Stack([1, 2, 3]);
 $stack->value(); // [1, 2, 3]
 $stack->size(); // 3
+$stack->index(1); // 2
 ```
 push()
 ```
@@ -121,7 +124,7 @@ $stack->value(); // [1, 2]
 
 Queue: First-In-First-Out Type ArrayList
 --
-constructor(), value(), size()
+constructor(), value(), size(), index()
 ```
 $queue = new \Vary\Queue();
 $queue->value(); // []
@@ -129,6 +132,7 @@ $queue->size(); // 0
 $queue = new \Vary\Queue([1, 2, 3]);
 $queue->value(); // [1, 2, 3]
 $queue->size(); // 3
+$queue->index(1); // 2
 ```
 push()
 ```
@@ -145,7 +149,7 @@ $queue->value(); // [2, 3]
 
 Deque: Double-Ended Type ArrayList
 --
-constructor(), value(), size()
+constructor(), value(), size(), index()
 ```
 $deque = new \Vary\Deque();
 $deque->value(); // []
@@ -153,6 +157,7 @@ $deque->size(); // 0
 $deque = new \Vary\Deque([1, 2, 3]);
 $deque->value(); // [1, 2, 3]
 $deque->size(); // 3
+$queue->index(1); // 2
 ```
 push()
 ```
@@ -181,11 +186,13 @@ $deque->value(); // [2, 3]
 
 OrderedList: Ordered ArrayList of Unique Numbers
 --
-constructor(), value(), size()
+constructor(), value(), size(), index()
 ```
 $ordered_list = new \Vary\OrderedList();
 $ordered_list->value(); // []
 $ordered_list->size(); // 0
+$ordered_list->add(1);
+$ordered_list->index(0); // 1
 ```
 add()
 ```

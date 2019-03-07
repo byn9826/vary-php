@@ -26,6 +26,12 @@ $array->sort();
 if ($array->value() !== [-1, 0, 1]) { throw new Exception('ArrayList sort error'); }
 $array->sort(function($a, $b) { return $a > $b; });
 if ($array->value() !== [1, 0, -1]) { throw new Exception('ArrayList sort error'); }
+$array = new \Vary\ArrayList([1, 2]);
+if ($array->concat([3, 4]) !== [1, 2, 3, 4]) {
+  throw new Exception('ArrayList concat error');
+}
+if ($array->value() !== [1, 2]) { throw new Exception('ArrayList concat error'); }
+if ($array->concat([]) !== [1, 2]) { throw new Exception('ArrayList concat error'); }
 
 $array1 = new \Vary\ArrayList();
 if ($array1->size() !== 0) { throw new Exception('ArrayList1 initial error'); }
@@ -224,6 +230,18 @@ $array16 = new \Vary\ArrayList(['a', 2, 0, -1, 'b', 'aa', 1]);
 });
 if ($array16->value()!= [-1, 0, 1, 2, 'a', 'b', 'aa']) {
   throw new Exception('Array16 sort error');
+}
+
+$array17 = new \Vary\ArrayList([1, null, false, 'a', 'bb']);
+if ($array17->concat([123]) !== [1, null, false, 'a', 'bb', 123]) {
+  throw new Exception('ArrayList17 concat error');
+}
+if ($array17->value() !== [1, null, false, 'a', 'bb']) {
+  throw new Exception('ArrayList17 concat error');
+}
+if ($array17->push('ccc') !== true) { throw new Exception('ArrayList17 push error'); }
+if ($array17->index($array17->size() - 1) !== 'ccc') {
+  throw new Exception('ArrayList17 push error');
 }
 
 $stack = new \Vary\Stack();

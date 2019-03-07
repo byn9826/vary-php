@@ -96,6 +96,12 @@ $array->value(); // [-1, 0, 1]
 $array->sort(function($a, $b) { return $a > $b; });
 $array->value(); // [1, 0, -1]
 ```
+concat()
+```
+$array = new \Vary\ArrayList([1, 2]);
+$array->concat([3, 4, 5]); // [1, 2, 3, 4, 5]
+$array->value(); // [1, 2]
+```
 
 Stack: Last-In-First-Out Type ArrayList
 --

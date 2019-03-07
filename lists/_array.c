@@ -256,6 +256,44 @@ PHP_METHOD(_array, sort)
   vary_algorithm_shellSort(_items, user_compare_func, user_compare_func_cache, ZEND_NUM_ARGS() + 1);
 }
 
+PHP_METHOD(_array, concat)
+{
+  zval *target;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ARRAY(target)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *current = array_getItems(getThis());
+  zval _items;
+  array_init(&_items);
+  uint32_t current_size = zend_hash_num_elements(Z_ARRVAL_P(current));
+  Bucket *carry;
+  zval carry_value;
+  for (uint32_t i = 0; i < current_size; i++) {
+    carry = Z_ARRVAL_P(current)->arData + i;
+    ZVAL_COPY(&carry_value, &carry->val);
+    if (zend_hash_next_index_insert(Z_ARRVAL_P(&_items), &carry_value) == NULL) {
+      //zval_ptr_dtor(&carry_value);
+      RETURN_NULL();
+    }
+    //zval_ptr_dtor(&carry_value);
+  }
+  uint32_t target_size = zend_hash_num_elements(Z_ARRVAL_P(target));
+  for (uint32_t i = 0; i < target_size; i++) {
+    carry = Z_ARRVAL_P(target)->arData + i;
+    ZVAL_COPY(&carry_value, &carry->val);
+    if (zend_hash_next_index_insert(Z_ARRVAL_P(&_items), &carry_value) == NULL) {
+      //zval_ptr_dtor(&carry_value);
+      RETURN_NULL();
+    }
+    //zval_ptr_dtor(&carry_value);
+  }
+  zval_ptr_dtor(&carry_value);
+  Z_ARRVAL_P(&_items)->nNumUsed = current_size + target_size;
+  Z_ARRVAL_P(&_items)->nNextFreeElement = current_size + target_size;
+  zend_hash_internal_pointer_reset(Z_ARRVAL_P(&_items));
+  RETURN_ARR(Z_ARRVAL_P(&_items));
+}
+
 PHP_METHOD(_array, indexOf)
 {
   vary_array_indexOf(INTERNAL_FUNCTION_PARAM_PASSTHRU, 0);

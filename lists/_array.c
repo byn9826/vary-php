@@ -104,7 +104,7 @@ PHP_METHOD(_array, value)
   RETURN_ZVAL(&rtval, 1, 1);
 }
 
-PHP_METHOD(_array, size)
+PHP_METHOD(_array, length)
 {
   ZEND_PARSE_PARAMETERS_START(0, 0)
   ZEND_PARSE_PARAMETERS_END();

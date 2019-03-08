@@ -14,9 +14,9 @@ if ($array->lastIndexOf(2) !== 1) { throw new Exception('ArrayList lastIndexOf e
 if ($array->removeIndex(1) !== 2) { throw new Exception('ArrayList removeIndex error'); }
 if ($array->pop() !== 3) { throw new Exception('ArrayList pop error'); }
 if ($array->shift() !== 1) { throw new Exception('ArrayList shift error'); }
-if ($array->size() !== 0) { throw new Exception('ArrayList size error'); }
+if ($array->length() !== 0) { throw new Exception('ArrayList length error'); }
 $array = new \Vary\ArrayList(['ab', 0, -1, 'ab', 0, -1, 100]);
-if ($array->size() !== 7) { throw new Exception('ArrayList size error'); }
+if ($array->length() !== 7) { throw new Exception('ArrayList length error'); }
 if ($array->indexOf('ab') !== 0) { throw new Exception('ArrayList indexOf error'); }
 if ($array->lastIndexOf('ab') !== 3) {
   throw new Exception('ArrayList lastIndexOf error');
@@ -50,27 +50,27 @@ if ($array->some(function($a) { return $a > 2; }) !== TRUE) {
 }
 
 $array1 = new \Vary\ArrayList();
-if ($array1->size() !== 0) { throw new Exception('ArrayList1 initial error'); }
+if ($array1->length() !== 0) { throw new Exception('ArrayList1 initial error'); }
 foreach([
   0, 1, 2, null, true, false, [], [1], [1, '1', false], 
   [1, ['1']], new \Vary\ArrayList(), [1, [new \Vary\ArrayList()]]
 ] as $case) {
   if ($array1->push($case) == false) { throw new Exception('ArrayList1 push error'); }
 }
-if ($array1->size() !== 12) { throw new Exception('ArrayList1 push error'); }
+if ($array1->length() !== 12) { throw new Exception('ArrayList1 push error'); }
 
 $test2 = [
   0, 1, 2, null, true, false, [], [1], [1, '1', false], 
   [1, ['1']], new \Vary\ArrayList(), [1, [new \Vary\ArrayList()]] 
 ];
 $array2 = new \Vary\ArrayList();
-if ($array2->size() !== 0) { throw new Exception('ArrayList2 initial error'); }
+if ($array2->length() !== 0) { throw new Exception('ArrayList2 initial error'); }
 foreach($test2 as $key => $case) {
-  if ($array2->push($case) === false || $array2->size() - 1 !== $key) {
+  if ($array2->push($case) === false || $array2->length() - 1 !== $key) {
     throw new Exception('ArrayList2 push error');
   }
 }
-if ($array2->size() !== 12) { throw new Exception('ArrayList2 push error'); }
+if ($array2->length() !== 12) { throw new Exception('ArrayList2 push error'); }
 
 $array3 = new \Vary\ArrayList([
   0, 1, 2, null, true, false, [], [1], [1, '1', false], 
@@ -94,13 +94,13 @@ if (
 ) {
   throw new Exception('ArrayList3 lastIndexOf error');
 }
-if ($array3->size() !== count($array3->value()) || $array3->size() !== 12) {
+if ($array3->length() !== count($array3->value()) || $array3->length() !== 12) {
   throw new Exception('ArrayList3 initial error');
 }
 
 $test4 = [0, 1, 2, null, true, false];
 $array4 = new \Vary\ArrayList([0, 1, 2, null, true, false]);
-if ($array4->size() !== 6) {
+if ($array4->length() !== 6) {
   throw new Exception('ArrayList4 initial error');
 }
 foreach($test4 as $key => $case) {
@@ -118,7 +118,7 @@ foreach($test5 as $key => $case) {
     throw new Exception('ArrayList5 lastIndexOf error');
   }
   if ($array5->pop() !== $case) { throw new Exception('ArrayList5 pop error'); }
-  if ($array5->size() !== 0) { throw new Exception('ArrayList5 size error'); }
+  if ($array5->length() !== 0) { throw new Exception('ArrayList5 length error'); }
 }
 
 $test6 = [0, 1, 2, null, true, false];
@@ -128,11 +128,11 @@ foreach($test6 as $key => $case) {
     throw new Exception('ArrayList6 pop error');
   }
 }
-if ($array6->size() !== 0) { throw new Exception('ArrayList6 size error'); }
+if ($array6->length() !== 0) { throw new Exception('ArrayList6 length error'); }
 
 $test7 = [0, 1, 2, null, true, false];
 $array7 = new \Vary\ArrayList([0, 1, 2, null, true, false]);
-if ($array7->size() !== 6) {
+if ($array7->length() !== 6) {
   throw new Exception('ArrayList7 initial error');
 }
 foreach($test7 as $key => $case) {
@@ -145,7 +145,7 @@ $test8 = [0, 1, 2, null, true, false];
 $array8 = new \Vary\ArrayList();
 foreach($test8 as $key => $case) {
   if ($array8->push($case) == false) { throw new Exception('ArrayList8 push error'); }
-  if ($array8->shift() !== $test8[$key] && $array8->size() !== 0) {
+  if ($array8->shift() !== $test8[$key] && $array8->length() !== 0) {
     throw new Exception('ArrayList8 shift error');
   }
 }
@@ -155,20 +155,20 @@ $array9 = new \Vary\ArrayList([0, 1, 2, null, true, false]);
 foreach($test9 as $case) {
   if ($array9->shift() !== $case) { throw new Exception('ArrayList9 shift error'); }
 }
-if ($array9->size() !== 0) { throw new Exception('ArrayList9 size error'); }
+if ($array9->length() !== 0) { throw new Exception('ArrayList9 length error'); }
 
 $test10 = [
   0, 1, 2, null, true, false, [], [1], [1, '1', false], 
   [1, ['1']], new \Vary\ArrayList(), [1, [new \Vary\ArrayList()]] 
 ];
 $array10 = new \Vary\ArrayList();
-if ($array10->size() !== 0) { throw new Exception('ArrayList10 size error'); }
+if ($array10->length() !== 0) { throw new Exception('ArrayList10 length error'); }
 foreach($test10 as $key => $case) {
   if ($array10->unshift($case) == false) {
     throw new Exception('ArrayList10 unshift error');
   }
-  if ($array10->size() - 1 !== $key) {
-    throw new Exception('ArrayList10 size error');
+  if ($array10->length() - 1 !== $key) {
+    throw new Exception('ArrayList10 length error');
   }
 }
 foreach($test10 as $key => $case) {
@@ -176,7 +176,7 @@ foreach($test10 as $key => $case) {
     throw new Exception('ArrayList10 unshift error');
   }
 }
-if ($array10->size() !== 12) { throw new Exception('ArrayList10 size error'); }
+if ($array10->length() !== 12) { throw new Exception('ArrayList10 length error'); }
 
 $test11 = [0, 1, 2, null, true, false];
 $array11 = new \Vary\ArrayList();
@@ -187,8 +187,8 @@ foreach($test11 as $key => $case) {
   if ($array11->shift() !== $test11[$key]) {
     throw new Exception('ArrayList11 shift error');
   }
-  if ($array11->size() !== 0) {
-    throw new Exception('ArrayList11 size error');
+  if ($array11->length() !== 0) {
+    throw new Exception('ArrayList11 length error');
   }
 }
 
@@ -204,7 +204,7 @@ foreach($test12 as $key => $case) {
     throw new Exception('ArrayList12 shift error');
   }
 }
-if ($array12->size() !== 0) { throw new Exception('ArrayList12 size error'); }
+if ($array12->length() !== 0) { throw new Exception('ArrayList12 length error'); }
 
 $test13 = [0, 1, 2, null];
 $array13 = new \Vary\ArrayList();
@@ -256,14 +256,14 @@ if ($array17->value() !== [1, null, false, 'a', 'bb']) {
   throw new Exception('ArrayList17 concat error');
 }
 if ($array17->push('ccc') !== true) { throw new Exception('ArrayList17 push error'); }
-if ($array17->index($array17->size() - 1) !== 'ccc') {
+if ($array17->index($array17->length() - 1) !== 'ccc') {
   throw new Exception('ArrayList17 push error');
 }
 
 $stack = new \Vary\Stack();
 if ($stack->push(1) !== true) { throw new Exception('Stack push error'); }
 if ($stack->pop() !== 1) { throw new Exception('Stack pop error'); }
-if ($stack->size() !== 0) { throw new Exception('Stack size error'); }
+if ($stack->length() !== 0) { throw new Exception('Stack length error'); }
 $stack = new \Vary\Stack([1, 2]);
 if ($stack->value() !== [1, 2]) { throw new Exception('Stack value error'); }
 if ($stack->index(0) !== 1) { throw new Exception('Stack index error'); }
@@ -275,7 +275,7 @@ if ($queue->shift() !== 1) { throw new Exception('Queue shift error'); }
 if ($queue->value() !== []) { throw new Exception('Queue value error'); }
 $queue = new \Vary\Queue([1, 2]);
 if ($queue->shift() !== 1) { throw new Exception('Queue shift error'); }
-if ($queue->size() !== 1) { throw new Exception('Queue size error'); }
+if ($queue->length() !== 1) { throw new Exception('Queue length error'); }
 if ($queue->index(0) !== 2) { throw new Exception('Queue index error'); }
 
 $deque = new \Vary\Deque();
@@ -285,4 +285,4 @@ if ($deque->value() !== [2, 1]) { throw new Exception('Deque value error'); }
 if ($deque->index(1) !== 1) { throw new Exception('Deque index error'); }
 if ($deque->shift() !== 2) { throw new Exception('Deque shift error'); }
 if ($deque->pop() !== 1) { throw new Exception('Deque pop error'); }
-if ($deque->size() !== 0) { throw new Exception('Deque size error'); }
+if ($deque->length() !== 0) { throw new Exception('Deque length error'); }

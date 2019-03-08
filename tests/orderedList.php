@@ -6,15 +6,15 @@ if ($test->value() !== [-1, 0, 1, 3, 50]) {
   throw new Exception('OrderedList add error');
 }
 if ($test->index(2) !== 1) { throw new Exception('OrderedList index error'); }
-if ($test->size() !== 5 || $test->value()[0] !== -1 || $test->value()[4] !== 50) {
+if ($test->length() !== 5 || $test->value()[0] !== -1 || $test->value()[4] !== 50) {
   throw new Exception('OrderedList add error');
 }
 if ($test->shift() !== -1) { throw new Exception('OrderedList shift error'); }
 if ($test->shift() !== 0) { throw new Exception('OrderedList shift error'); }
 if ($test->pop() !== 50) { throw new Exception('OrderedList pop error'); }
 if ($test->pop() !== 3) { throw new Exception('OrderedList pop error'); }
-if ($test->size() !== 1 || $test->value()[0] !== 1) {
-  throw new Exception('OrderedList size error');
+if ($test->length() !== 1 || $test->value()[0] !== 1) {
+  throw new Exception('OrderedList length error');
 }
 if ($test->add(0) !== 0) { throw new Exception('OrderedList add error'); }
 if ($test->add(2) !== 2) { throw new Exception('OrderedList add error'); }
@@ -34,7 +34,7 @@ if ($test->indexOf(2) !== 1) { throw new Exception('OrderedList indexOf error');
 
 $test1 = new \Vary\OrderedList();
 $add1 = $test1->add(1);
-if ($add1 !== 0 || $test1->size() !== 1) {
+if ($add1 !== 0 || $test1->length() !== 1) {
   throw new Exception('OrderedList1 add error');
 }
 $add1 = $test1->add(3);
@@ -80,12 +80,12 @@ $remove_index = $test1->removeIndex(1);
 if ($remove_index !== 3) { throw new Exception('OrderedList1 remove index error'); }
 $remove_index = $test1->removeIndex(1);
 if ($remove_index !== null) { throw new Exception('OrderedList1 remove index error'); }
-if ($test1->size() !== 1 || $test1->value()[0] !== 2) {
+if ($test1->length() !== 1 || $test1->value()[0] !== 2) {
   throw new Exception('OrderedList1 remove index error');
 }
 $remove = $test1->remove(1);
 if ($remove !== false) { throw new Exception('OrderedList1 remove error'); }
 $remove = $test1->remove(2);
-if ($remove !== 0 || $test1->size() !== 0) {
+if ($remove !== 0 || $test1->length() !== 0) {
   throw new Exception('OrderedList1 remove error');
 }

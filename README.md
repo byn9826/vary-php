@@ -1,5 +1,5 @@
-# Vary-PHP
-Various PHP classes in C
+# VARY-PHP
+Various PHP classes in C  
 Supported Version: php7.2  
 
 Installation
@@ -35,14 +35,14 @@ binarySearch, shellShort
 
 ArrayList: Array Type Collections
 --
-constructor(), value(), size(), index()
+constructor(), value(), length(), index()
 ```
 $array = new \Vary\ArrayList();
 $array->value(); // []
-$array->size(); // 0
+$array->length(); // 0
 $array = new \Vary\ArrayList([1, 2, 3]);
 $array->value(); // [1, 2, 3]
-$array->size(); // 3
+$array->length(); // 3
 $array->index(1); // 2
 $array->index(3); // null
 ```
@@ -117,14 +117,14 @@ $array->some(function($a) { return $a === 1; }) // TRUE
 
 Stack: Last-In-First-Out Type ArrayList
 --
-constructor(), value(), size(), index()
+constructor(), value(), length(), index()
 ```
 $stack = new \Vary\Stack();
 $stack->value(); // []
-$stack->size(); // 0
+$stack->length(); // 0
 $stack = new \Vary\Stack([1, 2, 3]);
 $stack->value(); // [1, 2, 3]
-$stack->size(); // 3
+$stack->length(); // 3
 $stack->index(1); // 2
 ```
 push()
@@ -142,14 +142,14 @@ $stack->value(); // [1, 2]
 
 Queue: First-In-First-Out Type ArrayList
 --
-constructor(), value(), size(), index()
+constructor(), value(), length(), index()
 ```
 $queue = new \Vary\Queue();
 $queue->value(); // []
-$queue->size(); // 0
+$queue->length(); // 0
 $queue = new \Vary\Queue([1, 2, 3]);
 $queue->value(); // [1, 2, 3]
-$queue->size(); // 3
+$queue->length(); // 3
 $queue->index(1); // 2
 ```
 push()
@@ -167,14 +167,14 @@ $queue->value(); // [2, 3]
 
 Deque: Double-Ended Type ArrayList
 --
-constructor(), value(), size(), index()
+constructor(), value(), length(), index()
 ```
 $deque = new \Vary\Deque();
 $deque->value(); // []
-$deque->size(); // 0
+$deque->length(); // 0
 $deque = new \Vary\Deque([1, 2, 3]);
 $deque->value(); // [1, 2, 3]
-$deque->size(); // 3
+$deque->length(); // 3
 $queue->index(1); // 2
 ```
 push()
@@ -204,11 +204,11 @@ $deque->value(); // [2, 3]
 
 OrderedList: Ordered ArrayList of Unique Numbers
 --
-constructor(), value(), size(), index()
+constructor(), value(), length(), index()
 ```
 $ordered_list = new \Vary\OrderedList();
 $ordered_list->value(); // []
-$ordered_list->size(); // 0
+$ordered_list->length(); // 0
 $ordered_list->add(1);
 $ordered_list->index(0); // 1
 ```

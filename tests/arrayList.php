@@ -32,6 +32,13 @@ if ($array->concat([3, 4]) !== [1, 2, 3, 4]) {
 }
 if ($array->value() !== [1, 2]) { throw new Exception('ArrayList concat error'); }
 if ($array->concat([]) !== [1, 2]) { throw new Exception('ArrayList concat error'); }
+$array = new \Vary\ArrayList([1, 2, 3]);
+if ($array->every(function($a) { return $a > 0; }) !== TRUE) {
+  throw new Exception('ArrayList every error');
+}
+if ($array->every(function($a) { return $a > 1; }) !== FALSE) {
+  throw new Exception('ArrayList every error');
+}
 
 $array1 = new \Vary\ArrayList();
 if ($array1->size() !== 0) { throw new Exception('ArrayList1 initial error'); }

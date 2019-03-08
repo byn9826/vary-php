@@ -102,6 +102,12 @@ $array = new \Vary\ArrayList([1, 2]);
 $array->concat([3, 4, 5]); // [1, 2, 3, 4, 5]
 $array->value(); // [1, 2]
 ```
+every()
+```
+$array = new \Vary\ArrayList([1, 2, 3]);
+$array->every(function($a) { return $a > 0; }) // TRUE
+$array->every(function($a) { return $a > 1; }) // FALSE
+```
 
 Stack: Last-In-First-Out Type ArrayList
 --

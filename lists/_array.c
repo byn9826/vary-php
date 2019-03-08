@@ -272,20 +272,16 @@ PHP_METHOD(_array, concat)
     carry = Z_ARRVAL_P(current)->arData + i;
     ZVAL_COPY(&carry_value, &carry->val);
     if (zend_hash_next_index_insert(Z_ARRVAL_P(&_items), &carry_value) == NULL) {
-      //zval_ptr_dtor(&carry_value);
       RETURN_NULL();
     }
-    //zval_ptr_dtor(&carry_value);
   }
   uint32_t target_size = zend_hash_num_elements(Z_ARRVAL_P(target));
   for (uint32_t i = 0; i < target_size; i++) {
     carry = Z_ARRVAL_P(target)->arData + i;
     ZVAL_COPY(&carry_value, &carry->val);
     if (zend_hash_next_index_insert(Z_ARRVAL_P(&_items), &carry_value) == NULL) {
-      //zval_ptr_dtor(&carry_value);
       RETURN_NULL();
     }
-    //zval_ptr_dtor(&carry_value);
   }
   zval_ptr_dtor(&carry_value);
   Z_ARRVAL_P(&_items)->nNumUsed = current_size + target_size;
@@ -302,4 +298,42 @@ PHP_METHOD(_array, indexOf)
 PHP_METHOD(_array, lastIndexOf)
 {
   vary_array_indexOf(INTERNAL_FUNCTION_PARAM_PASSTHRU, 1);
+}
+
+PHP_METHOD(_array, every)
+{
+  zend_fcall_info user_compare_func = empty_fcall_info;
+	zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_items = array_getItems(getThis());
+  uint32_t full_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
+  int result = 1;
+  for (uint32_t i = 0; i < full_size; ++i) {
+    Bucket *current_item = Z_ARRVAL_P(_items)->arData + i;
+    zval retval;
+    zval args[1];
+    ZVAL_COPY(&args[0], &current_item->val);
+    user_compare_func.retval = &retval;
+    user_compare_func.param_count = 1;
+    user_compare_func.no_separation = 0;
+    user_compare_func.params = args;
+    if (
+      zend_call_function(&user_compare_func, &user_compare_func_cache) != SUCCESS
+      || Z_TYPE(retval) == IS_FALSE
+    ) {
+      zval_ptr_dtor(&args[0]);
+      zval_ptr_dtor(&retval);
+      result = 0;
+      break;
+    }
+    zval_ptr_dtor(&args[0]);
+    zval_ptr_dtor(&retval);
+  }
+  if (result == 0) {
+    RETURN_FALSE;
+  } else {
+    RETURN_TRUE;
+  }
 }

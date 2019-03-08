@@ -39,6 +39,15 @@ if ($array->every(function($a) { return $a > 0; }) !== TRUE) {
 if ($array->every(function($a) { return $a > 1; }) !== FALSE) {
   throw new Exception('ArrayList every error');
 }
+if ($array->some(function($a) { return $a === 0; }) !== FALSE) {
+  throw new Exception('ArrayList some error');
+}
+if ($array->some(function($a) { return $a === 1; }) !== TRUE) {
+  throw new Exception('ArrayList some error');
+}
+if ($array->some(function($a) { return $a > 2; }) !== TRUE) {
+  throw new Exception('ArrayList some error');
+}
 
 $array1 = new \Vary\ArrayList();
 if ($array1->size() !== 0) { throw new Exception('ArrayList1 initial error'); }

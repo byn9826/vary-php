@@ -108,6 +108,12 @@ $array = new \Vary\ArrayList([1, 2, 3]);
 $array->every(function($a) { return $a > 0; }) // TRUE
 $array->every(function($a) { return $a > 1; }) // FALSE
 ```
+some()
+```
+$array = new \Vary\ArrayList([1, 2, 3]);
+$array->some(function($a) { return $a === 0; }) // FALSE
+$array->some(function($a) { return $a === 1; }) // TRUE
+```
 
 Stack: Last-In-First-Out Type ArrayList
 --

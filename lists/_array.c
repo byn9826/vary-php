@@ -266,28 +266,30 @@ PHP_METHOD(_array, concat)
   zval _items;
   array_init(&_items);
   uint32_t current_size = zend_hash_num_elements(Z_ARRVAL_P(current));
-  Bucket *carry;
   zval carry_value;
+  Bucket *carry;
   for (uint32_t i = 0; i < current_size; i++) {
     carry = Z_ARRVAL_P(current)->arData + i;
-    ZVAL_COPY(&carry_value, &carry->val);
-    if (zend_hash_next_index_insert(Z_ARRVAL_P(&_items), &carry_value) == NULL) {
+    ZVAL_COPY_UNREF(&carry_value, &carry->val);
+    if (zend_hash_next_index_insert(Z_ARRVAL(_items), &carry_value) == NULL) {
       RETURN_NULL();
     }
+    ZVAL_UNDEF(&carry_value);
   }
   uint32_t target_size = zend_hash_num_elements(Z_ARRVAL_P(target));
   for (uint32_t i = 0; i < target_size; i++) {
     carry = Z_ARRVAL_P(target)->arData + i;
-    ZVAL_COPY(&carry_value, &carry->val);
-    if (zend_hash_next_index_insert(Z_ARRVAL_P(&_items), &carry_value) == NULL) {
+    ZVAL_COPY_UNREF(&carry_value, &carry->val);
+    if (zend_hash_next_index_insert(Z_ARRVAL(_items), &carry_value) == NULL) {
       RETURN_NULL();
     }
+    ZVAL_UNDEF(&carry_value);
   }
   zval_ptr_dtor(&carry_value);
-  Z_ARRVAL_P(&_items)->nNumUsed = current_size + target_size;
-  Z_ARRVAL_P(&_items)->nNextFreeElement = current_size + target_size;
-  zend_hash_internal_pointer_reset(Z_ARRVAL_P(&_items));
-  RETURN_ARR(Z_ARRVAL_P(&_items));
+  Z_ARRVAL(_items)->nNumUsed = current_size + target_size;
+  Z_ARRVAL(_items)->nNextFreeElement = current_size + target_size;
+  zend_hash_internal_pointer_reset(Z_ARRVAL(_items));
+  RETURN_ARR(Z_ARRVAL(_items));
 }
 
 PHP_METHOD(_array, indexOf)
@@ -374,4 +376,39 @@ PHP_METHOD(_array, some)
   } else {
     RETURN_TRUE;
   }
+}
+
+PHP_METHOD(_array, map)
+{
+  zend_fcall_info user_compare_func = empty_fcall_info;
+	zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_items = array_getItems(getThis());
+  uint32_t full_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
+  zval _result;
+  array_init(&_result);
+  for (uint32_t i = 0; i < full_size; ++i) {
+    Bucket *carry = Z_ARRVAL_P(_items)->arData + i;
+    zval args[1], retval;
+    ZVAL_COPY_UNREF(&args[0], &carry->val);
+    user_compare_func.retval = &retval;
+    user_compare_func.param_count = 1;
+    user_compare_func.no_separation = 0;
+    user_compare_func.params = args;
+    if (zend_call_function(&user_compare_func, &user_compare_func_cache) != SUCCESS) {
+      zval_ptr_dtor(&args[0]);
+      zval_ptr_dtor(&retval);
+      RETURN_NULL();
+    }
+    if (zend_hash_next_index_insert(Z_ARRVAL_P(&_result), &retval) == NULL) {
+      RETURN_NULL();
+    }
+    zval_ptr_dtor(&args[0]);
+  }
+  Z_ARRVAL_P(&_result)->nNumUsed = full_size;
+  Z_ARRVAL_P(&_result)->nNextFreeElement = full_size;
+  zend_hash_internal_pointer_reset(Z_ARRVAL_P(&_result));
+  RETURN_ARR(Z_ARRVAL_P(&_result));
 }

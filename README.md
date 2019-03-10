@@ -114,6 +114,12 @@ $array = new \Vary\ArrayList([1, 2, 3]);
 $array->some(function($a) { return $a === 0; }) // FALSE
 $array->some(function($a) { return $a === 1; }) // TRUE
 ```
+map()
+```
+$array = new \Vary\ArrayList([1, 2, 3]);
+$array->map(function($a) { return $a * $a; }) // [1, 4, 9]
+$array->value(); // [1, 2, 3]
+```
 
 Stack: Last-In-First-Out Type ArrayList
 --

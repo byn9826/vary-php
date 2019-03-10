@@ -42,6 +42,7 @@ const zend_function_entry _array_funcs[] = {
 	PHP_ME(_array, concat, arginfo_array, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, every, arginfo_function, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, some, arginfo_function, ZEND_ACC_PROTECTED)
+	PHP_ME(_array, map, arginfo_function, ZEND_ACC_PROTECTED)
 	PHP_FE_END
 };
 
@@ -57,6 +58,7 @@ const zend_function_entry arrayList_funcs[] = {
 	PHP_ME(_array, concat, arginfo_array, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, every, arginfo_function, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, some, arginfo_function, ZEND_ACC_PUBLIC)
+	PHP_ME(_array, map, arginfo_function, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 

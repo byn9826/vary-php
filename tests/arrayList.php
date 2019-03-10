@@ -30,8 +30,12 @@ $array = new \Vary\ArrayList([1, 2]);
 if ($array->concat([3, 4]) !== [1, 2, 3, 4]) {
   throw new Exception('ArrayList concat error');
 }
-if ($array->value() !== [1, 2]) { throw new Exception('ArrayList concat error'); }
-if ($array->concat([]) !== [1, 2]) { throw new Exception('ArrayList concat error'); }
+$array = new \Vary\ArrayList(['1', '22']);
+if ($array->concat(['333', '4444']) !== ['1', '22', '333', '4444']) {
+  throw new Exception('ArrayList concat error');
+}
+if ($array->value() !== ['1', '22']) { throw new Exception('ArrayList concat error'); }
+if ($array->concat([]) !== ['1', '22']) { throw new Exception('ArrayList concat error'); }
 $array = new \Vary\ArrayList([1, 2, 3]);
 if ($array->every(function($a) { return $a > 0; }) !== TRUE) {
   throw new Exception('ArrayList every error');
@@ -39,15 +43,33 @@ if ($array->every(function($a) { return $a > 0; }) !== TRUE) {
 if ($array->every(function($a) { return $a > 1; }) !== FALSE) {
   throw new Exception('ArrayList every error');
 }
-if ($array->some(function($a) { return $a === 0; }) !== FALSE) {
+$array = new \Vary\ArrayList(['11', '2', 3]);
+if ($array->some(function($a) { return $a === '0'; }) !== FALSE) {
   throw new Exception('ArrayList some error');
 }
-if ($array->some(function($a) { return $a === 1; }) !== TRUE) {
+if ($array->some(function($a) { return $a === '11'; }) !== TRUE) {
   throw new Exception('ArrayList some error');
 }
-if ($array->some(function($a) { return $a > 2; }) !== TRUE) {
+if ($array->some(function($a) { return $a === '2'; }) !== TRUE) {
   throw new Exception('ArrayList some error');
 }
+$array = new \Vary\ArrayList([1, 2, 3]);
+if ($array->map(function($a) { return $a; }) !== [1, 2, 3]) {
+  throw new Exception('ArrayList map error');
+}
+if ($array->map(function($a) { return $a * 2; }) !== [2, 4, 6]) {
+  throw new Exception('ArrayList map error');
+}
+if ($array->value() !== [1, 2, 3]) { throw new Exception('ArrayList map error'); }
+if ($array->map(function($a) { return $a * $a; }) !== [1, 4, 9]) {
+  throw new Exception('ArrayList map error');
+}
+if ($array->value() !== [1, 2, 3]) { throw new Exception('ArrayList map error'); }
+$array = new \Vary\ArrayList(['1', '22', '333']);
+if ($array->map(function($a) { return $a . $a; }) !== ['11', '2222', '333333']) {
+  throw new Exception('ArrayList map error');
+}
+if ($array->value() !== ['1', '22', '333']) { throw new Exception('ArrayList map error'); }
 
 $array1 = new \Vary\ArrayList();
 if ($array1->length() !== 0) { throw new Exception('ArrayList1 initial error'); }

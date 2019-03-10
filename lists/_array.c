@@ -412,3 +412,31 @@ PHP_METHOD(_array, map)
   zend_hash_internal_pointer_reset(Z_ARRVAL_P(&_result));
   RETURN_ARR(Z_ARRVAL_P(&_result));
 }
+
+PHP_METHOD(_array, forEach)
+{
+  zend_fcall_info user_compare_func = empty_fcall_info;
+	zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_items = array_getItems(getThis());
+  uint32_t full_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
+  for (uint32_t i = 0; i < full_size; ++i) {
+    Bucket *carry = Z_ARRVAL_P(_items)->arData + i;
+    zval args[1], retval;
+    ZVAL_COPY_UNREF(&args[0], &carry->val);
+    user_compare_func.retval = &retval;
+    user_compare_func.param_count = 1;
+    user_compare_func.no_separation = 0;
+    user_compare_func.params = args;
+    if (zend_call_function(&user_compare_func, &user_compare_func_cache) != SUCCESS) {
+      zval_ptr_dtor(&args[0]);
+      zval_ptr_dtor(&retval);
+      RETURN_NULL();
+    }
+    zval_ptr_dtor(&args[0]);
+    zval_ptr_dtor(&retval);
+  }
+  RETURN_NULL();
+}

@@ -93,6 +93,16 @@ if ($array->map(function($a) { return $a . $a; }) !== ['11', '2222', '333333']) 
 }
 if ($array->value() !== ['1', '22', '333']) { throw new Exception('ArrayList map error'); }
 
+$array = new \Vary\ArrayList(['1', '22', '333']);
+$holder = new \Vary\ArrayList();
+$array->forEach(function($a) use($holder) { $holder->push($a . $a); });
+if ($holder->value() !== ['11', '2222', '333333']) {
+throw new Exception('ArrayList forEach error');
+}
+if ($array->value() !== ['1', '22', '333']) {
+  throw new Exception('ArrayList forEach error');
+}
+
 $array1 = new \Vary\ArrayList();
 if ($array1->length() !== 0) { throw new Exception('ArrayList1 initial error'); }
 foreach([

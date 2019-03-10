@@ -25,7 +25,6 @@ const zend_function_entry algorithm_funcs[] = {
 };
 
 #include "./lists/_array.c"
-#include "./lists/OrderedList.c"
 const zend_function_entry _array_funcs[] = {
   PHP_ME(_array, __construct, arginfo_array, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, value, arginfo_void, ZEND_ACC_PUBLIC)

@@ -124,7 +124,7 @@ forEach()
 ```
 $holder = new \Vary\ArrayList();
 $array = new \Vary\ArrayList([1, 2, 3]);
-$array->forEach(function($a) use($holder) { $holder->push($a * $a); }) //
+$array->forEach(function($a) use($holder) { $holder->push($a * $a); });
 $array->value(); // [1, 2, 3]
 $holder->value(); // [1, 4, 9]
 ```

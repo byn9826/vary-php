@@ -15,27 +15,46 @@ if ($array->removeIndex(1) !== 2) { throw new Exception('ArrayList removeIndex e
 if ($array->pop() !== 3) { throw new Exception('ArrayList pop error'); }
 if ($array->shift() !== 1) { throw new Exception('ArrayList shift error'); }
 if ($array->length() !== 0) { throw new Exception('ArrayList length error'); }
+
+$array = new \Vary\ArrayList(['1', '22', '333']);
+if ($array->value() != ['1', '22', '333']) { throw new Exception('ArrayList value error'); }
+if ($array->index(0) !== '1') { throw new Exception('ArrayList index error'); }
+if ($array->index(1) !== '22') { throw new Exception('ArrayList index error'); }
+if ($array->index(2) !== '333') { throw new Exception('ArrayList index error'); }
+if ($array->index(3) !== null) { throw new Exception('ArrayList index error'); }
+if ($array->index(-1) !== null) { throw new Exception('ArrayList index error'); }
+if ($array->indexOf('22') !== 1) { throw new Exception('ArrayList indexOf error'); }
+if ($array->lastIndexOf('22') !== 1) { throw new Exception('ArrayList lastIndexOf error'); }
+if ($array->removeIndex(1) !== '22') { throw new Exception('ArrayList removeIndex error'); }
+if ($array->pop() !== '333') { throw new Exception('ArrayList pop error'); }
+if ($array->shift() !== '1') { throw new Exception('ArrayList shift error'); }
+if ($array->length() !== 0) { throw new Exception('ArrayList length error'); }
+
 $array = new \Vary\ArrayList(['ab', 0, -1, 'ab', 0, -1, 100]);
 if ($array->length() !== 7) { throw new Exception('ArrayList length error'); }
 if ($array->indexOf('ab') !== 0) { throw new Exception('ArrayList indexOf error'); }
 if ($array->lastIndexOf('ab') !== 3) {
   throw new Exception('ArrayList lastIndexOf error');
 }
+
 $array = new \Vary\ArrayList([1, -1, 0]);
 $array->sort();
 if ($array->value() !== [-1, 0, 1]) { throw new Exception('ArrayList sort error'); }
 $array->sort(function($a, $b) { return $a > $b; });
 if ($array->value() !== [1, 0, -1]) { throw new Exception('ArrayList sort error'); }
+
 $array = new \Vary\ArrayList([1, 2]);
 if ($array->concat([3, 4]) !== [1, 2, 3, 4]) {
   throw new Exception('ArrayList concat error');
 }
+
 $array = new \Vary\ArrayList(['1', '22']);
 if ($array->concat(['333', '4444']) !== ['1', '22', '333', '4444']) {
   throw new Exception('ArrayList concat error');
 }
 if ($array->value() !== ['1', '22']) { throw new Exception('ArrayList concat error'); }
 if ($array->concat([]) !== ['1', '22']) { throw new Exception('ArrayList concat error'); }
+
 $array = new \Vary\ArrayList([1, 2, 3]);
 if ($array->every(function($a) { return $a > 0; }) !== TRUE) {
   throw new Exception('ArrayList every error');
@@ -43,6 +62,7 @@ if ($array->every(function($a) { return $a > 0; }) !== TRUE) {
 if ($array->every(function($a) { return $a > 1; }) !== FALSE) {
   throw new Exception('ArrayList every error');
 }
+
 $array = new \Vary\ArrayList(['11', '2', 3]);
 if ($array->some(function($a) { return $a === '0'; }) !== FALSE) {
   throw new Exception('ArrayList some error');
@@ -53,6 +73,7 @@ if ($array->some(function($a) { return $a === '11'; }) !== TRUE) {
 if ($array->some(function($a) { return $a === '2'; }) !== TRUE) {
   throw new Exception('ArrayList some error');
 }
+
 $array = new \Vary\ArrayList([1, 2, 3]);
 if ($array->map(function($a) { return $a; }) !== [1, 2, 3]) {
   throw new Exception('ArrayList map error');
@@ -65,6 +86,7 @@ if ($array->map(function($a) { return $a * $a; }) !== [1, 4, 9]) {
   throw new Exception('ArrayList map error');
 }
 if ($array->value() !== [1, 2, 3]) { throw new Exception('ArrayList map error'); }
+
 $array = new \Vary\ArrayList(['1', '22', '333']);
 if ($array->map(function($a) { return $a . $a; }) !== ['11', '2222', '333333']) {
   throw new Exception('ArrayList map error');

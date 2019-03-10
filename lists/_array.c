@@ -12,8 +12,8 @@ zval *array_getItems(zval *this)
   return zend_read_property(
     arrayList_handle,
     this,
-    "_items",
-    sizeof("_items") - 1,
+    "__value__",
+    sizeof("__value__") - 1,
     0,
     rv TSRMLS_CC
   );
@@ -86,8 +86,8 @@ PHP_METHOD(_array, __construct)
   zend_update_property(
     _array_handle,
     getThis(),
-    "_items",
-    sizeof("_items") - 1,
+    "__value__",
+    sizeof("__value__") - 1,
     &_items TSRMLS_CC
   );
   zval_ptr_dtor(&_items);

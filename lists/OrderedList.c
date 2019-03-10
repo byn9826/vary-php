@@ -11,8 +11,8 @@ PHP_METHOD(OrderedList, __construct)
   zend_update_property(
     _array_handle,
     getThis(),
-    "_items",
-    sizeof("_items") - 1,
+    "__value__",
+    sizeof("__value__") - 1,
     &_items TSRMLS_CC
   );
   zval_ptr_dtor(&_items);

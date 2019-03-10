@@ -43,6 +43,7 @@ const zend_function_entry _array_funcs[] = {
 	PHP_ME(_array, some, arginfo_function, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, map, arginfo_function, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, forEach, arginfo_function, ZEND_ACC_PROTECTED)
+	PHP_ME(_array, filter, arginfo_function, ZEND_ACC_PROTECTED)
 	PHP_FE_END
 };
 
@@ -60,6 +61,7 @@ const zend_function_entry arrayList_funcs[] = {
 	PHP_ME(_array, some, arginfo_function, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, map, arginfo_function, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, forEach, arginfo_function, ZEND_ACC_PUBLIC)
+	PHP_ME(_array, filter, arginfo_function, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 
@@ -97,9 +99,8 @@ const zend_function_entry orderedList_funcs[] = {
 PHP_MINIT_FUNCTION(vary)
 {
 	/*
-	 * Data Structures Classes
-	 * Parent: _array
-	 * Childs: ArrayList, Stack, Queue, Deque, OrderedList
+	 * _array Classes
+	 * ArrayList, Stack, Queue, Deque, OrderedList
 	 */
 	zend_class_entry _array_ce;
   INIT_NS_CLASS_ENTRY(_array_ce, "Vary", "_array", _array_funcs);

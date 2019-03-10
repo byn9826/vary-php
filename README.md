@@ -128,6 +128,12 @@ $array->forEach(function($a) use($holder) { $holder->push($a * $a); });
 $array->value(); // [1, 2, 3]
 $holder->value(); // [1, 4, 9]
 ```
+filter()
+```
+$array = new \Vary\ArrayList([1, 2, 3]);
+$array->filter(function($a) { return $a > 1; }) // [2, 3]
+$array->value(); // [1, 2, 3]
+```
 
 Stack: Last-In-First-Out Type ArrayList
 --

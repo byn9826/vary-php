@@ -103,6 +103,34 @@ if ($array->value() !== ['1', '22', '333']) {
   throw new Exception('ArrayList forEach error');
 }
 
+$array = new \Vary\ArrayList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+if ($array->filter(function($a) { return $a > 10; }) !== []) {
+  throw new Exception('ArrayList filter error');
+}
+if ($array->value() !== [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
+  throw new Exception('ArrayList filter error');
+}
+if ($array->filter(function($a) { return $a > 0; }) !== [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
+  throw new Exception('ArrayList filter error');
+}
+if ($array->value() !== [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
+  throw new Exception('ArrayList filter error');
+}
+if ($array->filter(function($a) { return $a > 5; }) !== [6, 7, 8, 9, 10]) {
+  throw new Exception('ArrayList filter error');
+}
+if ($array->value() !== [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
+  throw new Exception('ArrayList filter error');
+}
+
+$array = new \Vary\ArrayList(['1', '22', '333', '4444']);
+if ($array->filter(function($a) { return strlen($a) > 2; }) !== ['333', '4444']) {
+  throw new Exception('ArrayList filter error');
+}
+if ($array->value() !== ['1', '22', '333', '4444']) {
+  throw new Exception('ArrayList filter error');
+}
+
 $array1 = new \Vary\ArrayList();
 if ($array1->length() !== 0) { throw new Exception('ArrayList1 initial error'); }
 foreach([
@@ -313,6 +341,9 @@ if ($array17->push('ccc') !== true) { throw new Exception('ArrayList17 push erro
 if ($array17->index($array17->length() - 1) !== 'ccc') {
   throw new Exception('ArrayList17 push error');
 }
+
+$array18 = new \Vary\ArrayList([]);
+if ($array18->concat([]) !== []) { throw new Exception('ArrayList18 concat error'); }
 
 $stack = new \Vary\Stack();
 if ($stack->push(1) !== true) { throw new Exception('Stack push error'); }

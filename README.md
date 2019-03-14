@@ -96,6 +96,12 @@ $array->value(); // [-1, 0, 1]
 $array->sort(function($a, $b) { return $a > $b; });
 $array->value(); // [1, 0, -1]
 ```
+reverse()
+```
+$array = new \Vary\ArrayList([1, 2, 3]);
+$array->reverse(); // [3, 2, 1]
+$array->value(); // [3, 2, 1]
+```
 concat()
 ```
 $array = new \Vary\ArrayList([1, 2]);

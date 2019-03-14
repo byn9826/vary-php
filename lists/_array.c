@@ -292,6 +292,38 @@ PHP_METHOD(_array, sort)
   vary_algorithm_shellSort(_items, user_compare_func, user_compare_func_cache, ZEND_NUM_ARGS() + 1);
 }
 
+PHP_METHOD(_array, reverse)
+{
+  ZEND_PARSE_PARAMETERS_START(0, 0)
+  ZEND_PARSE_PARAMETERS_END();
+  zval array;
+  array_init(&array);
+  zval *_items = array_getItems(getThis());
+  int items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
+  Bucket *carry;
+  for (int i = items_size - 1; i >= 0; i--) {
+    zval carry_value;
+    carry = Z_ARRVAL_P(_items)->arData + i;
+    ZVAL_COPY_UNREF(&carry_value, &carry->val);
+    if (zend_hash_next_index_insert(Z_ARRVAL(array), &carry_value) == NULL) {
+      RETURN_NULL();
+    }
+    ZVAL_UNDEF(&carry_value);
+    zval_ptr_dtor(&carry_value);
+  }
+  Z_ARRVAL(array)->nNumUsed = items_size;
+  Z_ARRVAL(array)->nNextFreeElement = items_size;
+  zend_hash_internal_pointer_reset(Z_ARRVAL(array));
+  zend_update_property(
+    _array_handle,
+    getThis(),
+    "__value__",
+    sizeof("__value__") - 1,
+    &array TSRMLS_CC
+  );
+  RETURN_ARR(Z_ARRVAL(array));
+}
+
 PHP_METHOD(_array, concat)
 {
   zval *target;

@@ -158,6 +158,16 @@ if ($array->findIndex(function($a) { return $a['key'] === 0; }) !== 0) {
 if ($array->findIndex(function($a) { return $a['key'] === '55555'; }) !== -1) {
   throw new Exception('ArrayList findIndex error');
 }
+$array = new \Vary\ArrayList([1, '22', 333, '4444']);
+if ($array->reverse() !== ['4444', 333, '22', 1]) {
+  throw new Exception('ArrayList reverse error');
+}
+if ($array->value() !== ['4444', 333, '22', 1]) {
+  throw new Exception('ArrayList reverse error');
+}
+$array = new \Vary\ArrayList([]);
+if ($array->reverse() !== []) { throw new Exception('ArrayList reverse error'); }
+if ($array->value() !== []) { throw new Exception('ArrayList reverse error'); }
 
 $array1 = new \Vary\ArrayList();
 if ($array1->length() !== 0) { throw new Exception('ArrayList1 initial error'); }

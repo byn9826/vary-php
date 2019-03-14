@@ -131,6 +131,34 @@ if ($array->value() !== ['1', '22', '333', '4444']) {
   throw new Exception('ArrayList filter error');
 }
 
+$array = new \Vary\ArrayList([
+  ['key' => 0], ['key' => '1'], ['key' => '22'], ['key' => '333'], ['key' => '4444']
+]);
+if ($array->find(function($a) { return $a['key'] === '22'; }) !== ['key' => '22']) {
+  throw new Exception('ArrayList find error');
+}
+if ($array->find(function($a) { return $a['key'] === '1'; }) !== ['key' => '1']) {
+  throw new Exception('ArrayList find error');
+}
+if ($array->find(function($a) { return $a['key'] === 0; }) !== ['key' => 0]) {
+  throw new Exception('ArrayList find error');
+}
+if ($array->find(function($a) { return $a['key'] === '55555'; }) !== null) {
+  throw new Exception('ArrayList find error');
+}
+if ($array->findIndex(function($a) { return $a['key'] === '22'; }) !== 2) {
+  throw new Exception('ArrayList findIndex error');
+}
+if ($array->findIndex(function($a) { return $a['key'] === '1'; }) !== 1) {
+  throw new Exception('ArrayList findIndex error');
+}
+if ($array->findIndex(function($a) { return $a['key'] === 0; }) !== 0) {
+  throw new Exception('ArrayList fifindIndexnd error');
+}
+if ($array->findIndex(function($a) { return $a['key'] === '55555'; }) !== -1) {
+  throw new Exception('ArrayList findIndex error');
+}
+
 $array1 = new \Vary\ArrayList();
 if ($array1->length() !== 0) { throw new Exception('ArrayList1 initial error'); }
 foreach([

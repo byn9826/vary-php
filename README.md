@@ -134,6 +134,22 @@ $array = new \Vary\ArrayList([1, 2, 3]);
 $array->filter(function($a) { return $a > 1; }) // [2, 3]
 $array->value(); // [1, 2, 3]
 ```
+find()
+```
+$array = new \Vary\ArrayList([
+  ['value' => 0], ['value' => '1'], ['value' => '22']
+]);
+$array->find(function($a) { return $a['value'] === '1'; }); // ['value' => '1']
+$array->find(function($a) { return $a['value'] === '333'; }); // null
+```
+findIndex()
+```
+$array = new \Vary\ArrayList([
+  ['value' => 0], ['value' => '1'], ['value' => '22']
+]);
+$array->findIndex(function($a) { return $a['value'] === '1'; }); // 1
+$array->findIndex(function($a) { return $a['value'] === '333'; }); // -1
+```
 
 Stack: Last-In-First-Out Type ArrayList
 --

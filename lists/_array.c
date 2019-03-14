@@ -72,6 +72,41 @@ zval vary_array_removeIndex(zval *_items, zend_long target_index)
   return return_item;
 }
 
+int vary_array_findIndex(
+  zval *_items,
+  zend_fcall_info user_func,
+  zend_fcall_info_cache user_func_cache
+)
+{
+  uint32_t full_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
+  uint32_t i = 0;
+  for (i; i < full_size; ++i) {
+    Bucket *carry = Z_ARRVAL_P(_items)->arData + i;
+    zval args[1], retval;
+    ZVAL_COPY_UNREF(&args[0], &carry->val);
+    user_func.retval = &retval;
+    user_func.param_count = 1;
+    user_func.no_separation = 0;
+    user_func.params = args;
+    if (zend_call_function(&user_func, &user_func_cache) != SUCCESS) {
+      zval_ptr_dtor(&args[0]);
+      zval_ptr_dtor(&retval);
+      return -1;
+    }
+    if (Z_TYPE(retval) == IS_TRUE) {
+      zval_ptr_dtor(&args[0]);
+      zval_ptr_dtor(&retval);
+      break;
+    }
+    zval_ptr_dtor(&args[0]);
+    zval_ptr_dtor(&retval);
+  }
+  if (i == full_size) {
+    return -1;
+  }
+  return i;
+}
+
 PHP_METHOD(_array, __construct)
 {
   zval _items, *param;
@@ -444,6 +479,36 @@ PHP_METHOD(_array, forEach)
     zval_ptr_dtor(&retval);
   }
   RETURN_NULL();
+}
+
+PHP_METHOD(_array, findIndex)
+{
+  zend_fcall_info user_func = empty_fcall_info;
+	zend_fcall_info_cache user_func_cache = empty_fcall_info_cache;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_FUNC(user_func, user_func_cache)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_items = array_getItems(getThis());
+  int index = vary_array_findIndex(_items, user_func, user_func_cache);
+  RETURN_LONG(index);
+}
+
+PHP_METHOD(_array, find)
+{
+  zend_fcall_info user_func = empty_fcall_info;
+	zend_fcall_info_cache user_func_cache = empty_fcall_info_cache;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_FUNC(user_func, user_func_cache)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_items = array_getItems(getThis());
+  int index = vary_array_findIndex(_items, user_func, user_func_cache);
+  if (index == -1) {
+    RETURN_NULL();
+  }
+  Bucket *target = Z_ARRVAL_P(_items)->arData + index;
+  zval rtval;
+  ZVAL_COPY(&rtval, &target->val);
+  RETURN_ZVAL(&rtval, 0, 0);
 }
 
 PHP_METHOD(_array, filter)

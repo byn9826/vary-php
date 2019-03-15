@@ -88,6 +88,12 @@ $array = new \Vary\ArrayList([1, 2, 1]);
 $array->lastIndexOf(1); // 2
 $array->lastIndexOf(3); // -1
 ```
+includes()
+```
+$array = new \Vary\ArrayList([1, 2]);
+$array->includes(1); // true
+$array->includes(0); // false
+```
 sort()
 ```
 $array = new \Vary\ArrayList([-1, 1, 0]);

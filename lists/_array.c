@@ -20,13 +20,8 @@ zval *array_getItems(zval *this)
   );
 }
 
-void vary_array_indexOf(INTERNAL_FUNCTION_PARAMETERS, int behavior)
+int vary_array_indexOf(zval *_items, zval *_value, int behavior)
 {
-  zval *_value;
-  ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_ZVAL(_value)
-  ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getItems(getThis());
   uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
   int targetIndex = -1;
   Bucket *carry;
@@ -44,7 +39,7 @@ void vary_array_indexOf(INTERNAL_FUNCTION_PARAMETERS, int behavior)
       break;
     }
   }
-  RETURN_LONG(targetIndex);
+  return targetIndex;
 }
 
 zval vary_array_removeIndex(zval *_items, zend_long target_index)
@@ -364,12 +359,38 @@ PHP_METHOD(_array, concat)
 
 PHP_METHOD(_array, indexOf)
 {
-  vary_array_indexOf(INTERNAL_FUNCTION_PARAM_PASSTHRU, 0);
+  zval *_value;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ZVAL(_value)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_items = array_getItems(getThis());
+  int result = vary_array_indexOf(_items, _value, 0);
+  RETURN_LONG(result);
 }
 
 PHP_METHOD(_array, lastIndexOf)
 {
-  vary_array_indexOf(INTERNAL_FUNCTION_PARAM_PASSTHRU, 1);
+  zval *_value;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ZVAL(_value)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_items = array_getItems(getThis());
+  int result = vary_array_indexOf(_items, _value, 1);
+  RETURN_LONG(result);
+}
+
+PHP_METHOD(_array, includes)
+{
+  zval *_value;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ZVAL(_value)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_items = array_getItems(getThis());
+  int result = vary_array_indexOf(_items, _value, 1);
+  if (result == -1) {
+    RETURN_FALSE;
+  }
+  RETURN_TRUE;
 }
 
 PHP_METHOD(_array, every)

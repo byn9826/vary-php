@@ -33,9 +33,9 @@ if ($array->length() !== 0) { throw new Exception('ArrayList length error'); }
 $array = new \Vary\ArrayList(['ab', 0, -1, 'ab', 0, -1, 100]);
 if ($array->length() !== 7) { throw new Exception('ArrayList length error'); }
 if ($array->indexOf('ab') !== 0) { throw new Exception('ArrayList indexOf error'); }
-if ($array->lastIndexOf('ab') !== 3) {
-  throw new Exception('ArrayList lastIndexOf error');
-}
+if ($array->lastIndexOf('ab') !== 3) { throw new Exception('ArrayList lastIndexOf error'); }
+if ($array->includes('ab') !== true) { throw new Exception('ArrayList includes error'); }
+if ($array->includes('a') !== false) { throw new Exception('ArrayList includes error'); }
 
 $array = new \Vary\ArrayList([1, -1, 0]);
 $array->sort();

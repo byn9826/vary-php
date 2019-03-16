@@ -23,8 +23,7 @@ void vary_algorithm_shellSort(
           zval target_value, compare_result;
           ZVAL_COPY_UNREF(&target_value, &target_item->val);
           if (params_num == 2) {
-            zval retval;
-            zval args[2];
+            zval args[2], retval;
             ZVAL_COPY(&args[0], &target_value);
             ZVAL_COPY(&args[1], &current_value);
             user_compare_func.retval = &retval;

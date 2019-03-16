@@ -122,6 +122,12 @@ if ($array->filter(function($a) { return $a > 5; }) !== [6, 7, 8, 9, 10]) {
 if ($array->value() !== [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
   throw new Exception('ArrayList filter error');
 }
+if ($array->reduce(function($a, $b) { return $a + $b; }) !== 55) {
+  throw new Exception('ArrayList reduce error');
+}
+if ($array->reduce(function($a, $b) { return $a + $b; }, 5) !== 60) {
+  throw new Exception('ArrayList reduce error');
+}
 
 $array = new \Vary\ArrayList(['1', '22', '333', '4444']);
 if ($array->filter(function($a) { return strlen($a) > 2; }) !== ['333', '4444']) {
@@ -129,6 +135,12 @@ if ($array->filter(function($a) { return strlen($a) > 2; }) !== ['333', '4444'])
 }
 if ($array->value() !== ['1', '22', '333', '4444']) {
   throw new Exception('ArrayList filter error');
+}
+if ($array->reduce(function($a, $b) { return $a . $b; }) !== '1223334444') {
+  throw new Exception('ArrayList reduce error');
+}
+if ($array->reduce(function($a, $b) { return $a . $b; }, '00') !== '001223334444') {
+  throw new Exception('ArrayList reduce error');
 }
 
 $array = new \Vary\ArrayList([

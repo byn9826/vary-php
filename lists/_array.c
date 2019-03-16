@@ -534,6 +534,50 @@ PHP_METHOD(_array, forEach)
   RETURN_NULL();
 }
 
+PHP_METHOD(_array, reduce)
+{
+  zend_fcall_info user_func = empty_fcall_info;
+	zend_fcall_info_cache user_func_cache = empty_fcall_info_cache;
+  zval sum_value, *start_value;
+  ZEND_PARSE_PARAMETERS_START(1, 2)
+    Z_PARAM_FUNC(user_func, user_func_cache)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_ZVAL(start_value);
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_items = array_getItems(getThis());
+  int params_num = ZEND_NUM_ARGS();
+  int start_index;
+  if (params_num == 1) {
+    Bucket *carry = Z_ARRVAL_P(_items)->arData;
+    ZVAL_COPY_UNREF(&sum_value, &carry->val);
+    start_index = 1;
+  } else {
+    ZVAL_COPY_UNREF(&sum_value, start_value);
+    start_index = 0;
+  }
+  for (uint32_t i = start_index; i < zend_hash_num_elements(Z_ARRVAL_P(_items)); ++i)
+  {
+    Bucket *carry = Z_ARRVAL_P(_items)->arData + i;
+    zval args[2];
+    ZVAL_COPY_UNREF(&args[0], &sum_value);
+    zval_ptr_dtor(&sum_value);
+    ZVAL_COPY(&args[1], &carry->val);
+    user_func.retval = &sum_value;
+    user_func.param_count = 2;
+    user_func.no_separation = 0;
+    user_func.params = args;
+    if (zend_call_function(&user_func, &user_func_cache) != SUCCESS) {
+      zval_ptr_dtor(&args[0]);
+      zval_ptr_dtor(&args[1]);
+      zval_ptr_dtor(&sum_value);
+      RETURN_NULL();
+    }
+    zval_ptr_dtor(&args[0]);
+    zval_ptr_dtor(&args[1]);
+  }
+  RETURN_ZVAL(&sum_value, 0, 1);
+}
+
 PHP_METHOD(_array, findIndex)
 {
   zend_fcall_info user_func = empty_fcall_info;

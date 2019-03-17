@@ -46,6 +46,12 @@ $array->length(); // 3
 $array->index(1); // 2
 $array->index(3); // null
 ```
+setValue()
+```
+$array = new \Vary\ArrayList();
+$array->setValue([1, 2, 3]);
+$array->value(); // [1, 2, 3]
+```
 removeIndex()
 ```
 $array = new \Vary\ArrayList([1, 2, 3]);

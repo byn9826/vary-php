@@ -128,6 +128,10 @@ if ($array->reduce(function($a, $b) { return $a + $b; }) !== 55) {
 if ($array->reduce(function($a, $b) { return $a + $b; }, 5) !== 60) {
   throw new Exception('ArrayList reduce error');
 }
+$array->setValue([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+if ($array->value() !== [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
+  throw new Exception('ArrayList setValue error');
+}
 
 $array = new \Vary\ArrayList(['1', '22', '333', '4444']);
 if ($array->filter(function($a) { return strlen($a) > 2; }) !== ['333', '4444']) {
@@ -141,6 +145,11 @@ if ($array->reduce(function($a, $b) { return $a . $b; }) !== '1223334444') {
 }
 if ($array->reduce(function($a, $b) { return $a . $b; }, '00') !== '001223334444') {
   throw new Exception('ArrayList reduce error');
+}
+$array = new \Vary\ArrayList();
+$array->setValue(['1', '22', '333', '4444']);
+if ($array->value() !== ['1', '22', '333', '4444']) {
+  throw new Exception('ArrayList setValue error');
 }
 
 $array = new \Vary\ArrayList([
@@ -203,6 +212,8 @@ foreach($test2 as $key => $case) {
   }
 }
 if ($array2->length() !== 12) { throw new Exception('ArrayList2 push error'); }
+$array2->setValue($test2);
+if ($array2->value() !== $test2) { throw new Exception('ArrayList2 setValue error'); }
 
 $array3 = new \Vary\ArrayList([
   0, 1, 2, null, true, false, [], [1], [1, '1', false], 
@@ -229,6 +240,8 @@ if (
 if ($array3->length() !== count($array3->value()) || $array3->length() !== 12) {
   throw new Exception('ArrayList3 initial error');
 }
+$array3->setValue($test2);
+if ($array3->value() !== $test2) { throw new Exception('ArrayList3 setValue error'); }
 
 $test4 = [0, 1, 2, null, true, false];
 $array4 = new \Vary\ArrayList([0, 1, 2, null, true, false]);

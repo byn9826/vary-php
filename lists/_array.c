@@ -7,16 +7,27 @@ zend_class_entry *queue_handle;
 zend_class_entry *deque_handle;
 zend_class_entry *orderedList_handle;
 
-zval *array_getValue(zval *this)
+zval *vary_array_getValue(zval *this)
 {
   zval *rv;
   return zend_read_property(
-    arrayList_handle,
+    _array_handle,
     this,
     "__value__",
     sizeof("__value__") - 1,
     0,
     rv TSRMLS_CC
+  );
+}
+
+void vary_array_setValue(zval *this, zval _items)
+{
+  zend_update_property(
+    _array_handle,
+    this,
+    "__value__",
+    sizeof("__value__") - 1,
+    &_items TSRMLS_CC
   );
 }
 
@@ -113,13 +124,19 @@ PHP_METHOD(_array, __construct)
   } else {
     ZVAL_COPY(&_items, param);
   }
-  zend_update_property(
-    _array_handle,
-    getThis(),
-    "__value__",
-    sizeof("__value__") - 1,
-    &_items TSRMLS_CC
-  );
+  vary_array_setValue(getThis(), _items);
+  zval_ptr_dtor(&_items);
+  RETURN_TRUE;
+}
+
+PHP_METHOD(_array, setValue)
+{
+  zval _items, *param;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ARRAY(param)
+  ZEND_PARSE_PARAMETERS_END();
+  ZVAL_COPY(&_items, param);
+  vary_array_setValue(getThis(), _items);
   zval_ptr_dtor(&_items);
   RETURN_TRUE;
 }
@@ -128,7 +145,7 @@ PHP_METHOD(_array, value)
 {
   ZEND_PARSE_PARAMETERS_START(0, 0)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   zval rtval;
   ZVAL_COPY(&rtval, _items);
   RETURN_ZVAL(&rtval, 1, 1);
@@ -138,7 +155,7 @@ PHP_METHOD(_array, length)
 {
   ZEND_PARSE_PARAMETERS_START(0, 0)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   RETURN_LONG(zend_hash_num_elements(Z_ARRVAL_P(_items)));
 }
 
@@ -148,7 +165,7 @@ PHP_METHOD(_array, unshift)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_ZVAL(_value)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
   if (items_size == 0) {
     ZVAL_COPY(&value, _value);
@@ -189,7 +206,7 @@ PHP_METHOD(_array, push)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_ZVAL(_value)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   ZVAL_COPY(&value, _value);
   if (zend_hash_next_index_insert(Z_ARRVAL_P(_items), &value) == NULL) {
     zval_ptr_dtor(&value);
@@ -204,7 +221,7 @@ PHP_METHOD(_array, index)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_LONG(target_index)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
   if (target_index + 1 > items_size || target_index < 0) {
     RETURN_NULL();
@@ -221,7 +238,7 @@ PHP_METHOD(_array, removeIndex)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_LONG(target_index)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   zval return_item = vary_array_removeIndex(_items, target_index);
   RETURN_ZVAL(&return_item, 1, 1);
 }
@@ -230,7 +247,7 @@ PHP_METHOD(_array, shift)
 {
   ZEND_PARSE_PARAMETERS_START(0, 0)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
   if (items_size == 0) {
 		RETURN_NULL();
@@ -257,7 +274,7 @@ PHP_METHOD(_array, pop)
 {
   ZEND_PARSE_PARAMETERS_START(0, 0)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
   if (items_size == 0) {
 		RETURN_NULL();
@@ -274,7 +291,7 @@ PHP_METHOD(_array, pop)
 
 PHP_METHOD(_array, sort)
 {
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   zend_fcall_info user_compare_func = empty_fcall_info;
 	zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
   ZEND_PARSE_PARAMETERS_START(0, 1)
@@ -295,7 +312,7 @@ PHP_METHOD(_array, reverse)
   ZEND_PARSE_PARAMETERS_END();
   zval array;
   array_init(&array);
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   int items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
   for (int i = items_size - 1; i >= 0; i--) {
     zval carry_value;
@@ -310,13 +327,7 @@ PHP_METHOD(_array, reverse)
   Z_ARRVAL(array)->nNumUsed = items_size;
   Z_ARRVAL(array)->nNextFreeElement = items_size;
   zend_hash_internal_pointer_reset(Z_ARRVAL(array));
-  zend_update_property(
-    _array_handle,
-    getThis(),
-    "__value__",
-    sizeof("__value__") - 1,
-    &array TSRMLS_CC
-  );
+  vary_array_setValue(getThis(), array);
   RETURN_ARR(Z_ARRVAL(array));
 }
 
@@ -326,7 +337,7 @@ PHP_METHOD(_array, concat)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_ARRAY(target)
   ZEND_PARSE_PARAMETERS_END();
-  zval *current = array_getValue(getThis());
+  zval *current = vary_array_getValue(getThis());
   zval _items;
   array_init(&_items);
   uint32_t current_size = zend_hash_num_elements(Z_ARRVAL_P(current));
@@ -363,7 +374,7 @@ PHP_METHOD(_array, indexOf)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_ZVAL(_value)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   int result = vary_array_indexOf(_items, _value, 0);
   RETURN_LONG(result);
 }
@@ -374,7 +385,7 @@ PHP_METHOD(_array, lastIndexOf)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_ZVAL(_value)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   int result = vary_array_indexOf(_items, _value, 1);
   RETURN_LONG(result);
 }
@@ -385,7 +396,7 @@ PHP_METHOD(_array, includes)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_ZVAL(_value)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   int result = vary_array_indexOf(_items, _value, 1);
   if (result == -1) {
     RETURN_FALSE;
@@ -400,7 +411,7 @@ PHP_METHOD(_array, every)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   uint32_t full_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
   int result = 1;
   for (uint32_t i = 0; i < full_size; ++i) {
@@ -438,7 +449,7 @@ PHP_METHOD(_array, some)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   uint32_t full_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
   int result = 0;
   for (uint32_t i = 0; i < full_size; ++i) {
@@ -476,7 +487,7 @@ PHP_METHOD(_array, map)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   uint32_t full_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
   zval _result;
   array_init(&_result);
@@ -513,7 +524,7 @@ PHP_METHOD(_array, forEach)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   uint32_t full_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
   for (uint32_t i = 0; i < full_size; ++i) {
     Bucket *carry = Z_ARRVAL_P(_items)->arData + i;
@@ -544,7 +555,7 @@ PHP_METHOD(_array, reduce)
     Z_PARAM_OPTIONAL
     Z_PARAM_ZVAL(start_value);
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   int params_num = ZEND_NUM_ARGS();
   int start_index;
   if (params_num == 1) {
@@ -585,7 +596,7 @@ PHP_METHOD(_array, findIndex)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_FUNC(user_func, user_func_cache)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   int index = vary_array_findIndex(_items, user_func, user_func_cache);
   RETURN_LONG(index);
 }
@@ -597,7 +608,7 @@ PHP_METHOD(_array, find)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_FUNC(user_func, user_func_cache)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   int index = vary_array_findIndex(_items, user_func, user_func_cache);
   if (index == -1) {
     RETURN_NULL();
@@ -615,7 +626,7 @@ PHP_METHOD(_array, filter)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   uint32_t full_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
   uint32_t filter_size = 0;
   zval _result;
@@ -657,13 +668,7 @@ PHP_METHOD(OrderedList, __construct)
   ZEND_PARSE_PARAMETERS_END();
   zval _items;
   array_init(&_items);
-  zend_update_property(
-    _array_handle,
-    getThis(),
-    "__value__",
-    sizeof("__value__") - 1,
-    &_items TSRMLS_CC
-  );
+  vary_array_setValue(getThis(), _items);
   zval_ptr_dtor(&_items);
   RETURN_TRUE;
 }
@@ -674,7 +679,7 @@ PHP_METHOD(OrderedList, add)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_LONG(new_value)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   zval _binarySearch_retval = vary_algorithm_binarySearch(_items, new_value);
   Bucket *carry = Z_ARRVAL_P(&_binarySearch_retval)->arData + 1;
   if (zval_get_long(&carry->val) == 1) {
@@ -726,7 +731,7 @@ PHP_METHOD(OrderedList, remove)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_LONG(target_value)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   zval _binarySearch_retval = vary_algorithm_binarySearch(_items, target_value);
   Bucket *carry = Z_ARRVAL_P(&_binarySearch_retval)->arData + 1;
   if (zval_get_long(&carry->val) == 0) {
@@ -736,7 +741,7 @@ PHP_METHOD(OrderedList, remove)
   carry = Z_ARRVAL_P(&_binarySearch_retval)->arData;
   zend_long target_index = zval_get_long(&carry->val);
   zval_ptr_dtor(&_binarySearch_retval);
-  zval return_item = vary_array_removeIndex(array_getValue(getThis()), target_index);
+  zval return_item = vary_array_removeIndex(vary_array_getValue(getThis()), target_index);
   zval_ptr_dtor(&return_item);
   RETURN_LONG(target_index);
 }
@@ -747,7 +752,7 @@ PHP_METHOD(OrderedList, indexOf)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_LONG(target_value)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_items = array_getValue(getThis());
+  zval *_items = vary_array_getValue(getThis());
   zval _binarySearch_retval = vary_algorithm_binarySearch(_items, target_value);
   Bucket *carry = Z_ARRVAL_P(&_binarySearch_retval)->arData + 1;
   if (zval_get_long(&carry->val) == 0) {

@@ -128,6 +128,9 @@ if ($array->reduce(function($a, $b) { return $a + $b; }) !== 55) {
 if ($array->reduce(function($a, $b) { return $a + $b; }, 5) !== 60) {
   throw new Exception('ArrayList reduce error');
 }
+if ($array->reduceRight(function($a, $b) { return $a + $b; }, 5) !== 60) {
+  throw new Exception('ArrayList reduceRight error');
+}
 $array->setValue([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 if ($array->value() !== [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
   throw new Exception('ArrayList setValue error');
@@ -145,6 +148,12 @@ if ($array->reduce(function($a, $b) { return $a . $b; }) !== '1223334444') {
 }
 if ($array->reduce(function($a, $b) { return $a . $b; }, '00') !== '001223334444') {
   throw new Exception('ArrayList reduce error');
+}
+if ($array->reduceRight(function($a, $b) { return $a . $b; }) !== '4444333221') {
+  throw new Exception('ArrayList reduceRight error');
+}
+if ($array->reduceRight(function($a, $b) { return $a . $b; }, '00') !== '004444333221') {
+  throw new Exception('ArrayList reduceRight error');
 }
 $array = new \Vary\ArrayList();
 $array->setValue(['1', '22', '333', '4444']);

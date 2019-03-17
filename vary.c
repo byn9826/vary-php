@@ -47,6 +47,7 @@ const zend_function_entry _array_funcs[] = {
 	PHP_ME(_array, map, arginfo_function, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, forEach, arginfo_function, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, reduce, arginfo_function_any, ZEND_ACC_PROTECTED)
+	PHP_ME(_array, reduceRight, arginfo_function_any, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, filter, arginfo_function, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, find, arginfo_function, ZEND_ACC_PROTECTED)
 	PHP_ME(_array, findIndex, arginfo_function, ZEND_ACC_PROTECTED)
@@ -71,6 +72,7 @@ const zend_function_entry arrayList_funcs[] = {
 	PHP_ME(_array, map, arginfo_function, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, forEach, arginfo_function, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, reduce, arginfo_function_any, ZEND_ACC_PUBLIC)
+	PHP_ME(_array, reduceRight, arginfo_function_any, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, filter, arginfo_function, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, find, arginfo_function, ZEND_ACC_PUBLIC)
 	PHP_ME(_array, findIndex, arginfo_function, ZEND_ACC_PUBLIC)
@@ -157,10 +159,6 @@ PHP_RINIT_FUNCTION(vary)
 	return SUCCESS;
 }
 
-static const zend_function_entry vary_funcs[] = {
-	PHP_FE_END
-};
-
 PHP_MINFO_FUNCTION(vary)
 {
 	php_info_print_table_start();
@@ -172,7 +170,7 @@ PHP_MINFO_FUNCTION(vary)
 zend_module_entry vary_module_entry = {
 	STANDARD_MODULE_HEADER,
 	"vary",
-	vary_funcs,
+	NULL,
 	PHP_MINIT(vary),
 	NULL,
 	PHP_RINIT(vary),

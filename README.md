@@ -149,13 +149,18 @@ $holder->value(); // [1, 4, 9]
 reduce()
 ```
 $array = new \Vary\ArrayList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-$array->reduce(function($a, $b) { return $a + $b; }) // 55
-$array->reduce(function($a, $b) { return $a + $b; }, 5) // 60
+$array->reduce(function($a, $b) { return $a + $b; }); // 55
+$array->reduce(function($a, $b) { return $a + $b; }, 5); // 60
+```
+keys()
+```
+$array = new \Vary\ArrayList([1, 2, 3]);
+$array->keys(); // [0, 1, 2]
 ```
 filter()
 ```
 $array = new \Vary\ArrayList([1, 2, 3]);
-$array->filter(function($a) { return $a > 1; }) // [2, 3]
+$array->filter(function($a) { return $a > 1; }); // [2, 3]
 $array->value(); // [1, 2, 3]
 ```
 find()

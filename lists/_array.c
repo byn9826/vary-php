@@ -592,6 +592,31 @@ PHP_METHOD(_array, forEach)
   RETURN_NULL();
 }
 
+PHP_METHOD(_array, keys)
+{
+  ZEND_PARSE_PARAMETERS_START(0, 0)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_items = vary_array_getValue(getThis());
+  uint32_t full_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
+  zval keys;
+  array_init(&keys);
+  for (uint32_t i; i < full_size; ++i)
+  {
+    zval value;
+    ZVAL_LONG(&value, i);
+    if (zend_hash_next_index_insert(Z_ARRVAL(keys), &value) == NULL) {
+      zval_ptr_dtor(&keys);
+      zval_ptr_dtor(&value);
+      RETURN_NULL();
+    }
+    zval_ptr_dtor(&value);
+  }
+  Z_ARRVAL(keys)->nNumUsed = full_size;
+  Z_ARRVAL(keys)->nNextFreeElement = full_size;
+  zend_hash_internal_pointer_reset(Z_ARRVAL(keys));
+  RETURN_ARR(Z_ARRVAL(keys));
+}
+
 PHP_METHOD(_array, reduce)
 {
   zend_fcall_info user_func = empty_fcall_info;

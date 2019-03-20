@@ -160,7 +160,6 @@ $array->setValue(['1', '22', '333', '4444']);
 if ($array->value() !== ['1', '22', '333', '4444']) {
   throw new Exception('ArrayList setValue error');
 }
-if ($array->keys() !== [0, 1, 2, 3]) { throw new Exception('ArrayList keys error'); }
 
 $array = new \Vary\ArrayList([
   ['key' => 0], ['key' => '1'], ['key' => '22'], ['key' => '333'], ['key' => '4444']
@@ -196,11 +195,9 @@ if ($array->reverse() !== ['4444', 333, '22', 1]) {
 if ($array->value() !== ['4444', 333, '22', 1]) {
   throw new Exception('ArrayList reverse error');
 }
-if ($array->keys() !== [0, 1, 2, 3]) { throw new Exception('ArrayList keys error'); }
 $array = new \Vary\ArrayList([]);
 if ($array->reverse() !== []) { throw new Exception('ArrayList reverse error'); }
 if ($array->value() !== []) { throw new Exception('ArrayList reverse error'); }
-if ($array->keys() !== []) { throw new Exception('ArrayList keys error'); }
 
 $array1 = new \Vary\ArrayList();
 if ($array1->length() !== 0) { throw new Exception('ArrayList1 initial error'); }

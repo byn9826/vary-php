@@ -160,6 +160,18 @@ $array->setValue(['1', '22', '333', '4444']);
 if ($array->value() !== ['1', '22', '333', '4444']) {
   throw new Exception('ArrayList setValue error');
 }
+$array->fill('55555');
+if ($array->value() !== ['55555', '55555', '55555', '55555']) {
+  throw new Exception('ArrayList fill error');
+}
+$array->fill('666666', 2);
+if ($array->value() !== ['55555', '55555', '666666', '666666']) {
+  throw new Exception('ArrayList fill error');
+}
+$array->fill('22', 1, 3);
+if ($array->value() !== ['55555', '22', '22', '666666']) {
+  throw new Exception('ArrayList fill error');
+}
 
 $array = new \Vary\ArrayList([
   ['key' => 0], ['key' => '1'], ['key' => '22'], ['key' => '333'], ['key' => '4444']

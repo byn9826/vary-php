@@ -146,6 +146,16 @@ $array->forEach(function($a) use($holder) { $holder->push($a * $a); });
 $array->value(); // [1, 2, 3]
 $holder->value(); // [1, 4, 9]
 ```
+fill()
+```
+$array = new \Vary\ArrayList([1, 2, 3]);
+$array->fill(1);
+$array->value(); // [1, 1, 1]
+$array->fill(2, 1);
+$array->value(); // [1, 2, 2]
+$array->fill(3, 1, 2);
+$array->value(); // [1, 3, 1]
+```
 reduce()
 ```
 $array = new \Vary\ArrayList([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);

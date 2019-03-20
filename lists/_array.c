@@ -564,6 +564,43 @@ PHP_METHOD(_array, map)
   RETURN_ARR(Z_ARRVAL(_result));
 }
 
+PHP_METHOD(_array, fill)
+{
+  zval *_value, new_array;
+  zend_long start = 0, end;
+  ZEND_PARSE_PARAMETERS_START(1, 3)
+    Z_PARAM_ZVAL(_value)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(start)
+    Z_PARAM_LONG(end)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *items = vary_array_getValue(getThis());
+  uint32_t full_size = zend_hash_num_elements(Z_ARRVAL_P(items));
+  if (ZEND_NUM_ARGS() != 3) {
+    end = full_size;
+  }
+  array_init(&new_array);
+  for (int i = 0; i < full_size; ++i) {
+    zval *target;
+    if (i >= start && i < end) {
+      target = _value;
+    } else {
+      Bucket *carry = Z_ARRVAL_P(items)->arData + i;
+      target = &carry->val;
+    }
+    if (zend_hash_next_index_insert(Z_ARRVAL(new_array), target) == NULL) {
+      zval_ptr_dtor(&new_array);
+      RETURN_NULL();
+    }
+  }
+  Z_ARRVAL(new_array)->nNumUsed = full_size;
+  Z_ARRVAL(new_array)->nNextFreeElement = full_size;
+  zend_hash_internal_pointer_reset(Z_ARRVAL(new_array));
+  vary_array_setValue(getThis(), new_array);
+  zval_ptr_dtor(&new_array);
+  RETURN_TRUE;
+}
+
 PHP_METHOD(_array, forEach)
 {
   zend_fcall_info user_compare_func = empty_fcall_info;

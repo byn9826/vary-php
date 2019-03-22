@@ -73,7 +73,7 @@ zval vary_array_removeIndex(zval *_items, zend_long target_index)
     Z_ARRVAL_P(_items)->nNumUsed = items_size - 1;
     Z_ARRVAL_P(_items)->nNextFreeElement = items_size - 1;
     zend_hash_internal_pointer_reset(Z_ARRVAL_P(_items));
-	}
+  }
   return return_item;
 }
 
@@ -297,8 +297,8 @@ PHP_METHOD(_array, shift)
   zval *_items = vary_array_getValue(getThis());
   uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
   if (items_size == 0) {
-		RETURN_NULL();
-	}
+    RETURN_NULL();
+  }
   Bucket *first_item = Z_ARRVAL_P(_items)->arData;
   zval return_item;
   ZVAL_COPY(&return_item, &first_item->val);
@@ -324,8 +324,8 @@ PHP_METHOD(_array, pop)
   zval *_items = vary_array_getValue(getThis());
   uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_items));
   if (items_size == 0) {
-		RETURN_NULL();
-	}
+    RETURN_NULL();
+  }
   Bucket *last_item = Z_ARRVAL_P(_items)->arData + items_size - 1;
   zval return_item;
   ZVAL_COPY(&return_item, &last_item->val);
@@ -340,7 +340,7 @@ PHP_METHOD(_array, sort)
 {
   zval *_items = vary_array_getValue(getThis());
   zend_fcall_info user_compare_func = empty_fcall_info;
-	zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
+  zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
   ZEND_PARSE_PARAMETERS_START(0, 1)
     Z_PARAM_OPTIONAL
     Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
@@ -454,7 +454,7 @@ PHP_METHOD(_array, includes)
 PHP_METHOD(_array, every)
 {
   zend_fcall_info user_compare_func = empty_fcall_info;
-	zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
+  zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
   ZEND_PARSE_PARAMETERS_END();
@@ -492,7 +492,7 @@ PHP_METHOD(_array, every)
 PHP_METHOD(_array, some)
 {
   zend_fcall_info user_compare_func = empty_fcall_info;
-	zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
+  zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
   ZEND_PARSE_PARAMETERS_END();
@@ -530,7 +530,7 @@ PHP_METHOD(_array, some)
 PHP_METHOD(_array, map)
 {
   zend_fcall_info user_compare_func = empty_fcall_info;
-	zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
+  zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
   ZEND_PARSE_PARAMETERS_END();
@@ -604,7 +604,7 @@ PHP_METHOD(_array, fill)
 PHP_METHOD(_array, forEach)
 {
   zend_fcall_info user_compare_func = empty_fcall_info;
-	zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
+  zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
   ZEND_PARSE_PARAMETERS_END();
@@ -632,7 +632,7 @@ PHP_METHOD(_array, forEach)
 PHP_METHOD(_array, reduce)
 {
   zend_fcall_info user_func = empty_fcall_info;
-	zend_fcall_info_cache user_func_cache = empty_fcall_info_cache;
+  zend_fcall_info_cache user_func_cache = empty_fcall_info_cache;
   zval *start_value;
   ZEND_PARSE_PARAMETERS_START(1, 2)
     Z_PARAM_FUNC(user_func, user_func_cache)
@@ -653,7 +653,7 @@ PHP_METHOD(_array, reduce)
 PHP_METHOD(_array, reduceRight)
 {
   zend_fcall_info user_func = empty_fcall_info;
-	zend_fcall_info_cache user_func_cache = empty_fcall_info_cache;
+  zend_fcall_info_cache user_func_cache = empty_fcall_info_cache;
   zval *start_value;
   ZEND_PARSE_PARAMETERS_START(1, 2)
     Z_PARAM_FUNC(user_func, user_func_cache)
@@ -674,7 +674,7 @@ PHP_METHOD(_array, reduceRight)
 PHP_METHOD(_array, findIndex)
 {
   zend_fcall_info user_func = empty_fcall_info;
-	zend_fcall_info_cache user_func_cache = empty_fcall_info_cache;
+  zend_fcall_info_cache user_func_cache = empty_fcall_info_cache;
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_FUNC(user_func, user_func_cache)
   ZEND_PARSE_PARAMETERS_END();
@@ -686,7 +686,7 @@ PHP_METHOD(_array, findIndex)
 PHP_METHOD(_array, find)
 {
   zend_fcall_info user_func = empty_fcall_info;
-	zend_fcall_info_cache user_func_cache = empty_fcall_info_cache;
+  zend_fcall_info_cache user_func_cache = empty_fcall_info_cache;
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_FUNC(user_func, user_func_cache)
   ZEND_PARSE_PARAMETERS_END();
@@ -704,7 +704,7 @@ PHP_METHOD(_array, find)
 PHP_METHOD(_array, filter)
 {
   zend_fcall_info user_compare_func = empty_fcall_info;
-	zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
+  zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
   ZEND_PARSE_PARAMETERS_END();
@@ -743,6 +743,15 @@ PHP_METHOD(_array, filter)
   zend_hash_internal_pointer_reset(Z_ARRVAL(_result));
   RETURN_ARR(Z_ARRVAL(_result));
 }
+
+// PHP_METHOD(_array, splice)
+// {
+//   zend_long start_index, remove_nums;
+//   ZEND_PARSE_PARAMETERS_START(1, 1)
+//     Z_PARAM_LONG(start_index)
+//     Z_PARAM_LONG(remove_nums)
+//   ZEND_PARSE_PARAMETERS_END();
+// }
 
 PHP_METHOD(OrderedList, __construct)
 {

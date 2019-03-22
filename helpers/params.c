@@ -40,3 +40,8 @@ ZEND_BEGIN_ARG_INFO(arginfo_any_integer_integer, 0)
   ZEND_ARG_INFO(0, start)
   ZEND_ARG_INFO(0, end)
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_integer_integer, 0)
+  ZEND_ARG_INFO(0, index)
+  ZEND_ARG_INFO(0, number)
+ZEND_END_ARG_INFO()

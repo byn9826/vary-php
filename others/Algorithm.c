@@ -29,7 +29,7 @@ void vary_algorithm_shellSort(
             user_compare_func.retval = &retval;
             user_compare_func.param_count = 2;
             user_compare_func.no_separation = 0;
-		        user_compare_func.params = args;
+            user_compare_func.params = args;
             if (
               zend_call_function(&user_compare_func, &user_compare_func_cache) == SUCCESS
               && Z_TYPE(retval) == IS_TRUE
@@ -112,7 +112,7 @@ PHP_METHOD(Algorithm, shellSort)
 {
   zval *_array;
   zend_fcall_info user_compare_func = empty_fcall_info;
-	zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
+  zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
   ZEND_PARSE_PARAMETERS_START(1, 2)
     Z_PARAM_ARRAY(_array)
     Z_PARAM_OPTIONAL

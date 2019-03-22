@@ -744,14 +744,42 @@ PHP_METHOD(_array, filter)
   RETURN_ARR(Z_ARRVAL(_result));
 }
 
-// PHP_METHOD(_array, splice)
-// {
-//   zend_long start_index, remove_nums;
-//   ZEND_PARSE_PARAMETERS_START(1, 1)
-//     Z_PARAM_LONG(start_index)
-//     Z_PARAM_LONG(remove_nums)
-//   ZEND_PARSE_PARAMETERS_END();
-// }
+PHP_METHOD(_array, splice)
+{
+  zend_long start_index, remove_size;
+  zval *_insert_value;
+  ZEND_PARSE_PARAMETERS_START(2, 3)
+    Z_PARAM_LONG(start_index)
+    Z_PARAM_LONG(remove_size)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_ZVAL(_insert_value)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *array = vary_array_getValue(getThis());
+  zval new_array;
+  array_init(&new_array);
+  uint32_t i;
+  uint32_t array_size = zend_hash_num_elements(Z_ARRVAL_P(array));
+  for (i = 0; i < start_index && i < array_size; ++i) {
+    Bucket *current = Z_ARRVAL_P(array)->arData + i;
+    zend_hash_next_index_insert(Z_ARRVAL(new_array), &current->val);
+    ZVAL_UNDEF(&current->val);
+  }
+  if (ZEND_NUM_ARGS() == 3) {
+    zval insert_value;
+    ZVAL_COPY(&insert_value, _insert_value);
+    zend_hash_next_index_insert(Z_ARRVAL(new_array), &insert_value);
+    ZVAL_UNDEF(&insert_value);
+    zval_ptr_dtor(&insert_value);
+  }
+  for (i = start_index + remove_size; i < array_size; ++i) {
+    Bucket *current = Z_ARRVAL_P(array)->arData + i;
+    zend_hash_next_index_insert(Z_ARRVAL(new_array), &current->val);
+    ZVAL_UNDEF(&current->val);
+  }
+  vary_array_setValue(getThis(), new_array);
+  zval_ptr_dtor(&new_array);
+  RETURN_TRUE;
+}
 
 PHP_METHOD(OrderedList, __construct)
 {

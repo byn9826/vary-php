@@ -184,6 +184,14 @@ $array = new \Vary\ArrayList([
 $array->findIndex(function($a) { return $a['value'] === '1'; }); // 1
 $array->findIndex(function($a) { return $a['value'] === '333'; }); // -1
 ```
+splice()
+```
+$array = new \Vary\ArrayList([1, 2, 3, 4]);
+$array->splice(1, 2);
+$array->value(); // [1, 4]
+$array->splice(1, 0, 2);
+$array->value(); // [1, 2, 4]
+```
 
 Stack: Last-In-First-Out Type ArrayList
 --

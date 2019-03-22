@@ -1,6 +1,0 @@
-{
-  "phpcs.enable": false,
-  "files.associations": {
-    "type_traits": "c"
-  }
-}

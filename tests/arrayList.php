@@ -211,6 +211,34 @@ $array = new \Vary\ArrayList([]);
 if ($array->reverse() !== []) { throw new Exception('ArrayList reverse error'); }
 if ($array->value() !== []) { throw new Exception('ArrayList reverse error'); }
 
+$array = new \Vary\ArrayList([1, '22', 333, '4444']);
+if ($array->splice(1, 1) && $array->value() !== [1, 333, '4444']) {
+  throw new Exception('ArrayList splice error');
+}
+if ($array->splice(2, 2) && $array->value() !== [1, 333]) {
+  throw new Exception('ArrayList splice error');
+}
+if ($array->splice(3, 1) && $array->value() !== [1, 333]) {
+  throw new Exception('ArrayList splice error');
+}
+if ($array->splice(1, 0) && $array->value() !== [1, 333]) {
+  throw new Exception('ArrayList splice error');
+}
+
+$array = new \Vary\ArrayList([1, '22', 333, '4444']);
+if ($array->splice(1, 1, '12345') && $array->value() !== [1, '12345', 333, '4444']) {
+  throw new Exception('ArrayList splice error');
+}
+if ($array->splice(2, 2, ['1', '22', 3]) && $array->value() !== [1, '12345', ['1', '22', 3]]) {
+  throw new Exception('ArrayList splice error');
+}
+if ($array->splice(2, 2, ['22', '333', '444']) && $array->value() !== [1, '12345', ['22', '333', '444']]) {
+  throw new Exception('ArrayList splice error');
+}
+if ($array->splice(1, 0, ['1', '2', '333', '4444']) && $array->value() !== [1, ['1', '2', '333', '4444'], '12345', ['22', '333', '444']]) {
+  throw new Exception('ArrayList splice error');
+}
+
 $array1 = new \Vary\ArrayList();
 if ($array1->length() !== 0) { throw new Exception('ArrayList1 initial error'); }
 foreach([

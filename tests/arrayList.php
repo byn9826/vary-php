@@ -225,6 +225,25 @@ if ($array->splice(1, 0) && $array->value() !== [1, 333]) {
   throw new Exception('ArrayList splice error');
 }
 
+$array = new \Vary\ArrayList([1, '22', 333, '4444', ['1', '22']]);
+if($array->slice(1) !== ['22', 333, '4444', ['1', '22']]) {
+  throw new Exception('ArrayList slice error');
+}
+$array = new \Vary\ArrayList([1, '22', 333, '4444', ['1', '22']]);
+if($array->slice(1, 3) !== ['22', 333]) {
+  throw new Exception('ArrayList slice error');
+}
+$array = new \Vary\ArrayList([1, '22', 333, '4444', ['1', '22']]);
+if($array->slice(4, 5) !== [['1', '22']]) {
+  throw new Exception('ArrayList slice error');
+}
+if($array->slice(5, 5) !== []) {
+  throw new Exception('ArrayList slice error');
+}
+if($array->value() !== [1, '22', 333, '4444', ['1', '22']]) {
+  throw new Exception('ArrayList slice error');
+}
+
 $array = new \Vary\ArrayList([1, '22', 333, '4444']);
 if ($array->splice(1, 1, '12345') && $array->value() !== [1, '12345', 333, '4444']) {
   throw new Exception('ArrayList splice error');

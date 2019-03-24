@@ -192,6 +192,12 @@ $array->value(); // [1, 4]
 $array->splice(1, 0, 2);
 $array->value(); // [1, 2, 4]
 ```
+slice()
+```
+$array = new \Vary\ArrayList([1, 2, 3, 4]);
+$array->slice(1); // [2, 3, 4]
+$array->slice(1, 3); // 2, 3
+```
 
 Stack: Last-In-First-Out Type ArrayList
 --

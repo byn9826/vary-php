@@ -744,6 +744,29 @@ PHP_METHOD(_array, filter)
   RETURN_ARR(Z_ARRVAL(_result));
 }
 
+PHP_METHOD(_array, slice)
+{
+  zend_long start_index, end_index;
+  ZEND_PARSE_PARAMETERS_START(1, 2)
+    Z_PARAM_LONG(start_index)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(end_index)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *array = vary_array_getValue(getThis());
+  uint32_t array_size = zend_hash_num_elements(Z_ARRVAL_P(array));
+  zval result;
+  array_init(&result);
+  if (ZEND_NUM_ARGS() == 1 || array_size < end_index) {
+    end_index = array_size;
+  }
+  for (uint32_t i = start_index; i < end_index; ++i) {
+    Bucket *current = Z_ARRVAL_P(array)->arData + i;
+    zend_hash_next_index_insert(Z_ARRVAL(result), &current->val);
+    ZVAL_UNDEF(&current->val);
+  }
+  RETURN_ARR(Z_ARRVAL(result));
+}
+
 PHP_METHOD(_array, splice)
 {
   zend_long start_index, remove_size;

@@ -4,36 +4,34 @@ zend_class_entry *algorithm_handle;
 
 void vary_algorithm_shellSort(
   zval *_array,
-  zend_fcall_info user_compare_func,
-  zend_fcall_info_cache user_compare_func_cache,
-  int params_num
+  zend_fcall_info user_func,
+  zend_fcall_info_cache user_func_cache,
+  zend_long params_num
 )
 {
-  uint32_t full_size = zend_hash_num_elements(Z_ARRVAL_P(_array));
-  uint32_t sub_size = full_size / 2;
+  zend_long full_size = zend_hash_num_elements(Z_ARRVAL_P(_array));
+  zend_long sub_size = full_size / 2;
   while (sub_size > 0) {
-    for (uint32_t start = 0; start < sub_size; start++) {
-      for (uint32_t i = start + sub_size; i < full_size; i += sub_size) {
-        uint32_t position = i;
+    for (zend_long start = 0; start < sub_size; start++) {
+      for (zend_long i = start + sub_size; i < full_size; i += sub_size) {
+        zend_long position = i;
         Bucket *current_item = Z_ARRVAL_P(_array)->arData + position;
         Bucket *target_item = Z_ARRVAL_P(_array)->arData + position - sub_size;
         zval current_value;
-        ZVAL_COPY_UNREF(&current_value, &current_item->val);
+        ZVAL_COPY(&current_value, &current_item->val);
         while (position >= sub_size) {
           zval target_value, compare_result;
-          ZVAL_COPY_UNREF(&target_value, &target_item->val);
+          ZVAL_COPY(&target_value, &target_item->val);
           if (params_num == 2) {
             zval args[2], retval;
             ZVAL_COPY(&args[0], &target_value);
             ZVAL_COPY(&args[1], &current_value);
-            user_compare_func.retval = &retval;
-            user_compare_func.param_count = 2;
-            user_compare_func.no_separation = 0;
-            user_compare_func.params = args;
-            if (
-              zend_call_function(&user_compare_func, &user_compare_func_cache) == SUCCESS
-              && Z_TYPE(retval) == IS_TRUE
-            ) {
+            user_func.retval = &retval;
+            user_func.param_count = 2;
+            user_func.no_separation = 0;
+            user_func.params = args;
+            zend_call_function(&user_func, &user_func_cache);
+            if (Z_TYPE(retval) == IS_TRUE) {
               zval_ptr_dtor(&args[0]);
               zval_ptr_dtor(&args[1]);
               zval_ptr_dtor(&target_value);
@@ -70,11 +68,11 @@ void vary_algorithm_shellSort(
 
 zval vary_algorithm_binarySearch(zval *_array, zend_long value)
 {
-  uint32_t items_size = zend_hash_num_elements(Z_ARRVAL_P(_array));
-  int first = 0;
-  int last = items_size - 1;
-  int found = 0;
-  int middle;
+  zend_long array_size = zend_hash_num_elements(Z_ARRVAL_P(_array));
+  zend_long first = 0;
+  zend_long last = array_size - 1;
+  zend_long found = 0;
+  zend_long middle;
   Bucket *item;
   while (first <= last && found == 0) {
     middle = (first + last) / 2;
@@ -111,12 +109,12 @@ PHP_METHOD(Algorithm, binarySearch)
 PHP_METHOD(Algorithm, shellSort)
 {
   zval *_array;
-  zend_fcall_info user_compare_func = empty_fcall_info;
-  zend_fcall_info_cache user_compare_func_cache = empty_fcall_info_cache;
+  zend_fcall_info user_func = empty_fcall_info;
+  zend_fcall_info_cache user_func_cache = empty_fcall_info_cache;
   ZEND_PARSE_PARAMETERS_START(1, 2)
     Z_PARAM_ARRAY(_array)
     Z_PARAM_OPTIONAL
-    Z_PARAM_FUNC(user_compare_func, user_compare_func_cache)
+    Z_PARAM_FUNC(user_func, user_func_cache)
   ZEND_PARSE_PARAMETERS_END();
-  vary_algorithm_shellSort(_array, user_compare_func, user_compare_func_cache, ZEND_NUM_ARGS());
+  vary_algorithm_shellSort(_array, user_func, user_func_cache, ZEND_NUM_ARGS());
 }

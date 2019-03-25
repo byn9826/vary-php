@@ -111,7 +111,7 @@ $array->value(); // [1, 0, -1]
 reverse()
 ```
 $array = new \Vary\ArrayList([1, 2, 3]);
-$array->reverse(); // [3, 2, 1]
+$array->reverse();
 $array->value(); // [3, 2, 1]
 ```
 concat()

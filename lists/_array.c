@@ -9,15 +9,7 @@ zend_class_entry *orderedList_handle;
 
 zval *vary_array_getValue(zval *this)
 {
-  zval *rv;
-  return zend_read_property(
-    _array_handle,
-    this,
-    "__value__",
-    sizeof("__value__") - 1,
-    0,
-    rv TSRMLS_CC
-  );
+  return vary_lists_getValue(_array_handle, this);
 }
 
 void vary_array_setValue(zval *this, zval value)

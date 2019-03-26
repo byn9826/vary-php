@@ -14,8 +14,11 @@ extern zend_class_entry *stack_handle;
 extern zend_class_entry *queue_handle;
 extern zend_class_entry *deque_handle;
 extern zend_class_entry *orderedList_handle;
+extern zend_class_entry *_map_handle;
+extern zend_class_entry *mapList_handle;
 
 #include "./helpers/params.c"
+#include "./helpers/common.c"
 
 #include "./others/Algorithm.c"
 const zend_function_entry algorithm_funcs[] = {
@@ -116,11 +119,24 @@ const zend_function_entry orderedList_funcs[] = {
   PHP_FE_END
 };
 
+#include "./lists/_map.c"
+const zend_function_entry _map_funcs[] = {
+  PHP_ME(_map, __construct, arginfo_array, ZEND_ACC_PUBLIC)
+  PHP_FE_END
+};
+
+const zend_function_entry mapList_funcs[] = {
+  PHP_FE_END
+};
+
 PHP_MINIT_FUNCTION(vary)
 {
   /*
-   * _array Classes
-   * ArrayList, Stack, Queue, Deque, OrderedList
+   * _array:
+   * ArrayList, Stack, Queue, Deque
+   * OrderedList
+   * _map:
+   * MapList
    */
   zend_class_entry _array_ce;
   INIT_NS_CLASS_ENTRY(_array_ce, "Vary", "_array", _array_funcs);
@@ -145,6 +161,14 @@ PHP_MINIT_FUNCTION(vary)
   zend_class_entry orderedList_ce;
   INIT_NS_CLASS_ENTRY(orderedList_ce, "Vary", "OrderedList", orderedList_funcs);
   orderedList_handle = zend_register_internal_class_ex(&orderedList_ce, _array_handle);
+
+  zend_class_entry _map_ce;
+  INIT_NS_CLASS_ENTRY(_map_ce, "Vary", "_map", _map_funcs);
+  _map_handle = zend_register_internal_class(&_map_ce TSRMLS_CC);
+
+  zend_class_entry mapList_ce;
+  INIT_NS_CLASS_ENTRY(mapList_ce, "Vary", "MapList", mapList_funcs);
+  mapList_handle = zend_register_internal_class_ex(&mapList_ce, _map_handle);
 
   /*
    * Algorithm Functions

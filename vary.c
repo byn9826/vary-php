@@ -124,12 +124,12 @@ const zend_function_entry _map_funcs[] = {
   PHP_ME(_map, __construct, arginfo_array, ZEND_ACC_PUBLIC)
   PHP_ME(_map, size, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(_map, value, arginfo_void, ZEND_ACC_PUBLIC)
-  PHP_ME(_map, setValue, arginfo_array, ZEND_ACC_PROTECTED)
+  PHP_ME(_map, setValue, arginfo_array, ZEND_ACC_PUBLIC)
+  PHP_ME(_map, get, arginfo_any, ZEND_ACC_PUBLIC)
   PHP_FE_END
 };
 
 const zend_function_entry mapList_funcs[] = {
-  PHP_ME(_map, setValue, arginfo_array, ZEND_ACC_PUBLIC)
   PHP_FE_END
 };
 

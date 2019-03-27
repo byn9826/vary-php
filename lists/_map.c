@@ -59,3 +59,28 @@ PHP_METHOD(_map, setValue)
   zval_ptr_dtor(&map);
   RETURN_TRUE;
 }
+
+PHP_METHOD(_map, get)
+{
+  zval *_key, *_value;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ZVAL(_key)
+  ZEND_PARSE_PARAMETERS_END();
+  zend_bool is_exist = 0;
+  zval *_map = vary_map_getValue(getThis());
+  zval *value;
+  switch (Z_TYPE_P(_key)) {
+		case IS_STRING:
+      _value = zend_hash_find(Z_ARRVAL_P(_map), Z_STR_P(_key));
+			break;
+		case IS_LONG:
+      _value = zend_hash_index_find(Z_ARRVAL_P(_map), Z_LVAL_P(_key));
+			break;
+		default:
+			RETURN_NULL();
+	}
+  if (!_value) {
+    RETURN_NULL();
+  }
+  RETURN_ZVAL(_value, 1, 0);
+}

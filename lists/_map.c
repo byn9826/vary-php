@@ -8,6 +8,11 @@ zval *vary_map_getValue(zval *this)
   return vary_lists_getValue(_map_handle, this);
 }
 
+void vary_map_setValue(zval *this, zval value)
+{
+  vary_lists_setValue(_map_handle, this, value);
+}
+
 PHP_METHOD(_map, __construct)
 {
   zval map, *_map;
@@ -20,7 +25,7 @@ PHP_METHOD(_map, __construct)
   } else {
     ZVAL_COPY(&map, _map);
   }
-  vary_array_setValue(getThis(), map);
+  vary_map_setValue(getThis(), map);
   zval_ptr_dtor(&map);
   RETURN_TRUE;
 }

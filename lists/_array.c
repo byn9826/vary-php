@@ -14,13 +14,7 @@ zval *vary_array_getValue(zval *this)
 
 void vary_array_setValue(zval *this, zval value)
 {
-  zend_update_property(
-    _array_handle,
-    this,
-    "__value__",
-    sizeof("__value__") - 1,
-    &value TSRMLS_CC
-  );
+  vary_lists_setValue(_array_handle, this, value);
 }
 
 zend_long vary_array_indexOf(zval *_array, zval *_value, zend_long behavior)

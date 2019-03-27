@@ -18,7 +18,6 @@ extern zend_class_entry *_map_handle;
 extern zend_class_entry *mapList_handle;
 
 #include "./helpers/params.c"
-#include "./helpers/common.c"
 
 #include "./others/Algorithm.c"
 const zend_function_entry algorithm_funcs[] = {
@@ -27,6 +26,7 @@ const zend_function_entry algorithm_funcs[] = {
   PHP_FE_END
 };
 
+#include "./lists/common.c"
 #include "./lists/_array.c"
 const zend_function_entry _array_funcs[] = {
   PHP_ME(_array, __construct, arginfo_array, ZEND_ACC_PUBLIC)

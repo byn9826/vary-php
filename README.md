@@ -30,6 +30,7 @@ Classes
 --
 <b>Data Structures Classes:</b>  
 ArrayList, Stack, Queue, Deque, OrderedList  
+MapList  
 <b>Algorithm Functions:</b>  
 binarySearch, shellShort
 
@@ -339,6 +340,36 @@ $ordered_list = new \Vary\OrderedList();
 foreach([2, 3, 1] as $value) { $ordered_list->add($value); }
 $ordered_list->indexOf(3); // 2
 $ordered_list->indexOf(4); // -1
+```
+
+MapList: Dictionary Type Collections
+--
+constructor(), size(), value(), setValue()
+```
+$map = new \Vary\MapList();
+$map->size(); // 0
+$map = new \Vary\MapList([ 'a' => 1, 'b' => 2 ]);
+$map->value(); // [ 'a' => 1, 'b' => 2 ]
+$map->setValue([ 'a' => 2, 'b' => 1 ]);
+$map->value(); // [ 'a' => 2, 'b' => 1 ]
+```
+has()
+```
+$map = new \Vary\MapList([ 'a' => 1, 'b' => 2 ]);
+$map->has('a'); // true
+$map->has('c'); // false
+```
+get()
+```
+$map = new \Vary\MapList([ 'a' => 1, 'b' => 2 ]);
+$map->get('a'); // 1
+$map->get('c'); // null
+```
+clear()
+```
+$map = new \Vary\MapList([ 'a' => 1, 'b' => 2 ]);
+$map->clear();
+$map->value(); // [ 'a' => 1, 'b' => 2 ]
 ```
 
 Binary Search: Search in Ordered List

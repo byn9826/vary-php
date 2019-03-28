@@ -11,10 +11,21 @@ $map->setValue(['aaa' => '222', 'bb' => '111', 'c' => ['1', '22', '333'], 'qqq',
 if ($map->value() !== ['aaa' => '222', 'bb' => '111', 'c' => ['1', '22', '333'], 'qqq', 'abc']) {
   throw new Exception('MapList value error');
 }
+if ($map->has('aaa') !== true) { throw new Exception('MapList has error'); }
 if ($map->get('aaa') !== '222') { throw new Exception('MapList get error'); }
+if ($map->has(['123']) !== false) { throw new Exception('MapList has error'); }
 if ($map->get(['123']) !== null) { throw new Exception('MapList get error'); }
+if ($map->has('ccc') !== false) { throw new Exception('MapList has error'); }
 if ($map->get('ccc') !== null) { throw new Exception('MapList get error'); }
+if ($map->has('c') !== true) { throw new Exception('MapList has error'); }
 if ($map->get('c') !== ['1', '22', '333']) { throw new Exception('MapList get error'); }
+if ($map->has(0) !== true) { throw new Exception('MapList has error'); }
 if ($map->get(0) !== 'qqq') { throw new Exception('MapList get error'); }
+if ($map->has(2) !== false) { throw new Exception('MapList has error'); }
 if ($map->get(2) !== null) { throw new Exception('MapList get error'); }
+if ($map->has(null) !== false) { throw new Exception('MapList has error'); }
 if ($map->get(null) !== null) { throw new Exception('MapList get error'); }
+$map->clear();
+if ($map->size() !== 0 || $map->value() !== []) {
+  throw new Exception('MapList clear error');
+}

@@ -100,6 +100,26 @@ PHP_METHOD(_map, has)
   }
 }
 
+PHP_METHOD(_map, delete)
+{
+  zval *_key;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ZVAL(_key)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_map = vary_map_getValue(getThis());
+  switch (Z_TYPE_P(_key)) {
+		case IS_STRING:
+      zend_hash_del_ind(Z_ARRVAL_P(_map), Z_STR_P(_key));
+			break;
+		case IS_LONG:
+      zend_hash_index_del(Z_ARRVAL_P(_map), Z_LVAL_P(_key));
+			break;
+		default:
+			RETURN_TRUE;
+	}
+  RETURN_TRUE;
+}
+
 PHP_METHOD(_map, get)
 {
   zval *_key, *_value;

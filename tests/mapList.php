@@ -29,3 +29,21 @@ $map->clear();
 if ($map->size() !== 0 || $map->value() !== []) {
   throw new Exception('MapList clear error');
 }
+$map = new \Vary\MapList();
+$map->setValue(['aaa' => '222', 'bb' => '111', 'c' => ['1', '22', '333'], 'qqq', 'abc']);
+$map->delete(0);
+if ($map->value() !== ['aaa' => '222', 'bb' => '111', 'c' => ['1', '22', '333'], 1 => 'abc']) {
+  throw new Exception('MapList delete error');
+}
+$map->delete(0); $map->delete(2); $map->delete('aaa');
+if ($map->value() !== ['bb' => '111', 'c' => ['1', '22', '333'], 1 => 'abc']) {
+  throw new Exception('MapList delete error');
+}
+$map->delete(1);
+if ($map->value() !== ['bb' => '111', 'c' => ['1', '22', '333']]) {
+  throw new Exception('MapList delete error');
+}
+$map->delete('aaa'); $map->delete('a'); $map->delete('c');
+if ($map->value() !== ['bb' => '111']) {
+  throw new Exception('MapList delete error');
+}

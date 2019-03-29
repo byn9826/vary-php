@@ -371,6 +371,14 @@ $map = new \Vary\MapList([ 'a' => 1, 'b' => 2 ]);
 $map->clear();
 $map->value(); // [ 'a' => 1, 'b' => 2 ]
 ```
+delete()
+```
+$map = new \Vary\MapList([ 'a' => 1, 'b' => 2, 0 => 'a', 1 => 'b' ]);
+$map->delete(0);
+$map->value(); // [ 'a' => 1, 'b' => 2, 1 => 'b' ]
+$map->delete('a'); // 
+$map->value(); // [ 'b' => 2, 1 => 'b' ]
+```
 
 Binary Search: Search in Ordered List
 --

@@ -125,8 +125,9 @@ const zend_function_entry _map_funcs[] = {
   PHP_ME(_map, size, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(_map, value, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(_map, setValue, arginfo_array, ZEND_ACC_PUBLIC)
-  PHP_ME(_map, get, arginfo_any, ZEND_ACC_PUBLIC)
   PHP_ME(_map, has, arginfo_any, ZEND_ACC_PUBLIC)
+  PHP_ME(_map, get, arginfo_any, ZEND_ACC_PUBLIC)
+  PHP_ME(_map, set, arginfo_any_any, ZEND_ACC_PUBLIC)
   PHP_ME(_map, delete, arginfo_any, ZEND_ACC_PUBLIC)
   PHP_ME(_map, clear, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_FE_END

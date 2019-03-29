@@ -47,3 +47,42 @@ $map->delete('aaa'); $map->delete('a'); $map->delete('c');
 if ($map->value() !== ['bb' => '111']) {
   throw new Exception('MapList delete error');
 }
+$map = new \Vary\MapList();
+$map->set(100, 'abc');
+if ($map->value() !== [100 => 'abc']) { throw new Exception('MapList set error'); }
+$map->set(101, 'def');
+if ($map->value() !== [100 => 'abc', 101 => 'def']) { throw new Exception('MapList set error'); }
+$map->set(101, 'abcd');
+if ($map->value() !== [100 => 'abc', 101 => 'abcd']) { throw new Exception('MapList set error'); }
+$map->set('a', '1');
+if ($map->value() !== [100 => 'abc', 101 => 'abcd', 'a' => '1']) {
+  throw new Exception('MapList set error');
+}
+$map->set('bb', '222');
+if ($map->value() !== [100 => 'abc', 101 => 'abcd', 'a' => '1', 'bb' => '222']) {
+  throw new Exception('MapList set error');
+}
+$map->set('bb', '12');
+if ($map->value() !== [100 => 'abc', 101 => 'abcd', 'a' => '1', 'bb' => '12']) {
+  throw new Exception('MapList set error');
+}
+$map->set('ccc', '123');
+if ($map->value() !== [100 => 'abc', 101 => 'abcd', 'a' => '1', 'bb' => '12', 'ccc' => '123']) {
+  throw new Exception('MapList set error');
+}
+$map->set(['11', '222', '3333'], '123456');
+if ($map->value() !== [100 => 'abc', 101 => 'abcd', 'a' => '1', 'bb' => '12', 'ccc' => '123']) {
+  throw new Exception('MapList set error');
+}
+$map->set('ccc', ['123', '234', '345']);
+if ($map->value() !== [100 => 'abc', 101 => 'abcd', 'a' => '1', 'bb' => '12', 'ccc' => ['123', '234', '345']]) {
+  throw new Exception('MapList set error');
+}
+$map->set(['123', '234', '345'], ['123', '234', '345']);
+if ($map->value() !== [100 => 'abc', 101 => 'abcd', 'a' => '1', 'bb' => '12', 'ccc' => ['123', '234', '345']]) {
+  throw new Exception('MapList set error');
+}
+$map->set('dddd', ['123']);
+if ($map->value() !== [100 => 'abc', 101 => 'abcd', 'a' => '1', 'bb' => '12', 'ccc' => ['123', '234', '345'], 'dddd' => ['123']]) {
+  throw new Exception('MapList set error');
+}

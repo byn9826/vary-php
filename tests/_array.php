@@ -679,4 +679,9 @@ if ($remove !== 0 || $test1->length() !== 0) {
   throw new Exception('OrderedList1 remove error');
 }
 
+
+
+
 $set = new \Vary\SetList();
+if ($set->value() !== []) { throw new Exception('SetList value error'); }
+if ($set->size() !== 0) { throw new Exception('SetList size error'); }

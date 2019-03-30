@@ -207,6 +207,19 @@ $array->slice(1); // [2, 3, 4]
 $array->slice(1, 3); // 2, 3
 ```
 
+SetList: Array contains Unique Values
+--
+constructor(), value()
+```
+$set = new \Vary\SetList();
+$array->value(); // []
+```
+size()
+```
+$set = new \Vary\SetList();
+$set->size(); // 0
+```
+
 Stack: Last-In-First-Out Type ArrayList
 --
 constructor(), value(), 

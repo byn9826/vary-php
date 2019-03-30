@@ -828,3 +828,11 @@ PHP_METHOD(SetList, __construct)
   zval_ptr_dtor(&array);
   RETURN_TRUE;
 }
+
+PHP_METHOD(SetList, size)
+{
+  ZEND_PARSE_PARAMETERS_START(0, 0)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_array = vary_array_getValue(getThis());
+  RETURN_LONG(zend_hash_num_elements(Z_ARRVAL_P(_array)));
+}

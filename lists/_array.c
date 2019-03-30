@@ -137,7 +137,7 @@ static zval vary_array_reduce(
   return sum_value;
 }
 
-static void vary_array_includes(INTERNAL_FUNCTION_PARAMETERS)
+static void vary_array_includes(INTERNAL_FUNCTION_PARAMETERS, zend_long add_while_not_includes)
 {
   zval *_value;
   ZEND_PARSE_PARAMETERS_START(1, 1)
@@ -145,8 +145,16 @@ static void vary_array_includes(INTERNAL_FUNCTION_PARAMETERS)
   ZEND_PARSE_PARAMETERS_END();
   zval *_array = vary_array_getValue(getThis());
   zend_long result = vary_array_indexOf(_array, _value, 1);
+  if (add_while_not_includes == 0) {
+    if (result == -1) {
+      RETURN_FALSE;
+    }
+    RETURN_TRUE;
+  }
   if (result == -1) {
-    RETURN_FALSE;
+    zval value;
+    ZVAL_COPY(&value, _value);
+    zend_hash_next_index_insert(Z_ARRVAL_P(_array), &value);
   }
   RETURN_TRUE;
 }
@@ -401,7 +409,7 @@ PHP_METHOD(_array, lastIndexOf)
 
 PHP_METHOD(_array, includes)
 {
-  vary_array_includes(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+  vary_array_includes(INTERNAL_FUNCTION_PARAM_PASSTHRU, 0);
 }
 
 PHP_METHOD(_array, every)
@@ -844,6 +852,10 @@ PHP_METHOD(SetList, size)
 
 PHP_METHOD(SetList, has)
 {
-  vary_array_includes(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+  vary_array_includes(INTERNAL_FUNCTION_PARAM_PASSTHRU, 0);
 }
 
+PHP_METHOD(SetList, add)
+{
+  vary_array_includes(INTERNAL_FUNCTION_PARAM_PASSTHRU, 1);
+}

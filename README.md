@@ -214,10 +214,26 @@ constructor(), value()
 $set = new \Vary\SetList();
 $array->value(); // []
 ```
+add()
+```
+$set = new \Vary\SetList();
+$set->add(1);
+$set->add(1);
+$set->add(2);
+$array->value(); // [1, 2]
+```
 size()
 ```
 $set = new \Vary\SetList();
-$set->size(); // 0
+$set->add(2);
+$set->size(); // 1
+```
+has()
+```
+$set = new \Vary\SetList();
+$set->add(1);
+$set->has(1); // true
+$set->has(2); // false
 ```
 
 Stack: Last-In-First-Out Type ArrayList

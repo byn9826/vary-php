@@ -687,4 +687,22 @@ if ($set->value() !== []) { throw new Exception('SetList value error'); }
 if ($set->size() !== 0) { throw new Exception('SetList size error'); }
 if ($set->has('123') !== false) { throw new Exception('SetList has error'); }
 if ($set->has(true) !== false) { throw new Exception('SetList has error'); }
-if ($set->has(['1', '22', '333']) !== false) { throw new Exception('SetList has error'); }
+if ($set->has(['1', '22', '333']) !== false) {
+  throw new Exception('SetList has error');
+}
+$set->add('123');
+$set->add('123');
+$set->add(true);
+$set->add(false);
+$set->add(['1', '22', '333']);
+$set->add(['1', '22', '333']);
+$set->add(['2', '33', '444']);
+if ($set->value() !== ['123', true, false, ['1', '22', '333'], ['2', '33', '444']]) {
+  throw new Exception('SetList add error');
+}
+if ($set->size() !== 5) { throw new Exception('SetList size error'); }
+if ($set->has('123') !== true) { throw new Exception('SetList has error'); }
+if ($set->has(true) !== true) { throw new Exception('SetList has error'); }
+if ($set->has(['1', '22', '333']) !== true) {
+  throw new Exception('SetList has error');
+}

@@ -5,29 +5,18 @@ zend_class_entry *mapList_handle;
 
 zval *vary_dict_getValue(zval *this)
 {
-  return vary_lists_getValue(_dict_handle, this);
+  return vary_list_getValue(_dict_handle, this);
 }
 
 void vary_dict_setValue(zval *this, zval value)
 {
-  vary_lists_setValue(_dict_handle, this, value);
+  vary_list_setValue(_dict_handle, this, value);
 }
+
 
 PHP_METHOD(_dict, __construct)
 {
-  zval dict, *_dict;
-  ZEND_PARSE_PARAMETERS_START(0, 1)
-    Z_PARAM_OPTIONAL
-    Z_PARAM_ARRAY(_dict)
-  ZEND_PARSE_PARAMETERS_END();
-  if (ZEND_NUM_ARGS() == 0) {
-    array_init(&dict);
-  } else {
-    ZVAL_COPY(&dict, _dict);
-  }
-  vary_dict_setValue(getThis(), dict);
-  zval_ptr_dtor(&dict);
-  RETURN_TRUE;
+  vary_list_init_normal(INTERNAL_FUNCTION_PARAM_PASSTHRU, 1);
 }
 
 PHP_METHOD(_dict, value)
@@ -42,10 +31,7 @@ PHP_METHOD(_dict, value)
 
 PHP_METHOD(_dict, size)
 {
-  ZEND_PARSE_PARAMETERS_START(0, 0)
-  ZEND_PARSE_PARAMETERS_END();
-  zval *_dict = vary_dict_getValue(getThis());
-  RETURN_LONG(zend_hash_num_elements(Z_ARRVAL_P(_dict)));
+  vary_list_length(INTERNAL_FUNCTION_PARAM_PASSTHRU, 1);
 }
 
 PHP_METHOD(_dict, setValue)
@@ -62,13 +48,7 @@ PHP_METHOD(_dict, setValue)
 
 PHP_METHOD(_dict, clear)
 {
-  ZEND_PARSE_PARAMETERS_START(0, 0)
-  ZEND_PARSE_PARAMETERS_END();
-  zval dict;
-  array_init(&dict);
-  vary_array_setValue(getThis(), dict);
-  zval_ptr_dtor(&dict);
-  RETURN_TRUE;
+  vary_list_init_empty(INTERNAL_FUNCTION_PARAM_PASSTHRU, 1);
 }
 
 PHP_METHOD(_dict, has)

@@ -14,7 +14,7 @@ extern zend_class_entry *stack_handle;
 extern zend_class_entry *queue_handle;
 extern zend_class_entry *deque_handle;
 extern zend_class_entry *orderedList_handle;
-extern zend_class_entry *_map_handle;
+extern zend_class_entry *_dict_handle;
 extern zend_class_entry *mapList_handle;
 
 #include "./helpers/params.c"
@@ -119,17 +119,17 @@ const zend_function_entry orderedList_funcs[] = {
   PHP_FE_END
 };
 
-#include "./lists/_map.c"
-const zend_function_entry _map_funcs[] = {
-  PHP_ME(_map, __construct, arginfo_array, ZEND_ACC_PUBLIC)
-  PHP_ME(_map, size, arginfo_void, ZEND_ACC_PUBLIC)
-  PHP_ME(_map, value, arginfo_void, ZEND_ACC_PUBLIC)
-  PHP_ME(_map, setValue, arginfo_array, ZEND_ACC_PUBLIC)
-  PHP_ME(_map, has, arginfo_any, ZEND_ACC_PUBLIC)
-  PHP_ME(_map, get, arginfo_any, ZEND_ACC_PUBLIC)
-  PHP_ME(_map, set, arginfo_any_any, ZEND_ACC_PUBLIC)
-  PHP_ME(_map, delete, arginfo_any, ZEND_ACC_PUBLIC)
-  PHP_ME(_map, clear, arginfo_void, ZEND_ACC_PUBLIC)
+#include "./lists/_dict.c"
+const zend_function_entry _dict_funcs[] = {
+  PHP_ME(_dict, __construct, arginfo_array, ZEND_ACC_PUBLIC)
+  PHP_ME(_dict, size, arginfo_void, ZEND_ACC_PUBLIC)
+  PHP_ME(_dict, value, arginfo_void, ZEND_ACC_PUBLIC)
+  PHP_ME(_dict, setValue, arginfo_array, ZEND_ACC_PUBLIC)
+  PHP_ME(_dict, has, arginfo_any, ZEND_ACC_PUBLIC)
+  PHP_ME(_dict, get, arginfo_any, ZEND_ACC_PUBLIC)
+  PHP_ME(_dict, set, arginfo_any_any, ZEND_ACC_PUBLIC)
+  PHP_ME(_dict, delete, arginfo_any, ZEND_ACC_PUBLIC)
+  PHP_ME(_dict, clear, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_FE_END
 };
 
@@ -143,7 +143,7 @@ PHP_MINIT_FUNCTION(vary)
    * _array:
    * ArrayList, Stack, Queue, Deque
    * OrderedList
-   * _map:
+   * _dict:
    * MapList
    */
   zend_class_entry _array_ce;
@@ -170,13 +170,13 @@ PHP_MINIT_FUNCTION(vary)
   INIT_NS_CLASS_ENTRY(orderedList_ce, "Vary", "OrderedList", orderedList_funcs);
   orderedList_handle = zend_register_internal_class_ex(&orderedList_ce, _array_handle);
 
-  zend_class_entry _map_ce;
-  INIT_NS_CLASS_ENTRY(_map_ce, "Vary", "_map", _map_funcs);
-  _map_handle = zend_register_internal_class(&_map_ce TSRMLS_CC);
+  zend_class_entry _dict_ce;
+  INIT_NS_CLASS_ENTRY(_dict_ce, "Vary", "_dict", _dict_funcs);
+  _dict_handle = zend_register_internal_class(&_dict_ce TSRMLS_CC);
 
   zend_class_entry mapList_ce;
   INIT_NS_CLASS_ENTRY(mapList_ce, "Vary", "MapList", mapList_funcs);
-  mapList_handle = zend_register_internal_class_ex(&mapList_ce, _map_handle);
+  mapList_handle = zend_register_internal_class_ex(&mapList_ce, _dict_handle);
 
   /*
    * Algorithm Functions

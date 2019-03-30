@@ -1,7 +1,5 @@
 <?php
-include_once(__DIR__ . '/arrayList.php');
-include_once(__DIR__ . '/orderedList.php');
-include_once(__DIR__ . '/mapList.php');
+include_once(__DIR__ . '/_array.php');
+include_once(__DIR__ . '/_dict.php');
 
-include_once(__DIR__ . '/binarySearch.php');
-include_once(__DIR__ . '/shellSort.php');
+include_once(__DIR__ . '/algorithm.php');

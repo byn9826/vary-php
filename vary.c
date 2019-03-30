@@ -10,6 +10,7 @@
 extern zend_class_entry *algorithm_handle;
 extern zend_class_entry *_array_handle;
 extern zend_class_entry *arrayList_handle;
+extern zend_class_entry *setList_handle;
 extern zend_class_entry *stack_handle;
 extern zend_class_entry *queue_handle;
 extern zend_class_entry *deque_handle;
@@ -32,7 +33,7 @@ const zend_function_entry _array_funcs[] = {
   PHP_ME(_array, __construct, arginfo_array, ZEND_ACC_PUBLIC)
   PHP_ME(_array, value, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(_array, length, arginfo_void, ZEND_ACC_PUBLIC)
-  PHP_ME(_array, index, arginfo_integer, ZEND_ACC_PUBLIC)
+  PHP_ME(_array, index, arginfo_integer, ZEND_ACC_PROTECTED)
   PHP_ME(_array, setValue, arginfo_array, ZEND_ACC_PROTECTED)
   PHP_ME(_array, removeIndex, arginfo_integer, ZEND_ACC_PROTECTED)
   PHP_ME(_array, push, arginfo_any, ZEND_ACC_PROTECTED)
@@ -61,6 +62,7 @@ const zend_function_entry _array_funcs[] = {
 };
 
 const zend_function_entry arrayList_funcs[] = {
+  PHP_ME(_array, index, arginfo_integer, ZEND_ACC_PUBLIC)
   PHP_ME(_array, setValue, arginfo_array, ZEND_ACC_PUBLIC)
   PHP_ME(_array, removeIndex, arginfo_integer, ZEND_ACC_PUBLIC)
   PHP_ME(_array, push, arginfo_any, ZEND_ACC_PUBLIC)
@@ -88,6 +90,11 @@ const zend_function_entry arrayList_funcs[] = {
   PHP_FE_END
 };
 
+const zend_function_entry setList_funcs[] = {
+  PHP_ME(SetList, __construct, arginfo_void, ZEND_ACC_PUBLIC)
+  PHP_FE_END
+};
+
 const zend_function_entry stack_funcs[] = {
   PHP_ME(_array, push, arginfo_any, ZEND_ACC_PUBLIC)
   PHP_ME(_array, pop, arginfo_void, ZEND_ACC_PUBLIC)
@@ -110,6 +117,7 @@ const zend_function_entry deque_funcs[] = {
 
 const zend_function_entry orderedList_funcs[] = {
   PHP_ME(OrderedList, __construct, arginfo_void, ZEND_ACC_PUBLIC)
+  PHP_ME(_array, index, arginfo_integer, ZEND_ACC_PUBLIC)
   PHP_ME(_array, removeIndex, arginfo_integer, ZEND_ACC_PUBLIC)
   PHP_ME(_array, pop, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(_array, shift, arginfo_void, ZEND_ACC_PUBLIC)
@@ -141,7 +149,7 @@ PHP_MINIT_FUNCTION(vary)
 {
   /*
    * _array:
-   * ArrayList, Stack, Queue, Deque
+   * ArrayList, SetList, Stack, Queue, Deque
    * OrderedList
    * _dict:
    * MapList
@@ -153,6 +161,10 @@ PHP_MINIT_FUNCTION(vary)
   zend_class_entry arrayList_ce;
   INIT_NS_CLASS_ENTRY(arrayList_ce, "Vary", "ArrayList", arrayList_funcs);
   arrayList_handle = zend_register_internal_class_ex(&arrayList_ce, _array_handle);
+
+  zend_class_entry setList_ce;
+  INIT_NS_CLASS_ENTRY(setList_ce, "Vary", "SetList", setList_funcs);
+  setList_handle = zend_register_internal_class_ex(&setList_ce, _array_handle);
 
   zend_class_entry stack_ce;
   INIT_NS_CLASS_ENTRY(stack_ce, "Vary", "Stack", stack_funcs);

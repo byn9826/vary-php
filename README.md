@@ -36,7 +36,7 @@ binarySearch, shellShort
 
 ArrayList: Array Type Collections
 --
-constructor(), value(), length(), index()
+constructor(), value(), length()
 ```
 $array = new \Vary\ArrayList();
 $array->value(); // []
@@ -44,6 +44,11 @@ $array->length(); // 0
 $array = new \Vary\ArrayList([1, 2, 3]);
 $array->value(); // [1, 2, 3]
 $array->length(); // 3
+
+```
+index()
+```
+$array = new \Vary\ArrayList([1, 2, 3]);
 $array->index(1); // 2
 $array->index(3); // null
 ```
@@ -202,7 +207,7 @@ $array->slice(1, 3); // 2, 3
 
 Stack: Last-In-First-Out Type ArrayList
 --
-constructor(), value(), length(), index()
+constructor(), value(), length()
 ```
 $stack = new \Vary\Stack();
 $stack->value(); // []
@@ -210,7 +215,6 @@ $stack->length(); // 0
 $stack = new \Vary\Stack([1, 2, 3]);
 $stack->value(); // [1, 2, 3]
 $stack->length(); // 3
-$stack->index(1); // 2
 ```
 push()
 ```
@@ -227,7 +231,7 @@ $stack->value(); // [1, 2]
 
 Queue: First-In-First-Out Type ArrayList
 --
-constructor(), value(), length(), index()
+constructor(), value(), length()
 ```
 $queue = new \Vary\Queue();
 $queue->value(); // []
@@ -235,7 +239,6 @@ $queue->length(); // 0
 $queue = new \Vary\Queue([1, 2, 3]);
 $queue->value(); // [1, 2, 3]
 $queue->length(); // 3
-$queue->index(1); // 2
 ```
 push()
 ```
@@ -252,7 +255,7 @@ $queue->value(); // [2, 3]
 
 Deque: Double-Ended Type ArrayList
 --
-constructor(), value(), length(), index()
+constructor(), value(), length()
 ```
 $deque = new \Vary\Deque();
 $deque->value(); // []
@@ -260,7 +263,6 @@ $deque->length(); // 0
 $deque = new \Vary\Deque([1, 2, 3]);
 $deque->value(); // [1, 2, 3]
 $deque->length(); // 3
-$queue->index(1); // 2
 ```
 push()
 ```
@@ -289,13 +291,11 @@ $deque->value(); // [2, 3]
 
 OrderedList: Ordered ArrayList of Unique Numbers
 --
-constructor(), value(), length(), index()
+constructor(), value(), length()
 ```
 $ordered_list = new \Vary\OrderedList();
 $ordered_list->value(); // []
 $ordered_list->length(); // 0
-$ordered_list->add(1);
-$ordered_list->index(0); // 1
 ```
 add()
 ```
@@ -304,6 +304,12 @@ foreach([2, 4, 1] as $value) { $ordered_list->add($value); }
 $ordered_list->add(3); // 2
 $ordered_list->add(3); // false
 $ordered_list->value(); // [1, 2, 3, 4]
+```
+index()
+```
+$ordered_list = new \Vary\OrderedList();
+$ordered_list->add(1);
+$ordered_list->index(0); // 1
 ```
 remove()
 ```
@@ -344,12 +350,16 @@ $ordered_list->indexOf(4); // -1
 
 MapList: Dictionary Type Collections
 --
-constructor(), size(), value(), setValue()
+constructor(), size(), value()
 ```
 $map = new \Vary\MapList();
 $map->size(); // 0
 $map = new \Vary\MapList([ 'a' => 1, 'b' => 2 ]);
 $map->value(); // [ 'a' => 1, 'b' => 2 ]
+```
+setValue()
+```
+$map = new \Vary\MapList([ 'a' => 1, 'b' => 2 ]);
 $map->setValue([ 'a' => 2, 'b' => 1 ]);
 $map->value(); // [ 'a' => 2, 'b' => 1 ]
 ```

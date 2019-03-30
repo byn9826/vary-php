@@ -568,7 +568,6 @@ if ($stack->pop() !== 1) { throw new Exception('Stack pop error'); }
 if ($stack->length() !== 0) { throw new Exception('Stack length error'); }
 $stack = new \Vary\Stack([1, 2]);
 if ($stack->value() !== [1, 2]) { throw new Exception('Stack value error'); }
-if ($stack->index(0) !== 1) { throw new Exception('Stack index error'); }
 if ($stack->pop() !== 2) { throw new Exception('Stack pop error'); }
 
 $queue = new \Vary\Queue();
@@ -578,13 +577,11 @@ if ($queue->value() !== []) { throw new Exception('Queue value error'); }
 $queue = new \Vary\Queue([1, 2]);
 if ($queue->shift() !== 1) { throw new Exception('Queue shift error'); }
 if ($queue->length() !== 1) { throw new Exception('Queue length error'); }
-if ($queue->index(0) !== 2) { throw new Exception('Queue index error'); }
 
 $deque = new \Vary\Deque();
 if ($deque->push(1) !== true) { throw new Exception('Deque push error'); }
 if ($deque->unshift(2) !== true) { throw new Exception('Deque unshift error'); }
 if ($deque->value() !== [2, 1]) { throw new Exception('Deque value error'); }
-if ($deque->index(1) !== 1) { throw new Exception('Deque index error'); }
 if ($deque->shift() !== 2) { throw new Exception('Deque shift error'); }
 if ($deque->pop() !== 1) { throw new Exception('Deque pop error'); }
 if ($deque->length() !== 0) { throw new Exception('Deque length error'); }
@@ -681,3 +678,5 @@ $remove = $test1->remove(2);
 if ($remove !== 0 || $test1->length() !== 0) {
   throw new Exception('OrderedList1 remove error');
 }
+
+$set = new \Vary\SetList();

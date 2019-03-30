@@ -2,6 +2,7 @@
 
 zend_class_entry *_array_handle;
 zend_class_entry *arrayList_handle;
+zend_class_entry *setList_handle;
 zend_class_entry *stack_handle;
 zend_class_entry *queue_handle;
 zend_class_entry *deque_handle;
@@ -814,4 +815,16 @@ PHP_METHOD(OrderedList, indexOf)
   zend_long target_index = zval_get_long(&carry->val);
   zval_ptr_dtor(&_binarySearch_retval);
   RETURN_LONG(target_index);
+}
+
+
+PHP_METHOD(SetList, __construct)
+{
+  ZEND_PARSE_PARAMETERS_START(0, 0)
+  ZEND_PARSE_PARAMETERS_END();
+  zval array;
+  array_init(&array);
+  vary_array_setValue(getThis(), array);
+  zval_ptr_dtor(&array);
+  RETURN_TRUE;
 }

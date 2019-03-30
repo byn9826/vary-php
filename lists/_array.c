@@ -137,6 +137,25 @@ static zval vary_array_reduce(
   return sum_value;
 }
 
+static void vary_array_init_empty(INTERNAL_FUNCTION_PARAMETERS)
+{
+  ZEND_PARSE_PARAMETERS_START(0, 0)
+  ZEND_PARSE_PARAMETERS_END();
+  zval array;
+  array_init(&array);
+  vary_array_setValue(getThis(), array);
+  zval_ptr_dtor(&array);
+  RETURN_TRUE;
+}
+
+static void vary_array_length(INTERNAL_FUNCTION_PARAMETERS)
+{
+  ZEND_PARSE_PARAMETERS_START(0, 0)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_array = vary_array_getValue(getThis());
+  RETURN_LONG(zend_hash_num_elements(Z_ARRVAL_P(_array)));
+}
+
 static void vary_array_includes(INTERNAL_FUNCTION_PARAMETERS, zend_long add_while_not_includes)
 {
   zval *_value;
@@ -200,10 +219,7 @@ PHP_METHOD(_array, value)
 
 PHP_METHOD(_array, length)
 {
-  ZEND_PARSE_PARAMETERS_START(0, 0)
-  ZEND_PARSE_PARAMETERS_END();
-  zval *_array = vary_array_getValue(getThis());
-  RETURN_LONG(zend_hash_num_elements(Z_ARRVAL_P(_array)));
+  vary_array_length(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 
 PHP_METHOD(_array, unshift)
@@ -738,13 +754,7 @@ PHP_METHOD(_array, splice)
 
 PHP_METHOD(OrderedList, __construct)
 {
-  ZEND_PARSE_PARAMETERS_START(0, 0)
-  ZEND_PARSE_PARAMETERS_END();
-  zval array;
-  array_init(&array);
-  vary_array_setValue(getThis(), array);
-  zval_ptr_dtor(&array);
-  RETURN_TRUE;
+  vary_array_init_empty(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 
 PHP_METHOD(OrderedList, add)
@@ -833,21 +843,12 @@ PHP_METHOD(OrderedList, indexOf)
 
 PHP_METHOD(SetList, __construct)
 {
-  ZEND_PARSE_PARAMETERS_START(0, 0)
-  ZEND_PARSE_PARAMETERS_END();
-  zval array;
-  array_init(&array);
-  vary_array_setValue(getThis(), array);
-  zval_ptr_dtor(&array);
-  RETURN_TRUE;
+  vary_array_init_empty(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 
 PHP_METHOD(SetList, size)
 {
-  ZEND_PARSE_PARAMETERS_START(0, 0)
-  ZEND_PARSE_PARAMETERS_END();
-  zval *_array = vary_array_getValue(getThis());
-  RETURN_LONG(zend_hash_num_elements(Z_ARRVAL_P(_array)));
+  vary_array_length(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 
 PHP_METHOD(SetList, has)
@@ -858,4 +859,9 @@ PHP_METHOD(SetList, has)
 PHP_METHOD(SetList, add)
 {
   vary_array_includes(INTERNAL_FUNCTION_PARAM_PASSTHRU, 1);
+}
+
+PHP_METHOD(SetList, clear)
+{
+  vary_array_init_empty(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }

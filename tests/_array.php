@@ -706,3 +706,7 @@ if ($set->has(true) !== true) { throw new Exception('SetList has error'); }
 if ($set->has(['1', '22', '333']) !== true) {
   throw new Exception('SetList has error');
 }
+$set->clear();
+if ($set->value() !== [] || $set->size() !== 0) {
+  throw new Exception('SetList clear error');
+}

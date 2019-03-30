@@ -96,6 +96,7 @@ const zend_function_entry setList_funcs[] = {
   PHP_ME(SetList, size, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(SetList, has, arginfo_any, ZEND_ACC_PUBLIC)
   PHP_ME(SetList, add, arginfo_any, ZEND_ACC_PUBLIC)
+  PHP_ME(SetList, clear, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_FE_END
 };
 

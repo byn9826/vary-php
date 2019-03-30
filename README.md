@@ -235,6 +235,13 @@ $set->add(1);
 $set->has(1); // true
 $set->has(2); // false
 ```
+clear()
+```
+$set = new \Vary\SetList();
+$set->add(1);
+$set->clear();
+$set->value(); // []
+```
 
 Stack: Last-In-First-Out Type ArrayList
 --

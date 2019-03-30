@@ -22,7 +22,7 @@ static zend_long vary_array_indexOf(zval *_array, zval *_value, zend_long behavi
 {
   zend_long array_size = zend_hash_num_elements(Z_ARRVAL_P(_array));
   zend_long targetIndex = -1;
-  for (zend_long i = 0; i < array_size; i++) {
+  for (zend_long i = 0; i < array_size; ++i) {
     zend_long holder_index;
     Bucket *carry;
     if (behavior == 0) {
@@ -49,7 +49,7 @@ static zval vary_array_removeIndex(zval *_array, zend_long target_index)
     Bucket *first_item = Z_ARRVAL_P(_array)->arData + target_index;
     ZVAL_COPY(&return_item, &first_item->val);
     zend_hash_del_bucket(Z_ARRVAL_P(_array), first_item);
-    for (zend_long i = target_index + 1; i < array_size; i++) {
+    for (zend_long i = target_index + 1; i < array_size; ++i) {
       Bucket *carry = Z_ARRVAL_P(_array)->arData + i;
       Bucket *holder = Z_ARRVAL_P(_array)->arData + i - 1;
       ZVAL_COPY_VALUE(&holder->val, &carry->val);
@@ -137,8 +137,10 @@ static zval vary_array_reduce(
   return sum_value;
 }
 
-static void vary_array_includes(INTERNAL_FUNCTION_PARAMETERS, zend_long add_while_not_includes)
-{
+static void vary_array_includes(
+  INTERNAL_FUNCTION_PARAMETERS,
+  zend_long add_while_not_includes
+) {
   zval *_value;
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_ZVAL(_value)
@@ -273,7 +275,7 @@ PHP_METHOD(_array, shift)
   zval return_item;
   ZVAL_COPY(&return_item, &first_item->val);
   zend_hash_del_bucket(Z_ARRVAL_P(_array), first_item);
-  for (zend_long i = 1; i < array_size; i++) {
+  for (zend_long i = 1; i < array_size; ++i) {
     Bucket *carry = Z_ARRVAL_P(_array)->arData + i;
     Bucket *holder = Z_ARRVAL_P(_array)->arData + i - 1;
     ZVAL_COPY_VALUE(&holder->val, &carry->val);
@@ -353,13 +355,13 @@ PHP_METHOD(_array, concat)
   array_init(&array);
   zval value;
   zend_long current_size = zend_hash_num_elements(Z_ARRVAL_P(current));
-  for (zend_long i = 0; i < current_size; i++) {
+  for (zend_long i = 0; i < current_size; ++i) {
     Bucket *carry = Z_ARRVAL_P(current)->arData + i;
     ZVAL_COPY(&value, &carry->val);
     zend_hash_next_index_insert(Z_ARRVAL(array), &value);
   }
   zend_long target_size = zend_hash_num_elements(Z_ARRVAL_P(target));
-  for (zend_long i = 0; i < target_size; i++) {
+  for (zend_long i = 0; i < target_size; ++i) {
     Bucket *carry = Z_ARRVAL_P(target)->arData + i;
     ZVAL_COPY(&value, &carry->val);
     zend_hash_next_index_insert(Z_ARRVAL(array), &value);
@@ -833,4 +835,29 @@ PHP_METHOD(SetList, add)
 PHP_METHOD(SetList, clear)
 {
   vary_list_init_empty(INTERNAL_FUNCTION_PARAM_PASSTHRU, 0);
+}
+
+PHP_METHOD(SetList, delete)
+{
+  zval *_value;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ZVAL(_value)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_array = vary_array_getValue(getThis());
+  zend_long result = vary_array_indexOf(_array, _value, 1);
+  if (result == -1) {
+    RETURN_FALSE;
+  }
+  zend_long array_size = zend_hash_num_elements(Z_ARRVAL_P(_array));
+  zend_hash_del_bucket(Z_ARRVAL_P(_array), Z_ARRVAL_P(_array)->arData + result);
+  for (zend_long i = result; i < array_size; ++i) {
+    Bucket *holder = Z_ARRVAL_P(_array)->arData + i;
+    Bucket *carry = Z_ARRVAL_P(_array)->arData + i + 1;
+    ZVAL_COPY_VALUE(&holder->val, &carry->val);
+    ZVAL_UNDEF(&carry->val);
+  }
+  Z_ARRVAL_P(_array)->nNumUsed = array_size - 1;
+  Z_ARRVAL_P(_array)->nNextFreeElement = array_size - 1;
+  zend_hash_internal_pointer_reset(Z_ARRVAL_P(_array));
+  RETURN_TRUE;
 }

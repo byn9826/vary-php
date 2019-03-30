@@ -706,6 +706,21 @@ if ($set->has(true) !== true) { throw new Exception('SetList has error'); }
 if ($set->has(['1', '22', '333']) !== true) {
   throw new Exception('SetList has error');
 }
+if ($set->delete(true) !== true || $set->value() !== ['123', false, ['1', '22', '333'], ['2', '33', '444']]) {
+  throw new Exception('SetList delete error');
+}
+if ($set->delete(true) !== false) {
+  throw new Exception('SetList delete error');
+}
+if ($set->delete(['1', '22', '333']) !== true || $set->value() !== ['123', false, ['2', '33', '444']]) {
+  throw new Exception('SetList delete error');
+}
+if ($set->delete('234') !== false) {
+  throw new Exception('SetList delete error');
+}
+if ($set->delete('123') !== true || $set->value() !== [false, ['2', '33', '444']]) {
+  throw new Exception('SetList delete error');
+}
 $set->clear();
 if ($set->value() !== [] || $set->size() !== 0) {
   throw new Exception('SetList clear error');

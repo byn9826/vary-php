@@ -242,6 +242,14 @@ $set->add(1);
 $set->clear();
 $set->value(); // []
 ```
+delete()
+```
+$set = new \Vary\SetList();
+$set->add(1);
+$array->delete(2); // false
+$array->delete(1); // true
+$set->value(); // []
+```
 
 Stack: Last-In-First-Out Type ArrayList
 --

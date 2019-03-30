@@ -685,3 +685,6 @@ if ($remove !== 0 || $test1->length() !== 0) {
 $set = new \Vary\SetList();
 if ($set->value() !== []) { throw new Exception('SetList value error'); }
 if ($set->size() !== 0) { throw new Exception('SetList size error'); }
+if ($set->has('123') !== false) { throw new Exception('SetList has error'); }
+if ($set->has(true) !== false) { throw new Exception('SetList has error'); }
+if ($set->has(['1', '22', '333']) !== false) { throw new Exception('SetList has error'); }

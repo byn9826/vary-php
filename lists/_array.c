@@ -8,17 +8,17 @@ zend_class_entry *queue_handle;
 zend_class_entry *deque_handle;
 zend_class_entry *orderedList_handle;
 
-zval *vary_array_getValue(zval *this)
+static zval *vary_array_getValue(zval *this)
 {
   return vary_lists_getValue(_array_handle, this);
 }
 
-void vary_array_setValue(zval *this, zval value)
+static void vary_array_setValue(zval *this, zval value)
 {
   vary_lists_setValue(_array_handle, this, value);
 }
 
-zend_long vary_array_indexOf(zval *_array, zval *_value, zend_long behavior)
+static zend_long vary_array_indexOf(zval *_array, zval *_value, zend_long behavior)
 {
   zend_long array_size = zend_hash_num_elements(Z_ARRVAL_P(_array));
   zend_long targetIndex = -1;
@@ -40,7 +40,7 @@ zend_long vary_array_indexOf(zval *_array, zval *_value, zend_long behavior)
   return targetIndex;
 }
 
-zval vary_array_removeIndex(zval *_array, zend_long target_index)
+static zval vary_array_removeIndex(zval *_array, zend_long target_index)
 {
   zval return_item;
   ZVAL_NULL(&return_item);
@@ -61,7 +61,7 @@ zval vary_array_removeIndex(zval *_array, zend_long target_index)
   return return_item;
 }
 
-zend_long vary_array_findIndex(
+static zend_long vary_array_findIndex(
   zval *_array,
   zend_fcall_info user_func,
   zend_fcall_info_cache user_func_cache
@@ -91,7 +91,7 @@ zend_long vary_array_findIndex(
   return i;
 }
 
-zval vary_array_reduce(
+static zval vary_array_reduce(
   zval *_array,
   zend_fcall_info user_func,
   zend_fcall_info_cache user_func_cache,
@@ -135,6 +135,20 @@ zval vary_array_reduce(
     zval_ptr_dtor(&args[1]);
   }
   return sum_value;
+}
+
+static void vary_array_includes(INTERNAL_FUNCTION_PARAMETERS)
+{
+  zval *_value;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ZVAL(_value)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_array = vary_array_getValue(getThis());
+  zend_long result = vary_array_indexOf(_array, _value, 1);
+  if (result == -1) {
+    RETURN_FALSE;
+  }
+  RETURN_TRUE;
 }
 
 PHP_METHOD(_array, __construct)
@@ -387,16 +401,7 @@ PHP_METHOD(_array, lastIndexOf)
 
 PHP_METHOD(_array, includes)
 {
-  zval *_value;
-  ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_ZVAL(_value)
-  ZEND_PARSE_PARAMETERS_END();
-  zval *_array = vary_array_getValue(getThis());
-  zend_long result = vary_array_indexOf(_array, _value, 1);
-  if (result == -1) {
-    RETURN_FALSE;
-  }
-  RETURN_TRUE;
+  vary_array_includes(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 
 PHP_METHOD(_array, every)
@@ -836,3 +841,9 @@ PHP_METHOD(SetList, size)
   zval *_array = vary_array_getValue(getThis());
   RETURN_LONG(zend_hash_num_elements(Z_ARRVAL_P(_array)));
 }
+
+PHP_METHOD(SetList, has)
+{
+  vary_array_includes(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+

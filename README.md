@@ -5,7 +5,7 @@ Supported Version: php7.2
 Installation
 -
 ```
-sudo apt-get install php7.2-cli php7.2-dev valgrind
+sudo apt-get install php7.2-cli php7.2-dev php7.2-mysql valgrind
 git clone https://github.com/php/php-src.git
 cd ./ext
 git checkout PHP-7.2.15

@@ -159,7 +159,9 @@ const zend_function_entry mapList_funcs[] = {
 #include "./web/model.c"
 
 const zend_function_entry model_funcs[] = {
-  PHP_ME(Model, getConnection, arginfo_void, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(Model, _getConnection, arginfo_void, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+  PHP_ME(Model, config, arginfo_void, ZEND_ACC_PROTECTED | ZEND_ACC_ABSTRACT)
+  PHP_ME(Model, useTable, arginfo_string, ZEND_ACC_PROTECTED | ZEND_ACC_FINAL)
   PHP_FE_END
 };
 
@@ -172,13 +174,14 @@ PHP_MINIT_FUNCTION(vary)
   zend_class_entry model_ce;
   INIT_NS_CLASS_ENTRY(model_ce, "Vary", "Model", model_funcs);
   model_handle = zend_register_internal_class(&model_ce TSRMLS_CC);
-  zend_declare_property_string(model_handle, "__type__", sizeof("__type__") - 1, "mysql", ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
-  zend_declare_property_string(model_handle, "__host__", sizeof("__host__") - 1, "127.0.0.1", ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
-  zend_declare_property_long(model_handle, "__port__", sizeof("__port__") - 1, 3306, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
-  zend_declare_property_string(model_handle, "__database__", sizeof("__database__") - 1, "test", ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
-  zend_declare_property_string(model_handle, "__username__", sizeof("__username__") - 1, "root", ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
-  zend_declare_property_string(model_handle, "__password__", sizeof("__password__") - 1, "123", ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
-  zend_declare_property_null(model_handle, "__connection__", sizeof("__connection__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_string(model_handle, "__driver__", sizeof("__driver__") - 1, "mysql", ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_string(model_handle, "__host__", sizeof("__host__") - 1, "127.0.0.1", ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_long(model_handle, "__port__", sizeof("__port__") - 1, 3306, ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_string(model_handle, "__database__", sizeof("__database__") - 1, "test", ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_string(model_handle, "__username__", sizeof("__username__") - 1, "root", ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_string(model_handle, "__password__", sizeof("__password__") - 1, "123", ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_null(model_handle, "__connection__", sizeof("__connection__") - 1, ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_null(model_handle, "__table__", sizeof("__table__") - 1, ZEND_ACC_PUBLIC TSRMLS_CC);
 
   /*
    * Data Structure

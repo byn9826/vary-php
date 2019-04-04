@@ -4,25 +4,39 @@
 
 zend_class_entry *model_handle;
 
-PHP_METHOD(Model, getConnection)
+PHP_METHOD(Model, config) {}
+
+PHP_METHOD(Model, useTable)
 {
-  zval *_type = zend_read_static_property(model_handle, "__type__", sizeof("__type__") - 1, 0);
-  zval *_host = zend_read_static_property(model_handle, "__host__", sizeof("__host__") - 1, 0);
-  zval *_port = zend_read_static_property(model_handle, "__port__", sizeof("__port__") - 1, 0);
-  zval *_database = zend_read_static_property(model_handle, "__database__", sizeof("__database__") - 1, 0);
-  zval *_username = zend_read_static_property(model_handle, "__username__", sizeof("__username__") - 1, 0);
-  zval *_password = zend_read_static_property(model_handle, "__password__", sizeof("__password__") - 1, 0);
-  zval *_connection = zend_read_static_property(model_handle, "__connection__", sizeof("__connection__") - 1, 0);
+
+}
+
+PHP_METHOD(Model, _getConnection)
+{
+  zval *_driver = zend_read_static_property(model_handle, "__driver__", sizeof("__driver__") - 1, 1);
+  zval *_host = zend_read_static_property(model_handle, "__host__", sizeof("__host__") - 1, 1);
+  zval *_port = zend_read_static_property(model_handle, "__port__", sizeof("__port__") - 1, 1);
+  zval *_database = zend_read_static_property(model_handle, "__database__", sizeof("__database__") - 1, 1);
+  zval *_username = zend_read_static_property(model_handle, "__username__", sizeof("__username__") - 1, 1);
+  zval *_password = zend_read_static_property(model_handle, "__password__", sizeof("__password__") - 1, 1);
+  zval *_connection = zend_read_static_property(model_handle, "__connection__", sizeof("__connection__") - 1, 1);
+  zval driver, host, database;
+  ZVAL_NEW_STR(&driver, zval_get_string(_driver));
+  ZVAL_NEW_STR(&host, zval_get_string(_host));
+  ZVAL_NEW_STR(&database, zval_get_string(_database));
   smart_str connection_string = {0};
-  smart_str_appends(&connection_string, Z_STRVAL_P(_type));
+  smart_str_appends(&connection_string, Z_STRVAL(driver));
   smart_str_appends(&connection_string, ":host=");
-  smart_str_appends(&connection_string, Z_STRVAL_P(_host));
+  smart_str_appends(&connection_string, Z_STRVAL(host));
   smart_str_appends(&connection_string, ";dbname=");
-  smart_str_appends(&connection_string, Z_STRVAL_P(_database));
+  smart_str_appends(&connection_string, Z_STRVAL(database));
   smart_str_appends(&connection_string, ";port=");
   convert_to_string(_port);
   smart_str_appends(&connection_string, Z_STRVAL_P(_port));
   smart_str_0(&connection_string);
+  zval_ptr_dtor(&driver);
+  zval_ptr_dtor(&host);
+  zval_ptr_dtor(&database);
   zval pdo_init_name, pdo_init_retval;
   ZVAL_STRING(&pdo_init_name, "__construct");
   zval params[3];

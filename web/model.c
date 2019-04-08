@@ -21,12 +21,12 @@ PHP_METHOD(Model, useTable)
   zval_ptr_dtor(&name);
 }
 
-PHP_METHOD(Model, fetch)
+PHP_METHOD(Model, list)
 {
-  zend_long total;
+  zval *_limit;
   ZEND_PARSE_PARAMETERS_START(0, 1)
     Z_PARAM_OPTIONAL
-    Z_PARAM_LONG(total)
+    Z_PARAM_ZVAL(_limit)
   ZEND_PARSE_PARAMETERS_END();
   zend_string *_name = zend_get_called_scope(execute_data)->name;
   smart_str _model_config_name = {0};
@@ -50,6 +50,11 @@ PHP_METHOD(Model, fetch)
   smart_str _model_prepare_string = {0};
   smart_str_appends(&_model_prepare_string, "SELECT * FROM ");
   smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_table_name));
+  if (ZEND_NUM_ARGS() == 1) {
+    smart_str_appends(&_model_prepare_string, " LIMIT ");
+    convert_to_string(_limit)
+    smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_limit));
+  }
   smart_str_0(&_model_prepare_string);
   zval params[1];
   ZVAL_STR(&params[0], _model_prepare_string.s);

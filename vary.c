@@ -167,7 +167,7 @@ const zend_function_entry _conn_funcs[] = {
 const zend_function_entry model_funcs[] = {
   PHP_ME(Model, config, arginfo_void, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
   PHP_ME(Model, useTable, arginfo_string, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
-  PHP_ME(Model, fetch, arginfo_integer, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+  PHP_ME(Model, list, arginfo_integer, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
   PHP_FE_END
 };
 

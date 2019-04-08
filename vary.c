@@ -24,8 +24,8 @@ extern zend_class_entry *model_handle;
 
 #include "./others/Algorithm.c"
 const zend_function_entry algorithm_funcs[] = {
-  PHP_ME(Algorithm, binarySearch, arginfo_array_integer, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-  PHP_ME(Algorithm, shellSort, arginfo_array_function, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(Algorithm, binarySearch, arginfo_array_integer, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+  PHP_ME(Algorithm, shellSort, arginfo_array_function, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
   PHP_FE_END
 };
 
@@ -165,6 +165,9 @@ const zend_function_entry _conn_funcs[] = {
 };
 
 const zend_function_entry model_funcs[] = {
+  PHP_ME(Model, config, arginfo_void, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(Model, useTable, arginfo_string, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+  PHP_ME(Model, fetch, arginfo_integer, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
   PHP_FE_END
 };
 
@@ -225,7 +228,6 @@ PHP_MINIT_FUNCTION(vary)
    * Web
    * _conn, Model
    */
-
   zend_class_entry _conn_ce;
   INIT_NS_CLASS_ENTRY(_conn_ce, "Vary", "_conn", _conn_funcs);
   _conn_handle = zend_register_internal_class(&_conn_ce TSRMLS_CC);
@@ -240,6 +242,7 @@ PHP_MINIT_FUNCTION(vary)
   zend_class_entry model_ce;
   INIT_NS_CLASS_ENTRY(model_ce, "Vary", "Model", model_funcs);
   model_handle = zend_register_internal_class(&model_ce TSRMLS_CC);
+  zend_declare_property_null(model_handle, "__table__", sizeof("__table__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
 
   return SUCCESS;
 }

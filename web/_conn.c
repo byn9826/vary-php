@@ -4,13 +4,13 @@
 
 zend_class_entry *_conn_handle;
 
-PHP_METHOD(_conn, _getConn)
+zval vary_model_getConn()
 {
   zval *_conn = zend_read_static_property(_conn_handle, "__conn__", sizeof("__conn__") - 1, 0);
   zval conn;
   ZVAL_COPY(&conn, _conn);
   if (!ZVAL_IS_NULL(&conn)) {
-    RETURN_ZVAL(&conn, 0, 1);
+    return conn;
   }
   zval *_driver = zend_read_static_property(_conn_handle, "__driver__", sizeof("__driver__") - 1, 1);
   zval *_host = zend_read_static_property(_conn_handle, "__host__", sizeof("__host__") - 1, 1);
@@ -62,5 +62,13 @@ PHP_METHOD(_conn, _getConn)
     sizeof("__conn__") - 1,
     &obj TSRMLS_CC
   );
-  RETURN_ZVAL(&obj, 0, 1);
+  return obj;
+}
+
+PHP_METHOD(_conn, _getConn)
+{
+  ZEND_PARSE_PARAMETERS_START(0, 0)
+  ZEND_PARSE_PARAMETERS_END();
+  zval conn = vary_model_getConn();
+  RETURN_ZVAL(&conn, 0, 1);
 }

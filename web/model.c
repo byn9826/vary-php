@@ -1,6 +1,75 @@
 #include "php.h"
+#include "ext/pdo/php_pdo_driver.h"
 
 zend_class_entry *model_handle;
+
+static zval vary_model_prepare(zend_string *statement)
+{
+  zval conn = vary_conn_getConnection();
+  zval params[1];
+  ZVAL_STR(&params[0], statement);
+  zval model_prepare_name, model_prepare_retval;
+  ZVAL_STRING(&model_prepare_name, "prepare");
+  call_user_function(
+    EG(function_table),
+    &conn,
+    &model_prepare_name,
+    &model_prepare_retval,
+    1,
+    params TSRMLS_CC
+  );
+  zval_ptr_dtor(&conn);
+  zval_ptr_dtor(&params[0]);
+  zval_ptr_dtor(&model_prepare_name);
+  return model_prepare_retval;
+}
+
+static zval vary_model_execute(zval statement)
+{
+  zval model_execute_name, model_execute_retval;
+  ZVAL_STRING(&model_execute_name, "execute");
+  call_user_function(
+    EG(function_table),
+    &statement,
+    &model_execute_name,
+    &model_execute_retval,
+    0,
+    NULL TSRMLS_CC
+  );
+  zval_ptr_dtor(&model_execute_name);
+  zval_ptr_dtor(&model_execute_retval);
+}
+
+static zval vary_model_fetchAll(zval statement, zend_long type)
+{
+  zval model_fetchAll_name, model_fetchAll_retval;
+  ZVAL_STRING(&model_fetchAll_name, "fetchAll");
+  if (type == 0) {
+    call_user_function(
+      EG(function_table),
+      &statement,
+      &model_fetchAll_name,
+      &model_fetchAll_retval,
+      0,
+      NULL TSRMLS_CC
+    );
+  } else {
+    zval args[1];
+    ZVAL_LONG(&args[0], PDO_FETCH_COLUMN);
+    call_user_function(
+      EG(function_table),
+      &statement,
+      &model_fetchAll_name,
+      &model_fetchAll_retval,
+      1,
+      args TSRMLS_CC
+    );
+    zval_ptr_dtor(&args[0]);
+  }
+  zval_ptr_dtor(&statement);
+  zval_ptr_dtor(&model_fetchAll_name);
+  return model_fetchAll_retval;
+}
 
 PHP_METHOD(Model, config) {}
 
@@ -10,15 +79,37 @@ PHP_METHOD(Model, useTable)
   ZEND_PARSE_PARAMETERS_START(1, 3)
     Z_PARAM_STR(_name)
   ZEND_PARSE_PARAMETERS_END();
-  zval name;
-  ZVAL_STR(&name, _name);
-  zend_update_static_property(
+  zval *_table_name = zend_read_static_property(
     zend_get_called_scope(execute_data),
     "__table__",
     sizeof("__table__") - 1,
-    &name TSRMLS_CC
+    1
   );
-  zval_ptr_dtor(&name);
+  if (zval_get_type(_table_name) != IS_STRING) {
+    zval name;
+    ZVAL_STR(&name, _name);
+    zend_update_static_property(
+      zend_get_called_scope(execute_data),
+      "__table__",
+      sizeof("__table__") - 1,
+      &name TSRMLS_CC
+    );
+    smart_str _model_prepare_string = {0};
+    smart_str_appends(&_model_prepare_string, "DESCRIBE ");
+    smart_str_appends(&_model_prepare_string, Z_STRVAL(name));
+    smart_str_0(&_model_prepare_string);
+    zval_ptr_dtor(&name);
+    zval statement = vary_model_prepare(_model_prepare_string.s);
+    vary_model_execute(statement);
+    zval columns = vary_model_fetchAll(statement, 1);
+    zend_update_static_property(
+      zend_get_called_scope(execute_data),
+      "__columns__",
+      sizeof("__columns__") - 1,
+      &columns TSRMLS_CC
+    );
+    zval_ptr_dtor(&columns);
+  }
 }
 
 PHP_METHOD(Model, list)
@@ -46,7 +137,6 @@ PHP_METHOD(Model, list)
   zval_ptr_dtor(&model_config_name);
   zval_ptr_dtor(&model_config_retval);
   zval *_table_name = zend_read_static_property(zend_get_called_scope(execute_data), "__table__", sizeof("__table__") - 1, 1);
-  zval conn = vary_model_getConn();
   smart_str _model_prepare_string = {0};
   smart_str_appends(&_model_prepare_string, "SELECT * FROM ");
   smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_table_name));
@@ -56,46 +146,27 @@ PHP_METHOD(Model, list)
     smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_limit));
   }
   smart_str_0(&_model_prepare_string);
-  zval params[1];
-  ZVAL_STR(&params[0], _model_prepare_string.s);
-  zval model_prepare_name, model_prepare_retval;
-  ZVAL_STRING(&model_prepare_name, "prepare");
+  zval statement = vary_model_prepare(_model_prepare_string.s);
+  zval model_mode_name, model_mode_retval;
+  ZVAL_STRING(&model_mode_name, "setFetchMode");
+  zval args[2];
+  ZVAL_LONG(&args[0], PDO_FETCH_CLASS | PDO_FETCH_PROPS_LATE);
+  ZVAL_STR(&args[1], _name);
   call_user_function(
     EG(function_table),
-    &conn,
-    &model_prepare_name,
-    &model_prepare_retval,
-    1,
-    params TSRMLS_CC
+    &statement,
+    &model_mode_name,
+    &model_mode_retval,
+    2,
+    args TSRMLS_CC
   );
-  zval_ptr_dtor(&conn);
-  zval_ptr_dtor(&params[0]);
-  zval_ptr_dtor(&model_prepare_name);
-  zval model_execute_name, model_execute_retval;
-  ZVAL_STRING(&model_execute_name, "execute");
-  call_user_function(
-    EG(function_table),
-    &model_prepare_retval,
-    &model_execute_name,
-    &model_execute_retval,
-    0,
-    NULL TSRMLS_CC
-  );
-  zval_ptr_dtor(&model_execute_name);
-  zval_ptr_dtor(&model_execute_retval);
-  zval model_fetchAll_name, model_fetchAll_retval;
-  ZVAL_STRING(&model_fetchAll_name, "fetchAll");
-  call_user_function(
-    EG(function_table),
-    &model_prepare_retval,
-    &model_fetchAll_name,
-    &model_fetchAll_retval,
-    0,
-    NULL TSRMLS_CC
-  );
-  zval_ptr_dtor(&model_fetchAll_name);
-  zval_ptr_dtor(&model_prepare_retval);
-  RETURN_ARR(Z_ARRVAL(model_fetchAll_retval));
+  zval_ptr_dtor(&model_mode_name);
+  zval_ptr_dtor(&model_mode_retval);
+  zval_ptr_dtor(&args[0]);
+  zval_ptr_dtor(&args[1]);
+  vary_model_execute(statement);
+  zval result = vary_model_fetchAll(statement, 0);
+  RETURN_ARR(Z_ARRVAL(result));
 }
 
 PHP_METHOD(Model, __construct)

@@ -231,7 +231,6 @@ PHP_MINIT_FUNCTION(vary)
   zend_class_entry _conn_ce;
   INIT_NS_CLASS_ENTRY(_conn_ce, "Vary", "_conn", _conn_funcs);
   _conn_handle = zend_register_internal_class(&_conn_ce TSRMLS_CC);
-  zend_declare_property_string(_conn_handle, "__driver__", sizeof("__driver__") - 1, "mysql", ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
   zend_declare_property_string(_conn_handle, "__host__", sizeof("__host__") - 1, "127.0.0.1", ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
   zend_declare_property_long(_conn_handle, "__port__", sizeof("__port__") - 1, 3306, ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
   zend_declare_property_string(_conn_handle, "__database__", sizeof("__database__") - 1, "test", ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
@@ -243,6 +242,7 @@ PHP_MINIT_FUNCTION(vary)
   INIT_NS_CLASS_ENTRY(model_ce, "Vary", "Model", model_funcs);
   model_handle = zend_register_internal_class(&model_ce TSRMLS_CC);
   zend_declare_property_null(model_handle, "__table__", sizeof("__table__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_null(model_handle, "__columns__", sizeof("__columns__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
 
   return SUCCESS;
 }

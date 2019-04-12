@@ -136,7 +136,12 @@ PHP_METHOD(Model, list)
   );
   zval_ptr_dtor(&model_config_name);
   zval_ptr_dtor(&model_config_retval);
-  zval *_table_name = zend_read_static_property(zend_get_called_scope(execute_data), "__table__", sizeof("__table__") - 1, 1);
+  zval *_table_name = zend_read_static_property(
+    zend_get_called_scope(execute_data),
+    "__table__",
+    sizeof("__table__") - 1,
+    1
+  );
   smart_str _model_prepare_string = {0};
   smart_str_appends(&_model_prepare_string, "SELECT * FROM ");
   smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_table_name));
@@ -171,6 +176,67 @@ PHP_METHOD(Model, list)
 
 PHP_METHOD(Model, __construct)
 {
-  
+  ZEND_PARSE_PARAMETERS_START(0, 0)
+  ZEND_PARSE_PARAMETERS_END();
+  zval array;
+  array_init(&array);
+  zend_update_property(
+    model_handle,
+    getThis(),
+    "__origin__",
+    sizeof("__origin__") - 1,
+    &array TSRMLS_CC
+  );
+  zval_ptr_dtor(&array);
 }
 
+PHP_METHOD(Model, __set)
+{
+  zval *_name, *_value;
+  ZEND_PARSE_PARAMETERS_START(2, 2)
+    Z_PARAM_ZVAL(_name)
+    Z_PARAM_ZVAL(_value)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *rv;
+  zval *_origin = zend_read_property(
+    model_handle,
+    getThis(),
+    "__origin__",
+    sizeof("__origin__") - 1,
+    1,
+    rv
+  );
+  zval value;
+  ZVAL_COPY(&value, _value);
+  if (!zend_symtable_exists_ind(Z_ARRVAL_P(_origin), Z_STR_P(_name))) {
+    zend_hash_str_add_new(
+      Z_ARRVAL_P(_origin),
+      Z_STRVAL_P(_name),
+      Z_STRLEN_P(_name),
+      &value
+    );
+  }
+  zend_update_property(
+    model_handle,
+    getThis(),
+    Z_STRVAL_P(_name),
+    Z_STRLEN_P(_name),
+    &value
+  );
+}
+
+// zval *_columns = zend_read_static_property(
+  //   zend_get_called_scope(execute_data),
+  //   "__columns__",
+  //   sizeof("__columns__") - 1,
+  //   1
+  // );
+  // zend_long columns_size = zend_hash_num_elements(Z_ARRVAL_P(_columns));
+  // zend_long model_key = 0;
+  // for (zend_long i = 0; i < columns_size; ++i) {
+  //   Bucket *carry = Z_ARRVAL_P(_columns)->arData + i;
+  //   if (string_case_compare_function(_name, &carry->val)) {
+  //     model_key = 1;
+  //     break;
+  //   }
+  // }

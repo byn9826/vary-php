@@ -24,6 +24,11 @@ ZEND_BEGIN_ARG_INFO(arginfo_array_integer, 0)
   ZEND_ARG_INFO(0, integer)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_string_any, 0)
+  ZEND_ARG_INFO(0, string)
+  ZEND_ARG_INFO(0, any)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_function, 0)
   ZEND_ARG_INFO(0, function)
 ZEND_END_ARG_INFO()

@@ -27,12 +27,6 @@ missing
 mkinstalldirs
 modules
 run-tests.php
-tests/*/*.diff
-tests/*/*.out
-tests/*/*.php
-tests/*/*.exp
-tests/*/*.log
-tests/*/*.sh
 node_modules
 package-lock.json
 .vscode

@@ -76,7 +76,7 @@ PHP_METHOD(Model, config) {}
 PHP_METHOD(Model, useTable)
 {
   zend_string *_name;
-  ZEND_PARSE_PARAMETERS_START(1, 3)
+  ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_STR(_name)
   ZEND_PARSE_PARAMETERS_END();
   zval *_table_name = zend_read_static_property(
@@ -109,6 +109,31 @@ PHP_METHOD(Model, useTable)
       &columns TSRMLS_CC
     );
     zval_ptr_dtor(&columns);
+  }
+}
+
+PHP_METHOD(Model, usePrimary)
+{
+  zend_string *_name;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_STR(_name)
+  ZEND_PARSE_PARAMETERS_END();
+  zval *_table_name = zend_read_static_property(
+    zend_get_called_scope(execute_data),
+    "__primary__",
+    sizeof("__primary__") - 1,
+    1
+  );
+  if (zval_get_type(_table_name) != IS_STRING) {
+    zval name;
+    ZVAL_STR(&name, _name);
+    zend_update_static_property(
+      zend_get_called_scope(execute_data),
+      "__primary__",
+      sizeof("__primary__") - 1,
+      &name TSRMLS_CC
+    );
+    zval_ptr_dtor(&name);
   }
 }
 
@@ -225,18 +250,100 @@ PHP_METHOD(Model, __set)
   );
 }
 
-// zval *_columns = zend_read_static_property(
-  //   zend_get_called_scope(execute_data),
-  //   "__columns__",
-  //   sizeof("__columns__") - 1,
-  //   1
-  // );
-  // zend_long columns_size = zend_hash_num_elements(Z_ARRVAL_P(_columns));
-  // zend_long model_key = 0;
-  // for (zend_long i = 0; i < columns_size; ++i) {
-  //   Bucket *carry = Z_ARRVAL_P(_columns)->arData + i;
-  //   if (string_case_compare_function(_name, &carry->val)) {
-  //     model_key = 1;
-  //     break;
-  //   }
-  // }
+PHP_METHOD(Model, update)
+{
+  zval *_columns = zend_read_static_property(
+    zend_get_called_scope(execute_data),
+    "__columns__",
+    sizeof("__columns__") - 1,
+    1
+  );
+  zval *rv;
+  zval *_origin = zend_read_property(
+    model_handle,
+    getThis(),
+    "__origin__",
+    sizeof("__origin__") - 1,
+    1,
+    rv
+  );
+  zend_long columns_size = zend_hash_num_elements(Z_ARRVAL_P(_columns));
+  smart_str update_string = {0};
+  smart_str_appends(&update_string, "UPDATE ");
+  zval *_table_name = zend_read_static_property(
+    zend_get_called_scope(execute_data),
+    "__table__",
+    sizeof("__table__") - 1,
+    1
+  );
+  smart_str_appends(&update_string, Z_STRVAL_P(_table_name));
+  smart_str_appends(&update_string, " SET ");
+  zval values;
+  array_init(&values);
+  zend_long values_size = 0;
+  for (zend_long i = 0; i < columns_size; ++i) {
+    Bucket *carry = Z_ARRVAL_P(_columns)->arData + i;
+    zval *rvl;
+    zval *_current = zend_read_property(
+      model_handle,
+      getThis(),
+      Z_STRVAL_P(&carry->val),
+      Z_STRLEN_P(&carry->val),
+      1,
+      rvl
+    );
+    zval *_raw = zend_hash_find(Z_ARRVAL_P(_origin), Z_STR_P(&carry->val));
+    if (string_compare_function(_current, _raw) != 0) {
+      if (values_size != 0) {
+        smart_str_appends(&update_string, ", ");
+      }
+      ++values_size;
+      smart_str_appends(&update_string, Z_STRVAL_P(&carry->val));
+      smart_str_appends(&update_string, "=?");
+      zend_hash_next_index_insert(Z_ARRVAL(values), _current);
+      zend_hash_str_update(
+        Z_ARRVAL_P(_origin),
+        Z_STRVAL_P(&carry->val),
+        Z_STRLEN_P(&carry->val),
+        _current
+      );
+    }
+  }
+  smart_str_appends(&update_string, " WHERE ");
+  zval *_primary_key = zend_read_static_property(
+    zend_get_called_scope(execute_data),
+    "__primary__",
+    sizeof("__primary__") - 1,
+    1
+  );
+  smart_str_appends(&update_string, Z_STRVAL_P(_primary_key));
+  smart_str_appends(&update_string, " =?");
+  smart_str_0(&update_string);
+  zval *_primary_value = zend_hash_find(Z_ARRVAL_P(_origin), Z_STR_P(_primary_key));
+  zval primary_value;
+  ZVAL_COPY(&primary_value, _primary_value);
+  zend_hash_next_index_insert(Z_ARRVAL(values), &primary_value);
+  Z_ARRVAL(values)->nNumUsed = values_size + 1;
+  Z_ARRVAL(values)->nNextFreeElement = values_size + 1;
+  zend_hash_internal_pointer_reset(Z_ARRVAL(values));
+  zval statement = vary_model_prepare(update_string.s);
+  zval model_execute_name, model_execute_retval;
+  ZVAL_STRING(&model_execute_name, "execute");
+  zval args[1];
+  ZVAL_COPY(&args[0], &values);
+  call_user_function(
+    EG(function_table),
+    &statement,
+    &model_execute_name,
+    &model_execute_retval,
+    1,
+    args TSRMLS_CC
+  );
+  zval_ptr_dtor(&model_execute_name);
+  zval_ptr_dtor(&model_execute_retval);
+  zval_ptr_dtor(&args[0]);
+  zval_ptr_dtor(&statement);
+  zval_ptr_dtor(&values);
+  RETURN_TRUE;
+}
+

@@ -137,12 +137,29 @@ PHP_METHOD(Model, usePrimary)
   }
 }
 
+PHP_METHOD(Model, where)
+{
+  zval list, *_list;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ARRAY(_list)
+  ZEND_PARSE_PARAMETERS_END();
+  ZVAL_COPY(&list, _list);
+  zend_update_static_property(
+    zend_get_called_scope(execute_data),
+    "__where__",
+    sizeof("__where__") - 1,
+    &list TSRMLS_CC
+  );
+  zval_ptr_dtor(&list);
+}
+
 PHP_METHOD(Model, list)
 {
-  zval *_limit;
-  ZEND_PARSE_PARAMETERS_START(0, 1)
+  zval *_limit, *_offset;
+  ZEND_PARSE_PARAMETERS_START(0, 2)
     Z_PARAM_OPTIONAL
     Z_PARAM_ZVAL(_limit)
+    Z_PARAM_ZVAL(_offset)
   ZEND_PARSE_PARAMETERS_END();
   zend_string *_name = zend_get_called_scope(execute_data)->name;
   smart_str _model_config_name = {0};
@@ -170,10 +187,15 @@ PHP_METHOD(Model, list)
   smart_str _model_prepare_string = {0};
   smart_str_appends(&_model_prepare_string, "SELECT * FROM ");
   smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_table_name));
-  if (ZEND_NUM_ARGS() == 1) {
+  if (ZEND_NUM_ARGS() >= 1) {
     smart_str_appends(&_model_prepare_string, " LIMIT ");
     convert_to_string(_limit)
     smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_limit));
+  }
+  if (ZEND_NUM_ARGS() == 2) {
+    smart_str_appends(&_model_prepare_string, " OFFSET ");
+    convert_to_string(_offset)
+    smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_offset));
   }
   smart_str_0(&_model_prepare_string);
   zval statement = vary_model_prepare(_model_prepare_string.s);

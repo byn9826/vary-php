@@ -55,3 +55,24 @@ if (
 ) {
   throw new Exception('Model update error');
 }
+
+$tests = Test::list(1, 0);
+if (
+  $tests[0]->id !== '1'
+  || $tests[0]->name !== 'test'
+  || $tests[0]->note !== 'test1'
+) {
+  throw new Exception('Model list error');
+}
+
+$tests = Test::list(2, 1);
+if (
+  $tests[0]->id !== '2'
+  || $tests[0]->name !== 'test2'
+  || $tests[0]->note !== 'haha'
+  || $tests[1]->id !== '3'
+  || $tests[1]->name !== 'test3'
+  || $tests[1]->note !== 'lalala'
+) {
+  throw new Exception('Model list error');
+}

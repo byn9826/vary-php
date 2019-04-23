@@ -155,11 +155,10 @@ PHP_METHOD(Model, where)
 
 PHP_METHOD(Model, list)
 {
-  zval *_limit, *_offset;
-  ZEND_PARSE_PARAMETERS_START(0, 2)
+  zval *_list;
+  ZEND_PARSE_PARAMETERS_START(0, 1)
     Z_PARAM_OPTIONAL
-    Z_PARAM_ZVAL(_limit)
-    Z_PARAM_ZVAL(_offset)
+    Z_PARAM_ARRAY(_list)
   ZEND_PARSE_PARAMETERS_END();
   zend_string *_name = zend_get_called_scope(execute_data)->name;
   smart_str _model_config_name = {0};
@@ -187,15 +186,25 @@ PHP_METHOD(Model, list)
   smart_str _model_prepare_string = {0};
   smart_str_appends(&_model_prepare_string, "SELECT * FROM ");
   smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_table_name));
-  if (ZEND_NUM_ARGS() >= 1) {
-    smart_str_appends(&_model_prepare_string, " LIMIT ");
-    convert_to_string(_limit)
-    smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_limit));
-  }
-  if (ZEND_NUM_ARGS() == 2) {
-    smart_str_appends(&_model_prepare_string, " OFFSET ");
-    convert_to_string(_offset)
-    smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_offset));
+  if (ZEND_NUM_ARGS() == 1) {
+    zval limit_key, *limit_value;
+    ZVAL_STRING(&limit_key, "limit");
+    limit_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(limit_key));
+    if (limit_value) {
+      smart_str_appends(&_model_prepare_string, " LIMIT ");
+      convert_to_string(limit_value)
+      smart_str_appends(&_model_prepare_string, Z_STRVAL_P(limit_value));
+    }
+    zval_ptr_dtor(&limit_key);
+    zval offset_key, *offset_value;
+    ZVAL_STRING(&offset_key, "offset");
+    offset_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(offset_key));
+    if (offset_value) {
+      smart_str_appends(&_model_prepare_string, " OFFSET ");
+      convert_to_string(offset_value)
+      smart_str_appends(&_model_prepare_string, Z_STRVAL_P(offset_value));
+    }
+    zval_ptr_dtor(&offset_key);
   }
   smart_str_0(&_model_prepare_string);
   zval statement = vary_model_prepare(_model_prepare_string.s);
@@ -219,6 +228,26 @@ PHP_METHOD(Model, list)
   vary_model_execute(statement);
   zval result = vary_model_fetchAll(statement, 0);
   RETURN_ARR(Z_ARRVAL(result));
+
+
+  // zval *_limit, *_offset;
+  // ZEND_PARSE_PARAMETERS_START(0, 2)
+  //   Z_PARAM_OPTIONAL
+  //   Z_PARAM_ZVAL(_limit)
+  //   Z_PARAM_ZVAL(_offset)
+  // ZEND_PARSE_PARAMETERS_END();
+  
+  // if (ZEND_NUM_ARGS() >= 1) {
+  //   smart_str_appends(&_model_prepare_string, " LIMIT ");
+  //   convert_to_string(_limit)
+  //   smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_limit));
+  // }
+  // if (ZEND_NUM_ARGS() == 2) {
+  //   smart_str_appends(&_model_prepare_string, " OFFSET ");
+  //   convert_to_string(_offset)
+  //   smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_offset));
+  // }
+  
 }
 
 PHP_METHOD(Model, __construct)

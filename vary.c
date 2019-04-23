@@ -168,8 +168,7 @@ const zend_function_entry model_funcs[] = {
   PHP_ME(Model, config, arginfo_void, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
   PHP_ME(Model, useTable, arginfo_string, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
   PHP_ME(Model, usePrimary, arginfo_string, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
-  PHP_ME(Model, where, arginfo_array, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
-  PHP_ME(Model, list, arginfo_integer, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+  PHP_ME(Model, list, arginfo_array, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
   PHP_ME(Model, __construct, arginfo_void, ZEND_ACC_PROTECTED)
   PHP_ME(Model, __set, arginfo_string_any, ZEND_ACC_PUBLIC | ZEND_ACC_FINAL)
   PHP_ME(Model, update, arginfo_void, ZEND_ACC_PUBLIC)
@@ -249,7 +248,6 @@ PHP_MINIT_FUNCTION(vary)
   zend_declare_property_null(model_handle, "__table__", sizeof("__table__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
   zend_declare_property_null(model_handle, "__primary__", sizeof("__primary__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
   zend_declare_property_null(model_handle, "__columns__", sizeof("__columns__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
-  zend_declare_property_null(model_handle, "__where__", sizeof("__where__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
   zend_declare_property_null(model_handle, "__origin__", sizeof("__origin__") - 1, ZEND_ACC_PUBLIC TSRMLS_CC);
 
   return SUCCESS;

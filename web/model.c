@@ -183,8 +183,30 @@ PHP_METHOD(Model, list)
     sizeof("__table__") - 1,
     1
   );
+  zend_long i;
   smart_str _model_prepare_string = {0};
-  smart_str_appends(&_model_prepare_string, "SELECT * FROM ");
+  smart_str_appends(&_model_prepare_string, "SELECT ");
+  if (ZEND_NUM_ARGS() == 1) {
+    zval select_key, *select_value;
+    ZVAL_STRING(&select_key, "select");
+    select_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(select_key));
+    if (select_value) {
+      zend_long select_size = zend_hash_num_elements(Z_ARRVAL_P(select_value));
+      for (i = 0; i < select_size; ++i) {
+        Bucket *select = Z_ARRVAL_P(select_value)->arData + i;
+        smart_str_appends(&_model_prepare_string, Z_STRVAL_P(&select->val));
+        if (i != select_size - 1) {
+          smart_str_appends(&_model_prepare_string, ",");
+        }
+      }
+    } else {
+      smart_str_appends(&_model_prepare_string, "*");
+    }
+    zval_ptr_dtor(&select_key);
+  } else {
+    smart_str_appends(&_model_prepare_string, "*");
+  }
+  smart_str_appends(&_model_prepare_string, " FROM ");
   smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_table_name));
   if (ZEND_NUM_ARGS() == 1) {
     zval order_key, *order_value;
@@ -193,7 +215,7 @@ PHP_METHOD(Model, list)
     if (order_value) {
       smart_str_appends(&_model_prepare_string, " ORDER BY ");
       zend_long order_size = zend_hash_num_elements(Z_ARRVAL_P(order_value));
-      for (zend_long i = 0; i < order_size; ++i) {
+      for (i = 0; i < order_size; ++i) {
         Bucket *order = Z_ARRVAL_P(order_value)->arData + i;
         smart_str_appends(&_model_prepare_string, Z_STRVAL_P(&order->val));
         if (i != order_size - 1) {

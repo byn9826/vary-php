@@ -145,4 +145,15 @@ $tests[0]->name = 'test3';
 if ($tests[0]->update() !== true) {
   throw new Exception('Model update error');
 }
-
+$tests = Test::list([
+  'limit' => 1,
+  'select' => ['id', 'name']
+]);
+if (
+  count($tests) !== 1
+  || $tests[0]->id !== '1'
+  || $tests[0]->name !== 'test'
+  || isset($tests[0]->note)
+) {
+  throw new Exception('Model select error');
+}

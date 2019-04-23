@@ -1,6 +1,7 @@
 <?php
 
 include_once(__DIR__ . '/Test.php');
+
 $tests = Test::list();
 if (count($tests) !== 3 || $tests[0]->id !== '1' || $tests[1]->id !== '2' || $tests[2]->id !== '3') {
   throw new Exception('Model list error');
@@ -156,4 +157,38 @@ if (
   || isset($tests[0]->note)
 ) {
   throw new Exception('Model select error');
+}
+
+$tests = Test::list([
+  'where' => [
+    'id' => 1
+  ]
+]);
+if (count($tests) !== 1 || $tests[0]->id !== '1') {
+  throw new Exception('Model where error');
+}
+$tests[0]->name = 'test2';
+if ($tests[0]->update() !== true) {
+  throw new Exception('Model update error');
+}
+$tests = Test::list([
+  'where' => [
+    'name' => 'test2'
+  ]
+]);
+if (count($tests) !== 2 || $tests[0]->id !== '1' || $tests[1]->id !== '2') {
+  throw new Exception('Model where error');
+}
+$tests = Test::list([
+  'where' => [
+    'id' => 1,
+    'name' => 'test2'
+  ]
+]);
+if (count($tests) !== 1 || $tests[0]->id !== '1') {
+  throw new Exception('Model where error');
+}
+$tests[0]->name = 'test';
+if ($tests[0]->update() !== true) {
+  throw new Exception('Model update error');
 }

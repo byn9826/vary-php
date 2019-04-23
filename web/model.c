@@ -24,7 +24,7 @@ static zval vary_model_prepare(zend_string *statement)
   return model_prepare_retval;
 }
 
-static zval vary_model_execute(zval statement)
+static zval vary_model_execute(zval statement, zend_long params_num, zval params_val[])
 {
   zval model_execute_name, model_execute_retval;
   ZVAL_STRING(&model_execute_name, "execute");
@@ -33,8 +33,8 @@ static zval vary_model_execute(zval statement)
     &statement,
     &model_execute_name,
     &model_execute_retval,
-    0,
-    NULL TSRMLS_CC
+    params_num,
+    params_val TSRMLS_CC
   );
   zval_ptr_dtor(&model_execute_name);
   zval_ptr_dtor(&model_execute_retval);
@@ -100,7 +100,7 @@ PHP_METHOD(Model, useTable)
     smart_str_0(&_model_prepare_string);
     zval_ptr_dtor(&name);
     zval statement = vary_model_prepare(_model_prepare_string.s);
-    vary_model_execute(statement);
+    vary_model_execute(statement, 0, NULL);
     zval columns = vary_model_fetchAll(statement, 1);
     zend_update_static_property(
       zend_get_called_scope(execute_data),
@@ -208,7 +208,40 @@ PHP_METHOD(Model, list)
   }
   smart_str_appends(&_model_prepare_string, " FROM ");
   smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_table_name));
+  zend_long where_size = 0;
+  zval where_array;
+  array_init(&where_array);
   if (ZEND_NUM_ARGS() == 1) {
+    zval where_key, *where_value;
+    ZVAL_STRING(&where_key, "where");
+    where_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(where_key));
+    if (where_value) {
+      smart_str_appends(&_model_prepare_string, " WHERE ");
+      zval *zv;
+      zend_long num_key;
+		  zend_string *str_key;
+      ZEND_HASH_FOREACH_KEY_VAL_IND(Z_ARRVAL_P(where_value), num_key, str_key, zv) {
+        if (str_key) {
+          if (where_size != 0) {
+            smart_str_appends(&_model_prepare_string, " AND ");
+          }
+          smart_str_appends(&_model_prepare_string, ZSTR_VAL(str_key));
+          smart_str_appends(&_model_prepare_string, "=?");
+          zval *_str_value = zend_hash_find(Z_ARRVAL_P(where_value), str_key);
+          zval str_value;
+          ZVAL_COPY(&str_value, _str_value);
+          zend_hash_next_index_insert(
+            Z_ARRVAL(where_array),
+            &str_value
+          );
+          ++where_size;
+        }
+      } ZEND_HASH_FOREACH_END();
+      Z_ARRVAL(where_array)->nNumUsed = where_size;
+      Z_ARRVAL(where_array)->nNextFreeElement = where_size;
+      zend_hash_internal_pointer_reset(Z_ARRVAL(where_array));
+    }
+    zval_ptr_dtor(&where_key);
     zval order_key, *order_value;
     ZVAL_STRING(&order_key, "orderBy");
     order_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(order_key));
@@ -262,7 +295,12 @@ PHP_METHOD(Model, list)
   zval_ptr_dtor(&model_mode_retval);
   zval_ptr_dtor(&args[0]);
   zval_ptr_dtor(&args[1]);
-  vary_model_execute(statement);
+  if (where_size != 0) {
+    vary_model_execute(statement, 1, &where_array);
+  } else {
+    vary_model_execute(statement, 0, NULL);
+  }
+  zval_ptr_dtor(&where_array);
   zval result = vary_model_fetchAll(statement, 0);
   RETURN_ARR(Z_ARRVAL(result));
 }
@@ -395,21 +433,7 @@ PHP_METHOD(Model, update)
   Z_ARRVAL(values)->nNextFreeElement = values_size + 1;
   zend_hash_internal_pointer_reset(Z_ARRVAL(values));
   zval statement = vary_model_prepare(update_string.s);
-  zval model_execute_name, model_execute_retval;
-  ZVAL_STRING(&model_execute_name, "execute");
-  zval args[1];
-  ZVAL_COPY(&args[0], &values);
-  call_user_function(
-    EG(function_table),
-    &statement,
-    &model_execute_name,
-    &model_execute_retval,
-    1,
-    args TSRMLS_CC
-  );
-  zval_ptr_dtor(&model_execute_name);
-  zval_ptr_dtor(&model_execute_retval);
-  zval_ptr_dtor(&args[0]);
+  vary_model_execute(statement, 1, &values);
   zval_ptr_dtor(&statement);
   zval_ptr_dtor(&values);
   RETURN_TRUE;

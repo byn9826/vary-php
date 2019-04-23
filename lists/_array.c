@@ -71,14 +71,12 @@ static zend_long vary_array_findIndex(
   zend_long i = 0;
   for (i; i < array_size; ++i) {
     Bucket *carry = Z_ARRVAL_P(_array)->arData + i;
-    zval args[1], retval;
-    ZVAL_COPY(&args[0], &carry->val);
+    zval retval;
     user_func.retval = &retval;
     user_func.param_count = 1;
     user_func.no_separation = 0;
-    user_func.params = args;
+    user_func.params = &carry->val;
     zend_call_function(&user_func, &user_func_cache);
-    zval_ptr_dtor(&args[0]);
     if (Z_TYPE(retval) == IS_TRUE) {
       zval_ptr_dtor(&retval);
       break;
@@ -412,14 +410,11 @@ PHP_METHOD(_array, every)
   for (zend_long i = 0; i < array_size; ++i) {
     Bucket *current_item = Z_ARRVAL_P(_array)->arData + i;
     zval retval;
-    zval args[1];
-    ZVAL_COPY(&args[0], &current_item->val);
     user_func.retval = &retval;
     user_func.param_count = 1;
     user_func.no_separation = 0;
-    user_func.params = args;
+    user_func.params = &current_item->val;
     zend_call_function(&user_func, &user_func_cache);
-    zval_ptr_dtor(&args[0]);
     if (Z_TYPE(retval) == IS_FALSE) {
       zval_ptr_dtor(&retval);
       result = 0;
@@ -447,14 +442,11 @@ PHP_METHOD(_array, some)
   for (zend_long i = 0; i < array_size; ++i) {
     Bucket *current_item = Z_ARRVAL_P(_array)->arData + i;
     zval retval;
-    zval args[1];
-    ZVAL_COPY(&args[0], &current_item->val);
     user_func.retval = &retval;
     user_func.param_count = 1;
     user_func.no_separation = 0;
-    user_func.params = args;
+    user_func.params = &current_item->val;
     zend_call_function(&user_func, &user_func_cache);
-    zval_ptr_dtor(&args[0]);
     if (Z_TYPE(retval) == IS_TRUE) {
       zval_ptr_dtor(&retval);
       result = 1;
@@ -482,15 +474,13 @@ PHP_METHOD(_array, map)
   array_init(&result);
   for (zend_long i = 0; i < array_size; ++i) {
     Bucket *carry = Z_ARRVAL_P(_array)->arData + i;
-    zval args[1], retval;
-    ZVAL_COPY(&args[0], &carry->val);
+    zval retval;
     user_func.retval = &retval;
     user_func.param_count = 1;
     user_func.no_separation = 0;
-    user_func.params = args;
+    user_func.params = &carry->val;
     zend_call_function(&user_func, &user_func_cache);
     zend_hash_next_index_insert(Z_ARRVAL(result), &retval);
-    zval_ptr_dtor(&args[0]);
   }
   Z_ARRVAL(result)->nNumUsed = array_size;
   Z_ARRVAL(result)->nNextFreeElement = array_size;
@@ -544,14 +534,12 @@ PHP_METHOD(_array, forEach)
   zend_long array_size = zend_hash_num_elements(Z_ARRVAL_P(_array));
   for (zend_long i = 0; i < array_size; ++i) {
     Bucket *carry = Z_ARRVAL_P(_array)->arData + i;
-    zval args[1], retval;
-    ZVAL_COPY(&args[0], &carry->val);
+    zval retval;
     user_func.retval = &retval;
     user_func.param_count = 1;
     user_func.no_separation = 0;
-    user_func.params = args;
+    user_func.params = &carry->val;
     zend_call_function(&user_func, &user_func_cache);
-    zval_ptr_dtor(&args[0]);
     zval_ptr_dtor(&retval);
   }
   RETURN_NULL();

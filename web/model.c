@@ -187,6 +187,21 @@ PHP_METHOD(Model, list)
   smart_str_appends(&_model_prepare_string, "SELECT * FROM ");
   smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_table_name));
   if (ZEND_NUM_ARGS() == 1) {
+    zval order_key, *order_value;
+    ZVAL_STRING(&order_key, "orderBy");
+    order_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(order_key));
+    if (order_value) {
+      smart_str_appends(&_model_prepare_string, " ORDER BY ");
+      zend_long order_size = zend_hash_num_elements(Z_ARRVAL_P(order_value));
+      for (zend_long i = 0; i < order_size; ++i) {
+        Bucket *order = Z_ARRVAL_P(order_value)->arData + i;
+        smart_str_appends(&_model_prepare_string, Z_STRVAL_P(&order->val));
+        if (i != order_size - 1) {
+          smart_str_appends(&_model_prepare_string, ",");
+        }
+      }
+    }
+    zval_ptr_dtor(&order_key);
     zval limit_key, *limit_value;
     ZVAL_STRING(&limit_key, "limit");
     limit_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(limit_key));
@@ -228,26 +243,6 @@ PHP_METHOD(Model, list)
   vary_model_execute(statement);
   zval result = vary_model_fetchAll(statement, 0);
   RETURN_ARR(Z_ARRVAL(result));
-
-
-  // zval *_limit, *_offset;
-  // ZEND_PARSE_PARAMETERS_START(0, 2)
-  //   Z_PARAM_OPTIONAL
-  //   Z_PARAM_ZVAL(_limit)
-  //   Z_PARAM_ZVAL(_offset)
-  // ZEND_PARSE_PARAMETERS_END();
-  
-  // if (ZEND_NUM_ARGS() >= 1) {
-  //   smart_str_appends(&_model_prepare_string, " LIMIT ");
-  //   convert_to_string(_limit)
-  //   smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_limit));
-  // }
-  // if (ZEND_NUM_ARGS() == 2) {
-  //   smart_str_appends(&_model_prepare_string, " OFFSET ");
-  //   convert_to_string(_offset)
-  //   smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_offset));
-  // }
-  
 }
 
 PHP_METHOD(Model, __construct)

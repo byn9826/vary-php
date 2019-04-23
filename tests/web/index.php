@@ -49,6 +49,7 @@ if (
 }
 $tests[0]->name = 'test';
 $tests[0]->note = 'test1';
+$tests[0]->test = 'testing';
 if ($tests[0]->update() !== true) {
   throw new Exception('Model update error');
 }
@@ -89,3 +90,59 @@ if (
 ) {
   throw new Exception('Model list error');
 }
+$tests = Test::list([
+  'limit' => 1,
+  'orderBy' => ['id DESC']
+]);
+if (
+  $tests[0]->id !== '3'
+  || $tests[0]->name !== 'test3'
+  || $tests[0]->note !== 'lalala'
+) {
+  throw new Exception('Model orderBy error');
+}
+$tests[0]->name = 'test2';
+if ($tests[0]->update() !== true) {
+  throw new Exception('Model update error');
+}
+$tests = Test::list([
+  'orderBy' => ['name DESC', 'id ASC']
+]);
+if (
+  $tests[0]->id !== '2'
+  || $tests[0]->name !== 'test2'
+  || $tests[0]->note !== 'haha'
+  || $tests[1]->id !== '3'
+  || $tests[1]->name !== 'test2'
+  || $tests[1]->note !== 'lalala'
+  || $tests[2]->id !== '1'
+  || $tests[2]->name !== 'test'
+  || $tests[2]->note !== 'test1'
+) {
+  throw new Exception('Model orderBy error');
+}
+$tests = Test::list([
+  'orderBy' => ['name ASC', 'id DESC']
+]);
+if (
+  $tests[0]->id !== '1'
+  || $tests[0]->name !== 'test'
+  || $tests[0]->note !== 'test1'
+  || $tests[1]->id !== '3'
+  || $tests[1]->name !== 'test2'
+  || $tests[1]->note !== 'lalala'
+  || $tests[2]->id !== '2'
+  || $tests[2]->name !== 'test2'
+  || $tests[2]->note !== 'haha'
+) {
+  throw new Exception('Model orderBy error');
+}
+
+$tests = Test::list([
+  'orderBy' => ['id DESC']
+]);
+$tests[0]->name = 'test3';
+if ($tests[0]->update() !== true) {
+  throw new Exception('Model update error');
+}
+

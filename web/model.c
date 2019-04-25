@@ -3,6 +3,80 @@
 
 zend_class_entry *model_handle;
 
+static void vary_model_callConfig(zend_string *_name)
+{
+  smart_str _model_config_name = {0};
+  smart_str_appends(&_model_config_name, ZSTR_VAL(_name));
+  smart_str_appends(&_model_config_name, "::config");
+  smart_str_0(&_model_config_name);
+  zval model_config_name, model_config_retval;
+  ZVAL_STR(&model_config_name, _model_config_name.s);
+  call_user_function(
+    EG(function_table),
+    NULL,
+    &model_config_name,
+    &model_config_retval,
+    0,
+    NULL TSRMLS_CC
+  );
+  zval_ptr_dtor(&model_config_name);
+  zval_ptr_dtor(&model_config_retval);
+}
+
+static zval *vary_model_getOrigin(zval *this)
+{
+  zval *rv;
+  return zend_read_property(
+    model_handle,
+    this,
+    "__origin__",
+    sizeof("__origin__") - 1,
+    1,
+    rv
+  );
+} 
+
+static zval *vary_model_getTableName(zend_execute_data *execute_data)
+{
+  return zend_read_static_property(
+    zend_get_called_scope(execute_data),
+    "__table__",
+    sizeof("__table__") - 1,
+    1
+  );
+}
+
+static zval *vary_model_getPrimaryKey(zend_execute_data *execute_data)
+{
+  return zend_read_static_property(
+    zend_get_called_scope(execute_data),
+    "__primary__",
+    sizeof("__primary__") - 1,
+    1
+  );
+}
+
+static void vary_model_setFetchMode(zval statement, zend_string *_name, zend_long mode)
+{
+  zval model_mode_name, model_mode_retval;
+  ZVAL_STRING(&model_mode_name, "setFetchMode");
+  zval args[2];
+  ZVAL_LONG(&args[0], mode);
+  ZVAL_STR(&args[1], _name);
+  call_user_function(
+    EG(function_table),
+    &statement,
+    &model_mode_name,
+    &model_mode_retval,
+    2,
+    args TSRMLS_CC
+  );
+  zval_ptr_dtor(&model_mode_name);
+  zval_ptr_dtor(&model_mode_retval);
+  zval_ptr_dtor(&args[0]);
+  zval_ptr_dtor(&args[1]);
+}
+
 static zval vary_model_prepare(zend_string *statement)
 {
   zval conn = vary_conn_getConnection();
@@ -40,16 +114,20 @@ static zval vary_model_execute(zval statement, zend_long params_num, zval params
   zval_ptr_dtor(&model_execute_retval);
 }
 
-static zval vary_model_fetchAll(zval statement, zend_long type)
+static zval vary_model_fetch(zval statement, zend_long type)
 {
-  zval model_fetchAll_name, model_fetchAll_retval;
-  ZVAL_STRING(&model_fetchAll_name, "fetchAll");
-  if (type == 0) {
+  zval model_fetch_name, model_fetch_retval;
+  if (type == 1) {
+    ZVAL_STRING(&model_fetch_name, "fetch");
+  } else {
+    ZVAL_STRING(&model_fetch_name, "fetchAll");
+  }
+  if (type == 0 || type == 1) {
     call_user_function(
       EG(function_table),
       &statement,
-      &model_fetchAll_name,
-      &model_fetchAll_retval,
+      &model_fetch_name,
+      &model_fetch_retval,
       0,
       NULL TSRMLS_CC
     );
@@ -59,16 +137,16 @@ static zval vary_model_fetchAll(zval statement, zend_long type)
     call_user_function(
       EG(function_table),
       &statement,
-      &model_fetchAll_name,
-      &model_fetchAll_retval,
+      &model_fetch_name,
+      &model_fetch_retval,
       1,
       args TSRMLS_CC
     );
     zval_ptr_dtor(&args[0]);
   }
   zval_ptr_dtor(&statement);
-  zval_ptr_dtor(&model_fetchAll_name);
-  return model_fetchAll_retval;
+  zval_ptr_dtor(&model_fetch_name);
+  return model_fetch_retval;
 }
 
 PHP_METHOD(Model, config) {}
@@ -79,12 +157,7 @@ PHP_METHOD(Model, useTable)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_STR(_name)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_table_name = zend_read_static_property(
-    zend_get_called_scope(execute_data),
-    "__table__",
-    sizeof("__table__") - 1,
-    1
-  );
+  zval *_table_name = vary_model_getTableName(execute_data);
   if (zval_get_type(_table_name) != IS_STRING) {
     zval name;
     ZVAL_STR(&name, _name);
@@ -101,7 +174,7 @@ PHP_METHOD(Model, useTable)
     zval_ptr_dtor(&name);
     zval statement = vary_model_prepare(_model_prepare_string.s);
     vary_model_execute(statement, 0, NULL);
-    zval columns = vary_model_fetchAll(statement, 1);
+    zval columns = vary_model_fetch(statement, 2);
     zend_update_static_property(
       zend_get_called_scope(execute_data),
       "__columns__",
@@ -153,6 +226,52 @@ PHP_METHOD(Model, where)
   zval_ptr_dtor(&list);
 }
 
+PHP_METHOD(Model, get)
+{
+  zval *_param;
+  ZEND_PARSE_PARAMETERS_START(0, 1)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_ZVAL(_param);
+  ZEND_PARSE_PARAMETERS_END();
+  zend_string *_name = zend_get_called_scope(execute_data)->name;
+  vary_model_callConfig(_name);
+  zval *_table_name = vary_model_getTableName(execute_data);
+  zval values;
+  array_init(&values);
+  smart_str _model_prepare_string = {0};
+  switch (Z_TYPE_P(_param)) {
+    case IS_STRING:
+    case IS_LONG: {
+      smart_str_appends(&_model_prepare_string, "SELECT * FROM ");
+      smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_table_name));
+      smart_str_appends(&_model_prepare_string, " WHERE ");
+      zval *_primary_key = vary_model_getPrimaryKey(execute_data);
+      smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_primary_key));
+      smart_str_appends(&_model_prepare_string, " =?");
+      smart_str_0(&_model_prepare_string);
+      zend_hash_next_index_insert(Z_ARRVAL(values), _param);
+      Z_ARRVAL(values)->nNumUsed = 1;
+      Z_ARRVAL(values)->nNextFreeElement = 1;
+      zend_hash_internal_pointer_reset(Z_ARRVAL(values));
+			break;
+    }
+		case IS_ARRAY:
+			break;
+		default:
+			RETURN_FALSE;
+  }
+  zval statement = vary_model_prepare(_model_prepare_string.s);
+  vary_model_setFetchMode(
+    statement,
+    _name,
+    PDO_FETCH_CLASS | PDO_FETCH_PROPS_LATE
+  );
+  vary_model_execute(statement, 1, &values);
+  zval_ptr_dtor(&values);
+  zval result = vary_model_fetch(statement, 1);
+  RETURN_ZVAL(&result, 0, 1);
+}
+
 PHP_METHOD(Model, list)
 {
   zval *_list;
@@ -161,28 +280,8 @@ PHP_METHOD(Model, list)
     Z_PARAM_ARRAY(_list)
   ZEND_PARSE_PARAMETERS_END();
   zend_string *_name = zend_get_called_scope(execute_data)->name;
-  smart_str _model_config_name = {0};
-  smart_str_appends(&_model_config_name, ZSTR_VAL(_name));
-  smart_str_appends(&_model_config_name, "::config");
-  smart_str_0(&_model_config_name);
-  zval model_config_name, model_config_retval;
-  ZVAL_STR(&model_config_name, _model_config_name.s);
-  call_user_function(
-    EG(function_table),
-    NULL,
-    &model_config_name,
-    &model_config_retval,
-    0,
-    NULL TSRMLS_CC
-  );
-  zval_ptr_dtor(&model_config_name);
-  zval_ptr_dtor(&model_config_retval);
-  zval *_table_name = zend_read_static_property(
-    zend_get_called_scope(execute_data),
-    "__table__",
-    sizeof("__table__") - 1,
-    1
-  );
+  vary_model_callConfig(_name);
+  zval *_table_name = vary_model_getTableName(execute_data);
   zend_long i;
   smart_str _model_prepare_string = {0};
   smart_str_appends(&_model_prepare_string, "SELECT ");
@@ -278,30 +377,18 @@ PHP_METHOD(Model, list)
   }
   smart_str_0(&_model_prepare_string);
   zval statement = vary_model_prepare(_model_prepare_string.s);
-  zval model_mode_name, model_mode_retval;
-  ZVAL_STRING(&model_mode_name, "setFetchMode");
-  zval args[2];
-  ZVAL_LONG(&args[0], PDO_FETCH_CLASS | PDO_FETCH_PROPS_LATE);
-  ZVAL_STR(&args[1], _name);
-  call_user_function(
-    EG(function_table),
-    &statement,
-    &model_mode_name,
-    &model_mode_retval,
-    2,
-    args TSRMLS_CC
+  vary_model_setFetchMode(
+    statement,
+    _name,
+    PDO_FETCH_CLASS | PDO_FETCH_PROPS_LATE
   );
-  zval_ptr_dtor(&model_mode_name);
-  zval_ptr_dtor(&model_mode_retval);
-  zval_ptr_dtor(&args[0]);
-  zval_ptr_dtor(&args[1]);
   if (where_size != 0) {
     vary_model_execute(statement, 1, &where_array);
   } else {
     vary_model_execute(statement, 0, NULL);
   }
   zval_ptr_dtor(&where_array);
-  zval result = vary_model_fetchAll(statement, 0);
+  zval result = vary_model_fetch(statement, 0);
   RETURN_ARR(Z_ARRVAL(result));
 }
 
@@ -329,14 +416,7 @@ PHP_METHOD(Model, __set)
     Z_PARAM_ZVAL(_value)
   ZEND_PARSE_PARAMETERS_END();
   zval *rv;
-  zval *_origin = zend_read_property(
-    model_handle,
-    getThis(),
-    "__origin__",
-    sizeof("__origin__") - 1,
-    1,
-    rv
-  );
+  zval *_origin = vary_model_getOrigin(getThis());
   zval value;
   ZVAL_COPY(&value, _value);
   if (!zend_symtable_exists_ind(Z_ARRVAL_P(_origin), Z_STR_P(_name))) {
@@ -365,23 +445,11 @@ PHP_METHOD(Model, update)
     1
   );
   zval *rv;
-  zval *_origin = zend_read_property(
-    model_handle,
-    getThis(),
-    "__origin__",
-    sizeof("__origin__") - 1,
-    1,
-    rv
-  );
+  zval *_origin = vary_model_getOrigin(getThis());
   zend_long columns_size = zend_hash_num_elements(Z_ARRVAL_P(_columns));
   smart_str update_string = {0};
   smart_str_appends(&update_string, "UPDATE ");
-  zval *_table_name = zend_read_static_property(
-    zend_get_called_scope(execute_data),
-    "__table__",
-    sizeof("__table__") - 1,
-    1
-  );
+  zval *_table_name = vary_model_getTableName(execute_data);
   smart_str_appends(&update_string, Z_STRVAL_P(_table_name));
   smart_str_appends(&update_string, " SET ");
   zval values;
@@ -416,12 +484,7 @@ PHP_METHOD(Model, update)
     }
   }
   smart_str_appends(&update_string, " WHERE ");
-  zval *_primary_key = zend_read_static_property(
-    zend_get_called_scope(execute_data),
-    "__primary__",
-    sizeof("__primary__") - 1,
-    1
-  );
+  zval *_primary_key = vary_model_getPrimaryKey(execute_data);
   smart_str_appends(&update_string, Z_STRVAL_P(_primary_key));
   smart_str_appends(&update_string, " =?");
   smart_str_0(&update_string);

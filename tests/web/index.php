@@ -192,3 +192,20 @@ $tests[0]->name = 'test';
 if ($tests[0]->update() !== true) {
   throw new Exception('Model update error');
 }
+
+$test = Test::get(1);
+if (
+  $test->id !== '1'
+  || $test->name !== 'test'
+  || $test->note !== 'test1'
+) {
+  throw new Exception('Model get error');
+}
+$test = Test::get('2');
+if (
+  $test->id !== '2'
+  || $test->name !== 'test2'
+  || $test->note !== 'haha'
+) {
+  throw new Exception('Model get error');
+}

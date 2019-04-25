@@ -169,6 +169,7 @@ const zend_function_entry model_funcs[] = {
   PHP_ME(Model, useTable, arginfo_string, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
   PHP_ME(Model, usePrimary, arginfo_string, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
   PHP_ME(Model, list, arginfo_array, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+  PHP_ME(Model, get, arginfo_any, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
   PHP_ME(Model, __construct, arginfo_void, ZEND_ACC_PROTECTED)
   PHP_ME(Model, __set, arginfo_string_any, ZEND_ACC_PUBLIC | ZEND_ACC_FINAL)
   PHP_ME(Model, update, arginfo_void, ZEND_ACC_PUBLIC)

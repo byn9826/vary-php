@@ -209,3 +209,42 @@ if (
 ) {
   throw new Exception('Model get error');
 }
+
+$test = Test::get([
+  'orderBy' => ['id DESC'],
+]);
+if (
+  $test->id !== '3'
+  || $test->name !== 'test3'
+  || $test->note !== 'lalala'
+) {
+  throw new Exception('Model get error');
+}
+
+$test = Test::get([
+  'orderBy' => ['name ASC']
+]);
+if (
+  $test->id !== '1'
+  || $test->name !== 'test'
+  || $test->note !== 'test1'
+) {
+  throw new Exception('Model get error');
+}
+
+$test = Test::get([
+  'where' => [
+    'id' => 1,
+    'name' => 'test2'
+  ]
+]);
+if ($test !== false) {
+  throw new Exception('Model get error');
+}
+$test = Test::get([
+  'where' => ['id' => 2],
+  'select' => ['name']
+]);
+if ($test->name !== 'test2' || isset($test->note) || isset($test->is)) {
+  throw new Exception('Model get error');
+}

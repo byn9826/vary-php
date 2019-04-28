@@ -149,6 +149,105 @@ static zval vary_model_fetch(zval statement, zend_long type)
   return model_fetch_retval;
 }
 
+static smart_str vary_model_buildSelect(zval *_list, zval *_table_name, zend_long mode)
+{
+  smart_str _model_prepare_string = {0};
+  smart_str_appends(&_model_prepare_string, "SELECT ");
+  if (mode == 1) {
+    zval select_key, *select_value;
+    ZVAL_STRING(&select_key, "select");
+    select_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(select_key));
+    if (select_value) {
+      zend_long select_size = zend_hash_num_elements(Z_ARRVAL_P(select_value));
+      for (zend_long i = 0; i < select_size; ++i) {
+        Bucket *select = Z_ARRVAL_P(select_value)->arData + i;
+        smart_str_appends(&_model_prepare_string, Z_STRVAL_P(&select->val));
+        if (i != select_size - 1) {
+          smart_str_appends(&_model_prepare_string, ",");
+        }
+      }
+    } else {
+      smart_str_appends(&_model_prepare_string, "*");
+    }
+    zval_ptr_dtor(&select_key);
+  } else {
+    smart_str_appends(&_model_prepare_string, "*");
+  }
+  smart_str_appends(&_model_prepare_string, " FROM ");
+  smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_table_name));
+  return _model_prepare_string;
+}
+
+static zend_long vary_model_buildWhere(zval *_list, smart_str _model_prepare_string, zval where_array)
+{
+  zend_long where_size = 0;
+  zval where_key, *where_value;
+  ZVAL_STRING(&where_key, "where");
+  where_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(where_key));
+  if (where_value) {
+    smart_str_appends(&_model_prepare_string, " WHERE ");
+    zval *zv;
+    zend_long num_key;
+    zend_string *str_key;
+    ZEND_HASH_FOREACH_KEY_VAL_IND(Z_ARRVAL_P(where_value), num_key, str_key, zv) {
+      if (str_key) {
+        if (where_size != 0) {
+          smart_str_appends(&_model_prepare_string, " AND ");
+        }
+        smart_str_appends(&_model_prepare_string, ZSTR_VAL(str_key));
+        smart_str_appends(&_model_prepare_string, "=?");
+        zval *_str_value = zend_hash_find(Z_ARRVAL_P(where_value), str_key);
+        zval str_value;
+        ZVAL_COPY(&str_value, _str_value);
+        zend_hash_next_index_insert(
+          Z_ARRVAL(where_array),
+          &str_value
+        );
+        ++where_size;
+      }
+    } ZEND_HASH_FOREACH_END();
+    Z_ARRVAL(where_array)->nNumUsed = where_size;
+    Z_ARRVAL(where_array)->nNextFreeElement = where_size;
+    zend_hash_internal_pointer_reset(Z_ARRVAL(where_array));
+  }
+  zval_ptr_dtor(&where_key);
+  zval order_key, *order_value;
+  ZVAL_STRING(&order_key, "orderBy");
+  order_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(order_key));
+  if (order_value) {
+    smart_str_appends(&_model_prepare_string, " ORDER BY ");
+    zend_long order_size = zend_hash_num_elements(Z_ARRVAL_P(order_value));
+    for (zend_long i = 0; i < order_size; ++i) {
+      Bucket *order = Z_ARRVAL_P(order_value)->arData + i;
+      smart_str_appends(&_model_prepare_string, Z_STRVAL_P(&order->val));
+      if (i != order_size - 1) {
+        smart_str_appends(&_model_prepare_string, ",");
+      }
+    }
+  }
+  zval_ptr_dtor(&order_key);
+  zval limit_key, *limit_value;
+  ZVAL_STRING(&limit_key, "limit");
+  limit_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(limit_key));
+  if (limit_value) {
+    smart_str_appends(&_model_prepare_string, " LIMIT ");
+    convert_to_string(limit_value)
+    smart_str_appends(&_model_prepare_string, Z_STRVAL_P(limit_value));
+  }
+  zval_ptr_dtor(&limit_key);
+  zval offset_key, *offset_value;
+  ZVAL_STRING(&offset_key, "offset");
+  offset_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(offset_key));
+  if (offset_value) {
+    smart_str_appends(&_model_prepare_string, " OFFSET ");
+    convert_to_string(offset_value)
+    smart_str_appends(&_model_prepare_string, Z_STRVAL_P(offset_value));
+  }
+  zval_ptr_dtor(&offset_key);
+  smart_str_0(&_model_prepare_string);
+  return where_size;
+}
+
 PHP_METHOD(Model, config) {}
 
 PHP_METHOD(Model, useTable)
@@ -238,12 +337,11 @@ PHP_METHOD(Model, get)
   zval *_table_name = vary_model_getTableName(execute_data);
   zval values;
   array_init(&values);
-  smart_str _model_prepare_string = {0};
+  zend_long mode = Z_TYPE_P(_param) == IS_ARRAY ? 1 : 0;
+  smart_str _model_prepare_string = vary_model_buildSelect(_param, _table_name, mode);
   switch (Z_TYPE_P(_param)) {
     case IS_STRING:
     case IS_LONG: {
-      smart_str_appends(&_model_prepare_string, "SELECT * FROM ");
-      smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_table_name));
       smart_str_appends(&_model_prepare_string, " WHERE ");
       zval *_primary_key = vary_model_getPrimaryKey(execute_data);
       smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_primary_key));
@@ -255,8 +353,10 @@ PHP_METHOD(Model, get)
       zend_hash_internal_pointer_reset(Z_ARRVAL(values));
 			break;
     }
-		case IS_ARRAY:
+		case IS_ARRAY: {
+      vary_model_buildWhere(_param, _model_prepare_string, values);
 			break;
+    }
 		default:
 			RETURN_FALSE;
   }
@@ -282,100 +382,21 @@ PHP_METHOD(Model, list)
   zend_string *_name = zend_get_called_scope(execute_data)->name;
   vary_model_callConfig(_name);
   zval *_table_name = vary_model_getTableName(execute_data);
-  zend_long i;
-  smart_str _model_prepare_string = {0};
-  smart_str_appends(&_model_prepare_string, "SELECT ");
-  if (ZEND_NUM_ARGS() == 1) {
-    zval select_key, *select_value;
-    ZVAL_STRING(&select_key, "select");
-    select_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(select_key));
-    if (select_value) {
-      zend_long select_size = zend_hash_num_elements(Z_ARRVAL_P(select_value));
-      for (i = 0; i < select_size; ++i) {
-        Bucket *select = Z_ARRVAL_P(select_value)->arData + i;
-        smart_str_appends(&_model_prepare_string, Z_STRVAL_P(&select->val));
-        if (i != select_size - 1) {
-          smart_str_appends(&_model_prepare_string, ",");
-        }
-      }
-    } else {
-      smart_str_appends(&_model_prepare_string, "*");
-    }
-    zval_ptr_dtor(&select_key);
-  } else {
-    smart_str_appends(&_model_prepare_string, "*");
-  }
-  smart_str_appends(&_model_prepare_string, " FROM ");
-  smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_table_name));
-  zend_long where_size = 0;
+  smart_str _model_prepare_string = vary_model_buildSelect(
+    _list,
+    _table_name,
+    ZEND_NUM_ARGS()
+  );
   zval where_array;
   array_init(&where_array);
+  zend_long where_size = 0;
   if (ZEND_NUM_ARGS() == 1) {
-    zval where_key, *where_value;
-    ZVAL_STRING(&where_key, "where");
-    where_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(where_key));
-    if (where_value) {
-      smart_str_appends(&_model_prepare_string, " WHERE ");
-      zval *zv;
-      zend_long num_key;
-		  zend_string *str_key;
-      ZEND_HASH_FOREACH_KEY_VAL_IND(Z_ARRVAL_P(where_value), num_key, str_key, zv) {
-        if (str_key) {
-          if (where_size != 0) {
-            smart_str_appends(&_model_prepare_string, " AND ");
-          }
-          smart_str_appends(&_model_prepare_string, ZSTR_VAL(str_key));
-          smart_str_appends(&_model_prepare_string, "=?");
-          zval *_str_value = zend_hash_find(Z_ARRVAL_P(where_value), str_key);
-          zval str_value;
-          ZVAL_COPY(&str_value, _str_value);
-          zend_hash_next_index_insert(
-            Z_ARRVAL(where_array),
-            &str_value
-          );
-          ++where_size;
-        }
-      } ZEND_HASH_FOREACH_END();
-      Z_ARRVAL(where_array)->nNumUsed = where_size;
-      Z_ARRVAL(where_array)->nNextFreeElement = where_size;
-      zend_hash_internal_pointer_reset(Z_ARRVAL(where_array));
-    }
-    zval_ptr_dtor(&where_key);
-    zval order_key, *order_value;
-    ZVAL_STRING(&order_key, "orderBy");
-    order_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(order_key));
-    if (order_value) {
-      smart_str_appends(&_model_prepare_string, " ORDER BY ");
-      zend_long order_size = zend_hash_num_elements(Z_ARRVAL_P(order_value));
-      for (i = 0; i < order_size; ++i) {
-        Bucket *order = Z_ARRVAL_P(order_value)->arData + i;
-        smart_str_appends(&_model_prepare_string, Z_STRVAL_P(&order->val));
-        if (i != order_size - 1) {
-          smart_str_appends(&_model_prepare_string, ",");
-        }
-      }
-    }
-    zval_ptr_dtor(&order_key);
-    zval limit_key, *limit_value;
-    ZVAL_STRING(&limit_key, "limit");
-    limit_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(limit_key));
-    if (limit_value) {
-      smart_str_appends(&_model_prepare_string, " LIMIT ");
-      convert_to_string(limit_value)
-      smart_str_appends(&_model_prepare_string, Z_STRVAL_P(limit_value));
-    }
-    zval_ptr_dtor(&limit_key);
-    zval offset_key, *offset_value;
-    ZVAL_STRING(&offset_key, "offset");
-    offset_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(offset_key));
-    if (offset_value) {
-      smart_str_appends(&_model_prepare_string, " OFFSET ");
-      convert_to_string(offset_value)
-      smart_str_appends(&_model_prepare_string, Z_STRVAL_P(offset_value));
-    }
-    zval_ptr_dtor(&offset_key);
+    where_size = vary_model_buildWhere(
+      _list,
+      _model_prepare_string,
+      where_array
+    );
   }
-  smart_str_0(&_model_prepare_string);
   zval statement = vary_model_prepare(_model_prepare_string.s);
   vary_model_setFetchMode(
     statement,

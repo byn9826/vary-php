@@ -103,6 +103,7 @@ if (
   throw new Exception('Model orderBy error');
 }
 $tests[0]->name = 'test2';
+$tests[0]->id = '100';
 if ($tests[0]->update() !== true) {
   throw new Exception('Model update error');
 }
@@ -143,6 +144,7 @@ $tests = Test::list([
   'orderBy' => ['id DESC']
 ]);
 $tests[0]->name = 'test3';
+$tests[0]->id = 3000;
 if ($tests[0]->update() !== true) {
   throw new Exception('Model update error');
 }

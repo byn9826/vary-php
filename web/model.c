@@ -478,30 +478,33 @@ PHP_METHOD(Model, update)
   zend_long values_size = 0;
   for (zend_long i = 0; i < columns_size; ++i) {
     Bucket *carry = Z_ARRVAL_P(_columns)->arData + i;
-    zval *rvl;
-    zval *_current = zend_read_property(
-      model_handle,
-      getThis(),
-      Z_STRVAL_P(&carry->val),
-      Z_STRLEN_P(&carry->val),
-      1,
-      rvl
-    );
-    zval *_raw = zend_hash_find(Z_ARRVAL_P(_origin), Z_STR_P(&carry->val));
-    if (string_compare_function(_current, _raw) != 0) {
-      if (values_size != 0) {
-        smart_str_appends(&update_string, ", ");
-      }
-      ++values_size;
-      smart_str_appends(&update_string, Z_STRVAL_P(&carry->val));
-      smart_str_appends(&update_string, "=?");
-      zend_hash_next_index_insert(Z_ARRVAL(values), _current);
-      zend_hash_str_update(
-        Z_ARRVAL_P(_origin),
+    zval *_primary_key = vary_model_getPrimaryKey(execute_data);
+    if (string_compare_function(&carry->val, _primary_key) != 0) {
+      zval *rvl;
+      zval *_current = zend_read_property(
+        model_handle,
+        getThis(),
         Z_STRVAL_P(&carry->val),
         Z_STRLEN_P(&carry->val),
-        _current
+        1,
+        rvl
       );
+      zval *_raw = zend_hash_find(Z_ARRVAL_P(_origin), Z_STR_P(&carry->val));
+      if (string_compare_function(_current, _raw) != 0) {
+        if (values_size != 0) {
+          smart_str_appends(&update_string, ", ");
+        }
+        ++values_size;
+        smart_str_appends(&update_string, Z_STRVAL_P(&carry->val));
+        smart_str_appends(&update_string, "=?");
+        zend_hash_next_index_insert(Z_ARRVAL(values), _current);
+        zend_hash_str_update(
+          Z_ARRVAL_P(_origin),
+          Z_STRVAL_P(&carry->val),
+          Z_STRLEN_P(&carry->val),
+          _current
+        );
+      }
     }
   }
   smart_str_appends(&update_string, " WHERE ");

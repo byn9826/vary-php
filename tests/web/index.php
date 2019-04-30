@@ -245,6 +245,6 @@ $test = Test::get([
   'where' => ['id' => 2],
   'select' => ['name']
 ]);
-if ($test->name !== 'test2' || isset($test->note) || isset($test->is)) {
+if ($test->name !== 'test2' || isset($test->note) || !isset($test->id)) {
   throw new Exception('Model get error');
 }

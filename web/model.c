@@ -149,7 +149,7 @@ static zval vary_model_fetch(zval statement, zend_long type)
   return model_fetch_retval;
 }
 
-static smart_str vary_model_buildSelect(zval *_list, zval *_table_name, zend_long mode)
+static smart_str vary_model_buildSelect(zval *_list, zend_execute_data *execute_data, zend_long mode)
 {
   smart_str _model_prepare_string = {0};
   smart_str_appends(&_model_prepare_string, "SELECT ");
@@ -162,10 +162,10 @@ static smart_str vary_model_buildSelect(zval *_list, zval *_table_name, zend_lon
       for (zend_long i = 0; i < select_size; ++i) {
         Bucket *select = Z_ARRVAL_P(select_value)->arData + i;
         smart_str_appends(&_model_prepare_string, Z_STRVAL_P(&select->val));
-        if (i != select_size - 1) {
-          smart_str_appends(&_model_prepare_string, ",");
-        }
+        smart_str_appends(&_model_prepare_string, ", ");
       }
+      zval *_primary_key = vary_model_getPrimaryKey(execute_data);
+      smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_primary_key));
     } else {
       smart_str_appends(&_model_prepare_string, "*");
     }
@@ -174,6 +174,7 @@ static smart_str vary_model_buildSelect(zval *_list, zval *_table_name, zend_lon
     smart_str_appends(&_model_prepare_string, "*");
   }
   smart_str_appends(&_model_prepare_string, " FROM ");
+  zval *_table_name = vary_model_getTableName(execute_data);
   smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_table_name));
   return _model_prepare_string;
 }
@@ -338,7 +339,7 @@ PHP_METHOD(Model, get)
   zval values;
   array_init(&values);
   zend_long mode = Z_TYPE_P(_param) == IS_ARRAY ? 1 : 0;
-  smart_str _model_prepare_string = vary_model_buildSelect(_param, _table_name, mode);
+  smart_str _model_prepare_string = vary_model_buildSelect(_param, execute_data, mode);
   switch (Z_TYPE_P(_param)) {
     case IS_STRING:
     case IS_LONG: {
@@ -381,10 +382,9 @@ PHP_METHOD(Model, list)
   ZEND_PARSE_PARAMETERS_END();
   zend_string *_name = zend_get_called_scope(execute_data)->name;
   vary_model_callConfig(_name);
-  zval *_table_name = vary_model_getTableName(execute_data);
   smart_str _model_prepare_string = vary_model_buildSelect(
     _list,
-    _table_name,
+    execute_data,
     ZEND_NUM_ARGS()
   );
   zval where_array;

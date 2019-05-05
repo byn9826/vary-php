@@ -1,23 +1,15 @@
 # VARY-PHP
 Various PHP classes in C  
-Supported Version: php7.2  
+Supported Version: 7.0+ 
 
 Installation
 -
 ```
-sudo apt-get install php7.2-cli php7.2-dev php7.2-mysql valgrind
-git clone https://github.com/php/php-src.git
-cd ./ext
-git checkout PHP-7.2.15
 git clone https://github.com/byn9826/vary-php.git
 cd ./vary-php
-phpize
-./configure
-sudo make
-sudo make install
-sudo nano /etc/php/7.2/cli/php.ini
-[Add extension=vary.so]
-php ./tests/index.php
+docker image build -t vary-php .
+docker container run -v ~/Code/vary-php:/var/www/php-src/ext/vary-php
+sudo docker container start vary-php -i
 ```
 [Testing & Examples](https://github.com/byn9826/vary-php/tree/master/tests)
 ```

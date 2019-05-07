@@ -457,6 +457,34 @@ PHP_METHOD(Model, __set)
   );
 }
 
+PHP_METHOD(Model, delete)
+{
+  smart_str delete_string = {0};
+  smart_str_appends(&delete_string, "DELETE FROM ");
+  zval *_table_name = vary_model_getTableName(execute_data);
+  smart_str_appends(&delete_string, Z_STRVAL_P(_table_name));
+  smart_str_appends(&delete_string, " WHERE ");
+  zval *_primary_key = vary_model_getPrimaryKey(execute_data);
+  smart_str_appends(&delete_string, Z_STRVAL_P(_primary_key));
+  smart_str_appends(&delete_string, " =?");
+  smart_str_0(&delete_string);
+  zval values;
+  array_init(&values);
+  zval *_origin = vary_model_getOrigin(getThis());
+  zval *_primary_value = zend_hash_find(Z_ARRVAL_P(_origin), Z_STR_P(_primary_key));
+  zval primary_value;
+  ZVAL_COPY(&primary_value, _primary_value);
+  zend_hash_next_index_insert(Z_ARRVAL(values), &primary_value);
+  Z_ARRVAL(values)->nNumUsed = 1;
+  Z_ARRVAL(values)->nNextFreeElement = 1;
+  zend_hash_internal_pointer_reset(Z_ARRVAL(values));
+  zval statement = vary_model_prepare(delete_string.s);
+  vary_model_execute(statement, 1, &values);
+  zval_ptr_dtor(&statement);
+  zval_ptr_dtor(&values);
+  RETURN_TRUE;
+}
+
 PHP_METHOD(Model, update)
 {
   zval *_columns = zend_read_static_property(

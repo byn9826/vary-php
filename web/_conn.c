@@ -68,3 +68,67 @@ PHP_METHOD(_conn, _getConn)
   zval conn = vary_conn_getConnection();
   RETURN_ZVAL(&conn, 0, 1);
 }
+
+PHP_METHOD(_conn, _setConn)
+{
+  zval *_array;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ARRAY(_array)
+  ZEND_PARSE_PARAMETERS_END();
+  zval host_key, *host_value;
+  ZVAL_STRING(&host_key, "host");
+  host_value = zend_hash_find(Z_ARRVAL_P(_array), Z_STR(host_key));
+  zval_ptr_dtor(&host_key);
+  zend_update_static_property(
+    zend_get_called_scope(execute_data),
+    "__host__",
+    sizeof("__host__") - 1,
+    host_value TSRMLS_CC
+  );
+  zval port_key, *port_value;
+  ZVAL_STRING(&port_key, "port");
+  port_value = zend_hash_find(Z_ARRVAL_P(_array), Z_STR(port_key));
+  zval_ptr_dtor(&port_key);
+  if (port_value) {
+    zend_update_static_property(
+      zend_get_called_scope(execute_data),
+      "__port__",
+      sizeof("__port__") - 1,
+      port_value TSRMLS_CC
+    );
+  }
+  zval database_key, *database_value;
+  ZVAL_STRING(&database_key, "database");
+  database_value = zend_hash_find(Z_ARRVAL_P(_array), Z_STR(database_key));
+  zval_ptr_dtor(&database_key);
+  zend_update_static_property(
+    zend_get_called_scope(execute_data),
+    "__database__",
+    sizeof("__database__") - 1,
+    database_value TSRMLS_CC
+  );
+  zval username_key, *username_value;
+  ZVAL_STRING(&username_key, "username");
+  username_value = zend_hash_find(Z_ARRVAL_P(_array), Z_STR(username_key));
+  zval_ptr_dtor(&username_key);
+  if (username_value) {
+    zend_update_static_property(
+      zend_get_called_scope(execute_data),
+      "__username__",
+      sizeof("__username__") - 1,
+      username_value TSRMLS_CC
+    );
+  }
+  zval password_key, *password_value;
+  ZVAL_STRING(&password_key, "password");
+  password_value = zend_hash_find(Z_ARRVAL_P(_array), Z_STR(password_key));
+  zval_ptr_dtor(&password_key);
+  if (password_value) {
+    zend_update_static_property(
+      zend_get_called_scope(execute_data),
+      "__password__",
+      sizeof("__password__") - 1,
+      password_value TSRMLS_CC
+    );
+  }
+}

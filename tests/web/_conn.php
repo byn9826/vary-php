@@ -1,5 +1,11 @@
 <?php
-
+\Vary\_conn::_setConn([
+  'host' => '127.0.0.1',
+  'port' => '3306',
+  'database' => 'test',
+  'username' => 'root',
+  'password' => '123'
+]);
 $conn = \Vary\_conn::_getConn();
 $conn1 = \Vary\_conn::_getConn();
 if ($conn instanceof PDO !== true) {

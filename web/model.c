@@ -426,6 +426,8 @@ PHP_METHOD(Model, __construct)
     sizeof("__origin__") - 1,
     &array TSRMLS_CC
   );
+  zend_string *_name = zend_get_called_scope(execute_data)->name;
+  vary_model_callConfig(_name);
   zval_ptr_dtor(&array);
 }
 
@@ -485,6 +487,96 @@ PHP_METHOD(Model, delete)
   RETURN_TRUE;
 }
 
+PHP_METHOD(Model, create)
+{
+  smart_str create_string = {0};
+  smart_str_appends(&create_string, "INSERT INTO ");
+  zval *_table_name = vary_model_getTableName(execute_data);
+  smart_str_appends(&create_string, Z_STRVAL_P(_table_name));
+  smart_str_appends(&create_string, " (");
+  zval *_columns = zend_read_static_property(
+    zend_get_called_scope(execute_data),
+    "__columns__",
+    sizeof("__columns__") - 1,
+    1
+  );
+  zend_long columns_size = zend_hash_num_elements(Z_ARRVAL_P(_columns));
+  zval *_primary_key = vary_model_getPrimaryKey(execute_data);
+  zval *_origin = vary_model_getOrigin(getThis());
+  zval values;
+  array_init(&values);
+  zend_long values_size = 0;
+  for (zend_long i = 0; i < columns_size; ++i) {
+    Bucket *carry = Z_ARRVAL_P(_columns)->arData + i;
+    if (string_compare_function(&carry->val, _primary_key) != 0) {
+      zval *rv;
+      zval *_current = zend_read_property(
+        model_handle,
+        getThis(),
+        Z_STRVAL_P(&carry->val),
+        Z_STRLEN_P(&carry->val),
+        1,
+        rv
+      );
+      if (values_size != 0) {
+        smart_str_appends(&create_string, ", ");
+      }
+      ++values_size;
+      smart_str_appends(&create_string, Z_STRVAL_P(&carry->val));
+      zend_hash_next_index_insert(Z_ARRVAL(values), _current);
+      zend_hash_str_update(
+        Z_ARRVAL_P(_origin),
+        Z_STRVAL_P(&carry->val),
+        Z_STRLEN_P(&carry->val),
+        _current
+      );
+    }
+  }
+  smart_str_appends(&create_string, ") VALUES (");
+  for (zend_long j = 0; j < values_size; ++j) {
+    smart_str_appends(&create_string, "?");
+    if (j != values_size - 1) {
+      smart_str_appends(&create_string, ", ");
+    }
+  }
+  smart_str_appends(&create_string, ")");
+  smart_str_0(&create_string);
+  Z_ARRVAL(values)->nNumUsed = values_size;
+  Z_ARRVAL(values)->nNextFreeElement = values_size;
+  zend_hash_internal_pointer_reset(Z_ARRVAL(values));
+  zval statement = vary_model_prepare(create_string.s);
+  vary_model_execute(statement, 1, &values);
+  zval_ptr_dtor(&statement);
+  zval_ptr_dtor(&values);
+  zval conn = vary_conn_getConnection();
+  zval conn_inserted_name, conn_inserted_retval;
+  ZVAL_STRING(&conn_inserted_name, "lastInsertId");
+  call_user_function(
+    EG(function_table),
+    &conn,
+    &conn_inserted_name,
+    &conn_inserted_retval,
+    0,
+    NULL TSRMLS_CC
+  );
+  zval_ptr_dtor(&conn);
+  zval_ptr_dtor(&conn_inserted_name);
+  zend_update_property(
+    model_handle,
+    getThis(),
+    Z_STRVAL_P(_primary_key),
+    Z_STRLEN_P(_primary_key),
+    &conn_inserted_retval TSRMLS_CC
+  );
+  zend_hash_str_add_new(
+    Z_ARRVAL_P(_origin),
+    Z_STRVAL_P(_primary_key),
+    Z_STRLEN_P(_primary_key),
+    &conn_inserted_retval
+  );
+  RETURN_TRUE;
+}
+
 PHP_METHOD(Model, update)
 {
   zval *_columns = zend_read_static_property(
@@ -504,9 +596,9 @@ PHP_METHOD(Model, update)
   zval values;
   array_init(&values);
   zend_long values_size = 0;
+  zval *_primary_key = vary_model_getPrimaryKey(execute_data);
   for (zend_long i = 0; i < columns_size; ++i) {
     Bucket *carry = Z_ARRVAL_P(_columns)->arData + i;
-    zval *_primary_key = vary_model_getPrimaryKey(execute_data);
     if (string_compare_function(&carry->val, _primary_key) != 0) {
       zval *rvl;
       zval *_current = zend_read_property(
@@ -536,7 +628,6 @@ PHP_METHOD(Model, update)
     }
   }
   smart_str_appends(&update_string, " WHERE ");
-  zval *_primary_key = vary_model_getPrimaryKey(execute_data);
   smart_str_appends(&update_string, Z_STRVAL_P(_primary_key));
   smart_str_appends(&update_string, " =?");
   smart_str_0(&update_string);

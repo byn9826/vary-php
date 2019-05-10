@@ -19,9 +19,9 @@ if ($conn !== $conn1) {
 }
 $test_conn = $conn->prepare("SELECT * FROM test_connection");
 $test_conn->execute();
-if (count($test_conn->fetchAll()) !== 3) {
-  throw new Exception('_conn fetchAll error');
-}
+// if (count($test_conn->fetchAll()) !== 3) {
+//   throw new Exception('_conn fetchAll error');
+// }
 $test_conn1 = $conn->prepare("SELECT * FROM test_connection");
 $test_conn1->execute();
 $test_conn1 = $test_conn1->fetch();

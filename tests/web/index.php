@@ -2,6 +2,38 @@
 
 include_once(__DIR__ . '/Test.php');
 
+$new_test = new Test();
+$new_test->id = 1;
+$new_test->name = 'New Name';
+$new_test->note = 'It is a new note';
+$new_test->create();
+if ($new_test->name !== 'New Name' || $new_test->note !== 'It is a new note' || !isset($new_test->id) || $new_test->id === 1) {
+  throw new Exception('Model update error');
+}
+$tests = Test::list();
+if (end($tests)->name !== 'New Name' || end($tests)->note !== 'It is a new note') {
+  throw new Exception('Model update error');
+}
+$new_test = new Test();
+$new_test->name = 'Super Name';
+$new_test->note = 'It is a super note';
+$new_test->create();
+$new_test->name = 'Secondary Super Name';
+$new_test->update();
+$new_test1 = Test::get([
+  'where' => ['name' => 'Secondary Super Name']
+]);
+
+if ($new_test->id !== $new_test1->id || $new_test1->name !== 'Secondary Super Name' || $new_test1->note !== 'It is a super note') {
+  throw new Exception('Model update error');
+}
+
+$tests = Test::list();
+foreach ($tests as $key => $test) {
+  if ($key > 2) {
+    $test->delete();
+  }
+}
 $tests = Test::list();
 if (count($tests) !== 3 || $tests[0]->id !== '1' || $tests[1]->id !== '2' || $tests[2]->id !== '3') {
   throw new Exception('Model list error');

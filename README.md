@@ -20,11 +20,70 @@ npm run valgrind
 
 Classes
 --
+<b>Web Classes:</b>  
+Model  
 <b>Data Structures Classes:</b>  
 ArrayList, Stack, Queue, Deque, OrderedList  
 MapList  
 <b>Algorithm Functions:</b>  
 binarySearch, shellShort
+
+Model: Object-relational mapping
+--
+Set Connection String
+```
+\Vary\_conn::_setConn([
+  'host' => '127.0.0.1',
+  'port' => '3306',
+  'database' => 'test',
+  'username' => 'root',
+  'password' => '123'
+]);
+```
+Build a Model
+```
+class Test extends \Vary\Model {
+  public static function config()
+  {
+    self::useTable('test');
+    self::usePrimary('id');
+  }
+}
+```
+get()
+```
+Test::get(1); // Get record has PK = 1
+Test::get([
+  'where' => ['name' => 'some name'],
+  'orderBy' => ['id DESC']
+]);
+```
+list()
+```
+$tests = Test::list([
+  'select' => ['note', 'name']
+  'where' => ['name' => 'some name'],
+  'orderBy' => ['id DESC', 'note ASC'],
+  'limit' => 3,
+  'offset' => 1
+]);
+```
+create()
+```
+$new_test = new Test();
+$new_test->create();
+```
+update()
+```
+$one_test = Test::get(2);
+$one_test->name = 'new name';
+$one_test->update();
+```
+delete()
+```
+$one_test = Test::get(3);
+$one_test->delete();
+```
 
 ArrayList: Array Type Collections
 --

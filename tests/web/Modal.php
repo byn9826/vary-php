@@ -1,6 +1,6 @@
 <?php
 
-include_once(__DIR__ . '/Test.php');
+include_once(__DIR__ . '/models/Test.php');
 
 $new_test = new Test();
 $new_test->id = 1;

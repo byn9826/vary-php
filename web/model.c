@@ -461,6 +461,32 @@ PHP_METHOD(Model, updating)
   RETURN_TRUE;
 }
 
+PHP_METHOD(Model, deleting)
+{
+  zval *_list;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ARRAY(_list)
+  ZEND_PARSE_PARAMETERS_END();
+  zend_string *_name = zend_get_called_scope(execute_data)->name;
+  vary_model_callConfig(_name);
+  smart_str _model_prepare_string = {0};
+  smart_str_appends(&_model_prepare_string, "DELETE FROM ");
+  zval *_table_name = vary_model_getTableName(execute_data);
+  smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_table_name));
+  zval values;
+  array_init(&values);
+  zend_long values_size = vary_model_buildWhere(_list, _model_prepare_string, values);
+  Z_ARRVAL(values)->nNumUsed = values_size;
+  Z_ARRVAL(values)->nNextFreeElement = values_size;
+  zend_hash_internal_pointer_reset(Z_ARRVAL(values));
+  smart_str_0(&_model_prepare_string);
+  zval statement = vary_model_prepare(_model_prepare_string.s);
+  vary_model_execute(statement, 1, &values);
+  zval_ptr_dtor(&statement);
+  zval_ptr_dtor(&values);
+  RETURN_TRUE;
+}
+
 PHP_METHOD(Model, __construct)
 {
   ZEND_PARSE_PARAMETERS_START(0, 0)

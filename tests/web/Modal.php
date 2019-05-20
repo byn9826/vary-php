@@ -2,6 +2,60 @@
 
 include_once(__DIR__ . '/models/Test.php');
 
+$new_test = new Test();
+$new_test->name = '123456';
+$new_test->note = 'new1';
+$new_test->create();
+$new_test = new Test();
+$new_test->name = '123456';
+$new_test->note = 'new1';
+$new_test->create();
+$new_test = new Test();
+$new_test->name = '123456';
+$new_test->note = 'new2';
+$new_test->create();
+$tests = Test::list();
+if (
+  count($tests) !== 6
+  || $tests[3]->name !== '123456'
+  || $tests[3]->note !== 'new1'
+  || $tests[4]->name !== '123456'
+  || $tests[4]->note !== 'new1'
+  || $tests[5]->name !== '123456'
+  || $tests[5]->note !== 'new2'
+) {
+  throw new Exception('Model create error');
+};
+Test::deleting([
+  'where' => [
+    'name' => '123456',
+    'note' => 'new1'
+  ]
+]);
+$tests = Test::list();
+if (
+  count($tests) !== 4
+  || $tests[3]->name !== '123456'
+  || $tests[3]->note !== 'new2'
+) {
+  throw new Exception('Model deleting error');
+};
+Test::deleting([
+  'where' => [
+    'name' => '123456'
+  ]
+]);
+
+$tests = Test::list();
+if (
+  count($tests) !== 3
+  || $tests[0]->name !== 'test'
+  || $tests[1]->name !== 'test2'
+  || $tests[2]->name !== 'test3'
+) {
+  throw new Exception('Model create error');
+};
+
 Test::updating([
   'set' => [
     'id' => '5',

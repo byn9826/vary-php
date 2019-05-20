@@ -75,20 +75,26 @@ $new_test->create();
 ```
 update()
 ```
-$one_test = Test::get(2);
-$one_test->name = 'new name';
-$one_test->update();
+$test = Test::get(2);
+$test->name = 'new name';
+$test->update();
 ```
 delete()
 ```
-$one_test = Test::get(3);
-$one_test->delete();
+$test = Test::get(3);
+$test->delete();
 ```
 updating()
 ```
 Test::updating(
   'set' => ['name' => 'new name'],
   'where' => ['name' => 'old name']
+);
+```
+deleting()
+```
+Test::deleting(
+  'where' => ['name' => 'some name']
 );
 ```
 

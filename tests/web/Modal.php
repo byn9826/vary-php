@@ -2,6 +2,46 @@
 
 include_once(__DIR__ . '/models/Test.php');
 
+Test::updating([
+  'set' => [
+    'id' => '5',
+    'name' => 'ccc',
+    'note' => 'ddd',
+  ],
+  'where' => [
+    'id' => 2
+  ]
+]);
+$tests = Test::list();
+if ($tests[0]->id !== '1' || $tests[0]->name !== 'test' || $tests[0]->note !== 'test1') {
+  throw new Exception('Model updating error');
+}
+if ($tests[1]->id !== '2' || $tests[1]->name !== 'ccc' || $tests[1]->note !== 'ddd') {
+  throw new Exception('Model updating error');
+}
+if ($tests[2]->id !== '3' || $tests[2]->name !== 'test3' || $tests[2]->note !== 'lalala') {
+  throw new Exception('Model updating error');
+}
+Test::updating([
+  'set' => [
+    'name' => 'test2',
+    'note' => 'haha',
+  ],
+  'where' => [
+    'name' => 'ccc'
+  ]
+]);
+$tests = Test::list();
+if ($tests[0]->id !== '1' || $tests[0]->name !== 'test' || $tests[0]->note !== 'test1') {
+  throw new Exception('Model updating error');
+}
+if ($tests[1]->id !== '2' || $tests[1]->name !== 'test2' || $tests[1]->note !== 'haha') {
+  throw new Exception('Model updating error');
+}
+if ($tests[2]->id !== '3' || $tests[2]->name !== 'test3' || $tests[2]->note !== 'lalala') {
+  throw new Exception('Model updating error');
+}
+
 $new_test = new Test();
 $new_test->id = 1;
 $new_test->name = 'New Name';

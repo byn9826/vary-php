@@ -84,6 +84,13 @@ delete()
 $one_test = Test::get(3);
 $one_test->delete();
 ```
+updating()
+```
+Test::updating(
+  'set' => ['name' => 'new name'],
+  'where' => ['name' => 'old name']
+);
+```
 
 ArrayList: Array Type Collections
 --

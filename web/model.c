@@ -212,6 +212,11 @@ static zend_long vary_model_buildWhere(zval *_list, smart_str _model_prepare_str
     zend_hash_internal_pointer_reset(Z_ARRVAL(where_array));
   }
   zval_ptr_dtor(&where_key);
+  return where_size;
+}
+
+static void vary_model_buildOrderBy(zval *_list, smart_str _model_prepare_string)
+{
   zval order_key, *order_value;
   ZVAL_STRING(&order_key, "orderBy");
   order_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(order_key));
@@ -227,6 +232,10 @@ static zend_long vary_model_buildWhere(zval *_list, smart_str _model_prepare_str
     }
   }
   zval_ptr_dtor(&order_key);
+}
+
+static void vary_model_buildLimitOffset(zval *_list, smart_str _model_prepare_string)
+{
   zval limit_key, *limit_value;
   ZVAL_STRING(&limit_key, "limit");
   limit_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(limit_key));
@@ -246,7 +255,6 @@ static zend_long vary_model_buildWhere(zval *_list, smart_str _model_prepare_str
   }
   zval_ptr_dtor(&offset_key);
   smart_str_0(&_model_prepare_string);
-  return where_size;
 }
 
 PHP_METHOD(Model, config) {}
@@ -310,22 +318,6 @@ PHP_METHOD(Model, usePrimary)
   }
 }
 
-PHP_METHOD(Model, where)
-{
-  zval list, *_list;
-  ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_ARRAY(_list)
-  ZEND_PARSE_PARAMETERS_END();
-  ZVAL_COPY(&list, _list);
-  zend_update_static_property(
-    zend_get_called_scope(execute_data),
-    "__where__",
-    sizeof("__where__") - 1,
-    &list TSRMLS_CC
-  );
-  zval_ptr_dtor(&list);
-}
-
 PHP_METHOD(Model, get)
 {
   zval *_param;
@@ -356,6 +348,8 @@ PHP_METHOD(Model, get)
     }
 		case IS_ARRAY: {
       vary_model_buildWhere(_param, _model_prepare_string, values);
+      vary_model_buildOrderBy(_param, _model_prepare_string);
+      vary_model_buildLimitOffset(_param, _model_prepare_string);
 			break;
     }
 		default:
@@ -391,11 +385,9 @@ PHP_METHOD(Model, list)
   array_init(&where_array);
   zend_long where_size = 0;
   if (ZEND_NUM_ARGS() == 1) {
-    where_size = vary_model_buildWhere(
-      _list,
-      _model_prepare_string,
-      where_array
-    );
+    where_size = vary_model_buildWhere(_list, _model_prepare_string, where_array);
+    vary_model_buildOrderBy(_list, _model_prepare_string);
+    vary_model_buildLimitOffset(_list, _model_prepare_string);
   }
   zval statement = vary_model_prepare(_model_prepare_string.s);
   vary_model_setFetchMode(
@@ -411,6 +403,62 @@ PHP_METHOD(Model, list)
   zval_ptr_dtor(&where_array);
   zval result = vary_model_fetch(statement, 0);
   RETURN_ARR(Z_ARRVAL(result));
+}
+
+PHP_METHOD(Model, updating)
+{
+  zval *_list;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ARRAY(_list)
+  ZEND_PARSE_PARAMETERS_END();
+  zend_string *_name = zend_get_called_scope(execute_data)->name;
+  vary_model_callConfig(_name);
+  smart_str _model_prepare_string = {0};
+  smart_str_appends(&_model_prepare_string, "Update ");
+  zval *_table_name = vary_model_getTableName(execute_data);
+  smart_str_appends(&_model_prepare_string, Z_STRVAL_P(_table_name));
+  smart_str_appends(&_model_prepare_string, " SET ");
+  zval set_key, *set_value;
+  ZVAL_STRING(&set_key, "set");
+  set_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(set_key));
+  zval_ptr_dtor(&set_key);
+  zval *_primary_key = vary_model_getPrimaryKey(execute_data);
+  zval values;
+  array_init(&values);
+  zend_long values_size = 0;
+  zval *zv;
+  zend_long num_key;
+  zend_string *str_key;
+  ZEND_HASH_FOREACH_KEY_VAL_IND(Z_ARRVAL_P(set_value), num_key, str_key, zv) {
+    if (str_key) {
+      if (zend_string_equals(str_key, Z_STR_P(_primary_key)) == 0) {
+        if (values_size != 0) {
+          smart_str_appends(&_model_prepare_string, ", ");
+        }
+        smart_str_appends(&_model_prepare_string, ZSTR_VAL(str_key));
+        smart_str_appends(&_model_prepare_string, "=?");
+        zval *_str_value = zend_hash_find(Z_ARRVAL_P(set_value), str_key);
+        zval str_value;
+        ZVAL_COPY(&str_value, _str_value);
+        zend_hash_next_index_insert(
+          Z_ARRVAL(values),
+          &str_value
+        );
+        ++values_size;
+      }
+    }
+  } ZEND_HASH_FOREACH_END();
+  zend_long where_size = vary_model_buildWhere(_list, _model_prepare_string, values);
+  values_size += where_size;
+  Z_ARRVAL(values)->nNumUsed = values_size;
+  Z_ARRVAL(values)->nNextFreeElement = values_size;
+  zend_hash_internal_pointer_reset(Z_ARRVAL(values));
+  smart_str_0(&_model_prepare_string);
+  zval statement = vary_model_prepare(_model_prepare_string.s);
+  vary_model_execute(statement, 1, &values);
+  zval_ptr_dtor(&statement);
+  zval_ptr_dtor(&values);
+  RETURN_TRUE;
 }
 
 PHP_METHOD(Model, __construct)

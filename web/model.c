@@ -3,6 +3,39 @@
 
 zend_class_entry *model_handle;
 
+static void vary_model_callHooks(zval *this, zend_long type)
+{
+  zval model_hook_name, model_hook_retval;
+  switch (type)
+  {
+  case 0:
+    ZVAL_STRING(&model_hook_name, "beforeCreate");
+    break;
+  case 1:
+    ZVAL_STRING(&model_hook_name, "afterCreate");
+    break;
+  case 2:
+    ZVAL_STRING(&model_hook_name, "beforeUpdate");
+    break;
+  case 3:
+    ZVAL_STRING(&model_hook_name, "afterUpdate");
+    break;
+  default:
+    return;
+  }
+  
+  call_user_function(
+    EG(function_table),
+    this,
+    &model_hook_name,
+    &model_hook_retval,
+    0,
+    NULL TSRMLS_CC
+  );
+  zval_ptr_dtor(&model_hook_name);
+  zval_ptr_dtor(&model_hook_retval);
+}
+
 static void vary_model_callConfig(zend_string *_name)
 {
   smart_str _model_config_name = {0};
@@ -563,6 +596,7 @@ PHP_METHOD(Model, delete)
 
 PHP_METHOD(Model, create)
 {
+  vary_model_callHooks(getThis(), 0);
   smart_str create_string = {0};
   smart_str_appends(&create_string, "INSERT INTO ");
   zval *_table_name = vary_model_getTableName(execute_data);
@@ -648,11 +682,13 @@ PHP_METHOD(Model, create)
     Z_STRLEN_P(_primary_key),
     &conn_inserted_retval
   );
+  vary_model_callHooks(getThis(), 1);
   RETURN_TRUE;
 }
 
 PHP_METHOD(Model, update)
 {
+  vary_model_callHooks(getThis(), 2);
   zval *_columns = zend_read_static_property(
     zend_get_called_scope(execute_data),
     "__columns__",
@@ -716,6 +752,14 @@ PHP_METHOD(Model, update)
   vary_model_execute(statement, 1, &values);
   zval_ptr_dtor(&statement);
   zval_ptr_dtor(&values);
+  vary_model_callHooks(getThis(), 3);
   RETURN_TRUE;
 }
 
+PHP_METHOD(Model, beforeCreate) {}
+
+PHP_METHOD(Model, afterCreate) {}
+
+PHP_METHOD(Model, beforeUpdate) {}
+
+PHP_METHOD(Model, afterUpdate) {}

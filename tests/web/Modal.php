@@ -1,6 +1,7 @@
 <?php
 
 include_once(__DIR__ . '/models/Test.php');
+include_once(__DIR__ . '/models/TestHooks.php');
 
 $new_test = new Test();
 $new_test->name = '123456';
@@ -376,3 +377,39 @@ $test = Test::get([
 if ($test->name !== 'test2' || isset($test->note) || !isset($test->id)) {
   throw new Exception('Model get error');
 }
+
+$test_hooks = TestHooks::list();
+if (
+  count($test_hooks) !== 3
+  || $test_hooks[0]->name !== 'test'
+  || $test_hooks[1]->name !== 'test2'
+  || $test_hooks[2]->name !== 'test3'
+) {
+  throw new Exception('Model extends error');
+};
+
+$new_test = new TestHooks();
+if ($new_test->marker !== 0) {
+  throw new Exception('Model hooks error');
+};
+$new_test->name = 'Super Hooks';
+$new_test->note = 'It is a super hook';
+$new_test->create();
+if ($new_test->marker !== 3) {
+  throw new Exception('Model hooks error');
+};
+$new_test->name = 'Super Hooks1';
+$new_test->update();
+if ($new_test->marker !== 10) {
+  throw new Exception('Model hooks error');
+};
+$new_test->delete();
+$test_hooks = TestHooks::list();
+if (
+  count($test_hooks) !== 3
+  || $test_hooks[0]->name !== 'test'
+  || $test_hooks[1]->name !== 'test2'
+  || $test_hooks[2]->name !== 'test3'
+) {
+  throw new Exception('Model hooks error');
+};

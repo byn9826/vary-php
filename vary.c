@@ -178,6 +178,10 @@ const zend_function_entry model_funcs[] = {
   PHP_ME(Model, create, arginfo_void, ZEND_ACC_PUBLIC | ZEND_ACC_FINAL)
   PHP_ME(Model, update, arginfo_void, ZEND_ACC_PUBLIC | ZEND_ACC_FINAL)
   PHP_ME(Model, delete, arginfo_void, ZEND_ACC_PUBLIC | ZEND_ACC_FINAL)
+  PHP_ME(Model, beforeCreate, arginfo_void, ZEND_ACC_PUBLIC)
+  PHP_ME(Model, beforeUpdate, arginfo_void, ZEND_ACC_PUBLIC)
+  PHP_ME(Model, afterCreate, arginfo_void, ZEND_ACC_PUBLIC)
+  PHP_ME(Model, afterUpdate, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_FE_END
 };
 

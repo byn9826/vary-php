@@ -97,6 +97,16 @@ Test::deleting(
   'where' => ['name' => 'some name']
 );
 ```
+beforeCreate(), afterCreate(), beforeUpdate(), afterUpdate()
+```
+class Test extends \Vary\Model {
+  ...
+  public function beforeCreate() { $this->called += 1; }
+  public function afterCreate() { $this->called += 1; }
+  public function beforeUpdate() { $this->called += 1; }
+  public function afterUpdate() { $this->called += 1; }
+}
+```
 
 ArrayList: Array Type Collections
 --

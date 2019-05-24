@@ -2,6 +2,8 @@
 
 include_once(__DIR__ . '/models/Test.php');
 include_once(__DIR__ . '/models/TestHooks.php');
+include_once(__DIR__ . '/models/Dog.php');
+include_once(__DIR__ . '/models/Human.php');
 
 $new_test = new Test();
 $new_test->name = '123456';
@@ -412,4 +414,41 @@ if (
   || $test_hooks[2]->name !== 'test3'
 ) {
   throw new Exception('Model hooks error');
+};
+
+$humans = Human::list([
+  'where' => [
+    'human_id' => '1'
+  ]
+]);
+if (
+  count($humans) !== 1 || $humans[0]->human_name !== 'baozier'
+) {
+  throw new Exception('Model list error');
+};
+$humans = Human::list([
+  'where' => [
+    'human_id' => '2'
+  ]
+]);
+if (
+  count($humans) !== 1 || $humans[0]->human_name !== 'mimi'
+) {
+  throw new Exception('Model list error');
+};
+
+$humans = Human::list([
+  'where' => [
+    'human_id' => '1'
+  ],
+  'orWhere' => [
+    'human_id' => '2'
+  ]
+]);
+if (
+  count($humans) !== 2
+  || $humans[0]->human_name !== 'baozier'
+  || $humans[1]->human_name !== 'mimi'
+) {
+  throw new Exception('Model list error');
 };

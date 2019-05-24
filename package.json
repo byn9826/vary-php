@@ -12,7 +12,8 @@
     "build": "sudo sh ./build.sh"
   },
   "pre-commit": [
-    "test", "valgrind"
+    "test",
+    "valgrind"
   ],
   "author": "Baozier",
   "email": "byn9826@gmail.com",

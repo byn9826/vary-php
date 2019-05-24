@@ -16,6 +16,55 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `dog`
+--
+
+DROP TABLE IF EXISTS `dog`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dog` (
+  `dog_id` int(11) NOT NULL AUTO_INCREMENT,
+  `dog_name` varchar(50) NOT NULL,
+  PRIMARY KEY (`dog_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `dog`
+--
+
+LOCK TABLES `dog` WRITE;
+/*!40000 ALTER TABLE `dog` DISABLE KEYS */;
+INSERT INTO `dog` VALUES (1,'Shilee');
+/*!40000 ALTER TABLE `dog` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `human`
+--
+
+DROP TABLE IF EXISTS `human`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `human` (
+  `human_id` int(11) NOT NULL AUTO_INCREMENT,
+  `human_name` varchar(50) NOT NULL,
+  `dog_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`human_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `human`
+--
+
+LOCK TABLES `human` WRITE;
+/*!40000 ALTER TABLE `human` DISABLE KEYS */;
+INSERT INTO `human` VALUES (1,'baozier',1),(2,'mimi',1);
+/*!40000 ALTER TABLE `human` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `test_connection`
 --
 
@@ -27,7 +76,7 @@ CREATE TABLE `test_connection` (
   `name` varchar(255) DEFAULT NULL,
   `note` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=190 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -49,4 +98,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-05-09  2:18:52
+-- Dump completed on 2019-05-24  2:05:59

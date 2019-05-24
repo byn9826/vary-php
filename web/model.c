@@ -218,11 +218,13 @@ static zend_long vary_model_buildWhere(zval *_list, smart_str _model_prepare_str
   zval where_key, *where_value;
   ZVAL_STRING(&where_key, "where");
   where_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(where_key));
+  zval_ptr_dtor(&where_key);
   if (where_value) {
     smart_str_appends(&_model_prepare_string, " WHERE ");
     zval *zv;
     zend_long num_key;
     zend_string *str_key;
+    smart_str_appends(&_model_prepare_string, " ( ");
     ZEND_HASH_FOREACH_KEY_VAL_IND(Z_ARRVAL_P(where_value), num_key, str_key, zv) {
       if (str_key) {
         if (where_size != 0) {
@@ -240,11 +242,38 @@ static zend_long vary_model_buildWhere(zval *_list, smart_str _model_prepare_str
         ++where_size;
       }
     } ZEND_HASH_FOREACH_END();
+    smart_str_appends(&_model_prepare_string, " ) ");
+    zval orWhere_key, *orWhere_value;
+    ZVAL_STRING(&orWhere_key, "orWhere");
+    orWhere_value = zend_hash_find(Z_ARRVAL_P(_list), Z_STR(orWhere_key));
+    zval_ptr_dtor(&orWhere_key);
+    if (orWhere_value) {
+      smart_str_appends(&_model_prepare_string, "OR ( ");
+      zend_long orWhere_size = 0;
+      ZEND_HASH_FOREACH_KEY_VAL_IND(Z_ARRVAL_P(where_value), num_key, str_key, zv) {
+        if (str_key) {
+          if (orWhere_size != 0) {
+            smart_str_appends(&_model_prepare_string, " AND ");
+          }
+          smart_str_appends(&_model_prepare_string, ZSTR_VAL(str_key));
+          smart_str_appends(&_model_prepare_string, "=?");
+          zval *_str_value = zend_hash_find(Z_ARRVAL_P(orWhere_value), str_key);
+          zval str_value;
+          ZVAL_COPY(&str_value, _str_value);
+          zend_hash_next_index_insert(
+            Z_ARRVAL(where_array),
+            &str_value
+          );
+          ++orWhere_size;
+        }
+      } ZEND_HASH_FOREACH_END();
+      where_size += orWhere_size;
+      smart_str_appends(&_model_prepare_string, " ) ");
+    }
     Z_ARRVAL(where_array)->nNumUsed = where_size;
     Z_ARRVAL(where_array)->nNextFreeElement = where_size;
     zend_hash_internal_pointer_reset(Z_ARRVAL(where_array));
   }
-  zval_ptr_dtor(&where_key);
   return where_size;
 }
 

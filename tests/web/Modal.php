@@ -445,10 +445,87 @@ $humans = Human::list([
     'human_id' => '2'
   ]
 ]);
+
+if (
+  count($humans) !== 2
+  || $humans[0]->human_name !== 'baozier'
+  || $humans[0]->dog_id !== '1'
+  || $humans[1]->human_name !== 'mimi'
+  || $humans[1]->dog_id !== '1'
+) {
+  throw new Exception('Model orWhere error');
+};
+
+Human::updating([
+  'set' => [
+    'dog_id' => '2'
+  ],
+  'where' => [
+    'human_id' => '1'
+  ],
+  'orWhere' => [
+    'human_id' => '2'
+  ]
+]);
+
+$human = Human::get([
+  'where' => ['dog_id' => '2']
+]);
+if (
+  $human->human_name !== 'baozier'
+  || $human->dog_id !== '2'
+) {
+  throw new Exception('Model orWhere error');
+};
+
+$human = Human::get([
+  'where' => ['dog_id' => '2'],
+  'orderBy' => ['human_id DESC']
+]);
+if (
+  $human->human_name !== 'mimi'
+  || $human->dog_id !== '2'
+) {
+  throw new Exception('Model orWhere error');
+};
+
+Human::updating([
+  'set' => ['dog_id' => '1']
+]);
+$humans = Human::list();
+if (
+  count($humans) !== 2
+  || $humans[0]->human_name !== 'baozier'
+  || $humans[0]->dog_id !== '1'
+  || $humans[1]->human_name !== 'mimi'
+  || $humans[1]->dog_id !== '1'
+) {
+  throw new Exception('Model orWhere error');
+};
+
+$human = new Human();
+$human->human_name = 'H1';
+$human->create();
+$human = new Human();
+$human->human_name = 'H2';
+$human->create();
+$humans = Human::list();
+if (count($humans) !== 4) {
+  throw new Exception('Model create error');
+};
+Human::deleting([
+  'where' => [
+    'human_name' => 'H1'
+  ],
+  'orWhere' => [
+    'human_name' => 'H2'
+  ]
+]);
+$humans = Human::list();
 if (
   count($humans) !== 2
   || $humans[0]->human_name !== 'baozier'
   || $humans[1]->human_name !== 'mimi'
 ) {
-  throw new Exception('Model list error');
+  throw new Exception('Model orWhere error');
 };

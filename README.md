@@ -63,6 +63,7 @@ list()
 $tests = Test::list([
   'select' => ['note', 'name']
   'where' => ['name' => 'some name'],
+  'orWhere' => ['name' => 'another name'],
   'orderBy' => ['id DESC', 'note ASC'],
   'limit' => 3,
   'offset' => 1

@@ -1,0 +1,20 @@
+server {
+	listen 0.0.0.0:80;
+	server_name localhost:8001;
+	root /var/www/php-src/ext/vary-php/tests/web;
+	index index.html index.php;
+	charset utf-8;
+	
+	location / {
+		try_files $uri $uri/ /index.php?$query_string;
+	}
+
+  location ~ \.php {
+    fastcgi_pass  unix:/run/php/php7.2-fpm.sock;
+    fastcgi_index /index.php;
+    include fastcgi_params;
+    fastcgi_split_path_info       ^(.+\.php)(/.+)$;
+    fastcgi_param PATH_INFO       $fastcgi_path_info;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+  }
+}

@@ -8,7 +8,7 @@ Installation
 git clone https://github.com/byn9826/vary-php.git
 cd ./vary-php
 docker image build -t vary-php .
-docker container run -v ~/Code/vary-php:/var/www/php-src/ext/vary-php
+docker container run -p 8001:80 -v ~/Code/vary-php:/var/www/php-src/ext/vary-php --name=vary-php -it vary-php
 sudo docker container start vary-php -i
 ```
 [Testing & Examples](https://github.com/byn9826/vary-php/tree/master/tests)

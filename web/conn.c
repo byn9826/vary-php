@@ -2,21 +2,21 @@
 #include "Zend/zend_smart_str.h"
 #include "ext/pdo/php_pdo_driver.h"
 
-zend_class_entry *_conn_handle;
+zend_class_entry *conn_handle;
 
 zval vary_conn_getConnection()
 {
-  zval *_conn = zend_read_static_property(_conn_handle, "__conn__", sizeof("__conn__") - 1, 1);
+  zval *_conn = zend_read_static_property(conn_handle, "__conn__", sizeof("__conn__") - 1, 1);
   zval conn;
   ZVAL_COPY(&conn, _conn);
   if (!ZVAL_IS_NULL(&conn)) {
     return conn;
   }
-  zval *_host = zend_read_static_property(_conn_handle, "__host__", sizeof("__host__") - 1, 1);
-  zval *_port = zend_read_static_property(_conn_handle, "__port__", sizeof("__port__") - 1, 1);
-  zval *_database = zend_read_static_property(_conn_handle, "__database__", sizeof("__database__") - 1, 1);
-  zval *_username = zend_read_static_property(_conn_handle, "__username__", sizeof("__username__") - 1, 1);
-  zval *_password = zend_read_static_property(_conn_handle, "__password__", sizeof("__password__") - 1, 1);
+  zval *_host = zend_read_static_property(conn_handle, "__host__", sizeof("__host__") - 1, 1);
+  zval *_port = zend_read_static_property(conn_handle, "__port__", sizeof("__port__") - 1, 1);
+  zval *_database = zend_read_static_property(conn_handle, "__database__", sizeof("__database__") - 1, 1);
+  zval *_username = zend_read_static_property(conn_handle, "__username__", sizeof("__username__") - 1, 1);
+  zval *_password = zend_read_static_property(conn_handle, "__password__", sizeof("__password__") - 1, 1);
   zval host, database;
   ZVAL_NEW_STR(&host, zval_get_string(_host));
   ZVAL_NEW_STR(&database, zval_get_string(_database));
@@ -53,7 +53,7 @@ zval vary_conn_getConnection()
   zval_ptr_dtor(&pdo_init_name);
   zval_ptr_dtor(&pdo_init_retval);
   zend_update_static_property(
-    _conn_handle,
+    conn_handle,
     "__conn__",
     sizeof("__conn__") - 1,
     &obj TSRMLS_CC
@@ -61,7 +61,7 @@ zval vary_conn_getConnection()
   return obj;
 }
 
-PHP_METHOD(_conn, _getConn)
+PHP_METHOD(Conn, getConn)
 {
   ZEND_PARSE_PARAMETERS_START(0, 0)
   ZEND_PARSE_PARAMETERS_END();
@@ -69,7 +69,7 @@ PHP_METHOD(_conn, _getConn)
   RETURN_ZVAL(&conn, 0, 1);
 }
 
-PHP_METHOD(_conn, _setConn)
+PHP_METHOD(Conn, setConn)
 {
   zval *_array;
   ZEND_PARSE_PARAMETERS_START(1, 1)

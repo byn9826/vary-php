@@ -1,21 +1,21 @@
 <?php
-\Vary\_conn::_setConn([
+\Vary\Conn::setConn([
   'host' => '127.0.0.1',
   'port' => '3306',
   'database' => 'test',
   'username' => 'root',
   'password' => '123'
 ]);
-$conn = \Vary\_conn::_getConn();
-$conn1 = \Vary\_conn::_getConn();
+$conn = \Vary\Conn::getConn();
+$conn1 = \Vary\Conn::getConn();
 if ($conn instanceof PDO !== true) {
-  throw new Exception('_conn getConn error');
+  throw new Exception('conn getConn error');
 }
 if ($conn1 instanceof PDO !== true) {
-  throw new Exception('_conn getConn error');
+  throw new Exception('conn getConn error');
 }
 if ($conn !== $conn1) {
-  throw new Exception('_conn getConn error');
+  throw new Exception('conn getConn error');
 }
 $test_conn = $conn->prepare("SELECT * FROM test_connection");
 $test_conn->execute();

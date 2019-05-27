@@ -17,7 +17,7 @@ extern zend_class_entry *deque_handle;
 extern zend_class_entry *orderedList_handle;
 extern zend_class_entry *_dict_handle;
 extern zend_class_entry *mapList_handle;
-extern zend_class_entry *_conn_handle;
+extern zend_class_entry *conn_handle;
 extern zend_class_entry *model_handle;
 
 #include "./helpers/params.c"
@@ -157,11 +157,11 @@ const zend_function_entry mapList_funcs[] = {
   PHP_FE_END
 };
 
-#include "./web/_conn.c"
+#include "./web/conn.c"
 #include "./web/model.c"
-const zend_function_entry _conn_funcs[] = {
-  PHP_ME(_conn, _getConn, arginfo_void, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
-  PHP_ME(_conn, _setConn, arginfo_array, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+const zend_function_entry conn_funcs[] = {
+  PHP_ME(Conn, getConn, arginfo_void, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+  PHP_ME(Conn, setConn, arginfo_array, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
   PHP_FE_END
 };
 
@@ -240,17 +240,17 @@ PHP_MINIT_FUNCTION(vary)
 
   /*
    * Web
-   * _conn, Model
+   * Conn, Model
    */
-  zend_class_entry _conn_ce;
-  INIT_NS_CLASS_ENTRY(_conn_ce, "Vary", "_conn", _conn_funcs);
-  _conn_handle = zend_register_internal_class(&_conn_ce TSRMLS_CC);
-  zend_declare_property_null(_conn_handle, "__host__", sizeof("__host__") - 1, ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
-  zend_declare_property_long(_conn_handle, "__port__", sizeof("__port__") - 1, 3306, ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
-  zend_declare_property_null(_conn_handle, "__database__", sizeof("__database__") - 1, ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
-  zend_declare_property_string(_conn_handle, "__username__", sizeof("__username__") - 1, "root", ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
-  zend_declare_property_string(_conn_handle, "__password__", sizeof("__password__") - 1, "", ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
-  zend_declare_property_null(_conn_handle, "__conn__", sizeof("__conn__") - 1, ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_class_entry conn_ce;
+  INIT_NS_CLASS_ENTRY(conn_ce, "Vary", "Conn", conn_funcs);
+  conn_handle = zend_register_internal_class(&conn_ce TSRMLS_CC);
+  zend_declare_property_null(conn_handle, "__host__", sizeof("__host__") - 1, ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_long(conn_handle, "__port__", sizeof("__port__") - 1, 3306, ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_null(conn_handle, "__database__", sizeof("__database__") - 1, ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_string(conn_handle, "__username__", sizeof("__username__") - 1, "root", ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_string(conn_handle, "__password__", sizeof("__password__") - 1, "", ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_null(conn_handle, "__conn__", sizeof("__conn__") - 1, ZEND_ACC_PROTECTED | ZEND_ACC_STATIC TSRMLS_CC);
 
   zend_class_entry model_ce;
   INIT_NS_CLASS_ENTRY(model_ce, "Vary", "Model", model_funcs);

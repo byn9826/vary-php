@@ -19,6 +19,7 @@ extern zend_class_entry *_dict_handle;
 extern zend_class_entry *mapList_handle;
 extern zend_class_entry *conn_handle;
 extern zend_class_entry *model_handle;
+extern zend_class_entry *router_handle;
 
 #include "./helpers/params.c"
 
@@ -159,6 +160,7 @@ const zend_function_entry mapList_funcs[] = {
 
 #include "./web/conn.c"
 #include "./web/model.c"
+#include "./web/router.c"
 const zend_function_entry conn_funcs[] = {
   PHP_ME(Conn, getConn, arginfo_void, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
   PHP_ME(Conn, setConn, arginfo_array, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
@@ -182,6 +184,11 @@ const zend_function_entry model_funcs[] = {
   PHP_ME(Model, beforeUpdate, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(Model, afterCreate, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(Model, afterUpdate, arginfo_void, ZEND_ACC_PUBLIC)
+  PHP_FE_END
+};
+
+const zend_function_entry router_funcs[] = {
+  PHP_ME(Router, get, arginfo_string_string_string, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
   PHP_FE_END
 };
 
@@ -259,6 +266,11 @@ PHP_MINIT_FUNCTION(vary)
   zend_declare_property_null(model_handle, "__primary__", sizeof("__primary__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
   zend_declare_property_null(model_handle, "__columns__", sizeof("__columns__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
   zend_declare_property_null(model_handle, "__origin__", sizeof("__origin__") - 1, ZEND_ACC_PUBLIC TSRMLS_CC);
+
+  zend_class_entry router_ce;
+  INIT_NS_CLASS_ENTRY(router_ce, "Vary", "Router", router_funcs);
+  router_handle = zend_register_internal_class(&router_ce TSRMLS_CC);
+  zend_declare_property_null(router_handle, "__rules__", sizeof("__rules__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
 
   return SUCCESS;
 }

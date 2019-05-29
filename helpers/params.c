@@ -59,6 +59,12 @@ ZEND_BEGIN_ARG_INFO(arginfo_integer_integer, 0)
   ZEND_ARG_INFO(0, integer)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO(arginfo_string_string_string, 0)
+  ZEND_ARG_INFO(0, string)
+  ZEND_ARG_INFO(0, string)
+  ZEND_ARG_INFO(0, string)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_integer_integer_any, 0)
   ZEND_ARG_INFO(0, integer)
   ZEND_ARG_INFO(0, integer)

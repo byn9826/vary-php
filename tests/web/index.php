@@ -1,1 +1,2 @@
-var_dump(123);
+<?php
+var_dump($_SERVER['REQUEST_URI']);

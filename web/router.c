@@ -16,8 +16,16 @@ PHP_METHOD(Router, get)
   if (ZVAL_IS_NULL(&rules)) {
     array_init(&rules);
   }
-  zval strtolower_name, strtolower_retval;
-  zval uri;
+  zval rule_set;
+  zend_long rule_exist = 0;
+  if (!zend_symtable_exists_ind(Z_ARRVAL(rules), _controller)) {
+    array_init(&rule_set);
+  } else {
+    zval *_rule_set = zend_hash_find(Z_ARRVAL(rules), _controller);
+    rule_exist = 1;
+    ZVAL_COPY(&rule_set, _rule_set);
+  }
+  zval strtolower_name, strtolower_retval, uri;
   ZVAL_STR(&uri, _uri);
   ZVAL_STRING(&strtolower_name, "strtolower");
   call_user_function(
@@ -29,27 +37,44 @@ PHP_METHOD(Router, get)
     &uri TSRMLS_CC
   );
   zval_ptr_dtor(&strtolower_name);
-  if (!zend_symtable_exists_ind(Z_ARRVAL(rules), Z_STR(strtolower_retval))) {
-    zval rule_set;
-    array_init(&rule_set);
-    zval controller, method;
-    ZVAL_STR(&controller, _controller);
-    ZVAL_STR(&method, _method);
-    zend_hash_next_index_insert(Z_ARRVAL(rule_set), &controller);
-    zend_hash_next_index_insert(Z_ARRVAL(rule_set), &method);
-    zend_hash_str_add_new(
-      Z_ARRVAL(rules),
+  zval method;
+  ZVAL_STR(&method, _method);
+  if (zend_symtable_exists_ind(Z_ARRVAL(rule_set), Z_STR(strtolower_retval))) {
+    zend_hash_str_update(
+      Z_ARRVAL(rule_set),
       Z_STRVAL(strtolower_retval),
       Z_STRLEN(strtolower_retval),
-      &rule_set
+      &method
     );
-    zend_update_static_property(
-      router_handle,
-      "__rules__",
-      sizeof("__rules__") - 1,
-      &rules TSRMLS_CC
+  } else {
+    zend_hash_str_add_new(
+      Z_ARRVAL(rule_set),
+      Z_STRVAL(strtolower_retval),
+      Z_STRLEN(strtolower_retval),
+      &method
     );
   }
+  if (rule_exist == 1) {
+    zend_hash_str_update(
+      Z_ARRVAL(rules),
+      ZSTR_VAL(_controller),
+      ZSTR_LEN(_controller),
+      &rule_set
+    );
+  } else {
+    zend_hash_str_add_new(
+      Z_ARRVAL(rules),
+      ZSTR_VAL(_controller),
+      ZSTR_LEN(_controller),
+      &rule_set
+    );
+  }
+  zend_update_static_property(
+    router_handle,
+    "__rules__",
+    sizeof("__rules__") - 1,
+    &rules TSRMLS_CC
+  );
   zval_ptr_dtor(&rules);
   zval_ptr_dtor(&strtolower_retval);
 }

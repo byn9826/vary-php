@@ -78,3 +78,28 @@ PHP_METHOD(Router, get)
   zval_ptr_dtor(&rules);
   zval_ptr_dtor(&strtolower_retval);
 }
+
+PHP_METHOD(Router, handle)
+{
+  zend_string *_uri;
+  ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_STR(_uri)
+  ZEND_PARSE_PARAMETERS_END();
+  zval explode_name, explode_retval;
+  ZVAL_STRING(&explode_name, "explode");
+  zval params[2];
+  ZVAL_STRINGL(&params[0], "/", sizeof("/") - 1);
+  ZVAL_STR(&params[1], _uri);
+  call_user_function(
+    EG(function_table),
+    NULL,
+    &explode_name,
+    &explode_retval,
+    2,
+    params TSRMLS_CC
+  );
+  zval_ptr_dtor(&explode_name);
+  zval_ptr_dtor(&params[0]);
+  zval_ptr_dtor(&params[1]);
+  RETURN_ZVAL(&explode_retval, 0, 1);
+}

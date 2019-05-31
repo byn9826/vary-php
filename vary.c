@@ -189,6 +189,7 @@ const zend_function_entry model_funcs[] = {
 
 const zend_function_entry router_funcs[] = {
   PHP_ME(Router, get, arginfo_string_string_string, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+  PHP_ME(Router, handle, arginfo_string, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
   PHP_FE_END
 };
 

@@ -17,23 +17,29 @@ if (
 ) {
   throw new Exception('Model create error');
 };
-
 var_dump(\Vary\Router::$__rules__);
+var_dump(\Vary\Router::handle('/'));
+var_dump(\Vary\Router::handle('/human'));
+var_dump(\Vary\Router::handle('/human/1'));
+var_dump(\Vary\Router::handle('/human/A/2'));
+var_dump(\Vary\Router::handle('/pet'));
 
-
-
-
-$ch = curl_init("localhost");
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-$response = curl_exec($ch);
-curl_close($ch);
-var_dump($response);
-
-\Vary\Router::get('/human/{id}', 'human', 'get');
+// $ch = curl_init("localhost");
+// curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+// curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+// $response = curl_exec($ch);
+// curl_close($ch);
+// var_dump($response);
 
 
 // $ch = curl_init("localhost/human");
+// curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+// curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+// $response = curl_exec($ch);
+// curl_close($ch);
+// var_dump($response);
+
+// $ch = curl_init("localhost/human/1");
 // curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
 // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 // $response = curl_exec($ch);

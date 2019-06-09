@@ -95,10 +95,15 @@ PHP_METHOD(Router, handle)
   ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_STR(_uri)
   ZEND_PARSE_PARAMETERS_END();
+  zval *_rules = zend_read_static_property(router_handle, "__rules__", sizeof("__rules__") - 1, 1);
+  zval *_matched = zend_hash_find(Z_ARRVAL_P(_rules), _uri);
+  if (_matched) {
+    RETURN_ZVAL(_matched, 1, 0);
+  }
   zval explode_name, explode_retval;
   ZVAL_STRING(&explode_name, "explode");
   zval params[2];
-  ZVAL_STRINGL(&params[0], "/", sizeof("/") - 1);
+  ZVAL_STRING(&params[0], "/");
   ZVAL_STR(&params[1], _uri);
   call_user_function(
     EG(function_table),
@@ -111,12 +116,40 @@ PHP_METHOD(Router, handle)
   zval_ptr_dtor(&explode_name);
   zval_ptr_dtor(&params[0]);
   zval_ptr_dtor(&params[1]);
-  Bucket *_controller = Z_ARRVAL(explode_retval)->arData + 1;
-  zval controller;
-  if (Z_STRLEN_P(&_controller->val) == 0) {
-    ZVAL_STRINGL(&controller, "default", sizeof("default") - 1);
-  } else {
-    ZVAL_COPY(&controller, &_controller->val);
+  zend_long array_size = zend_hash_num_elements(Z_ARRVAL(explode_retval));
+  zend_long padding_index = array_size - 1;
+  zend_long match_find = 0;
+  while (padding_index > 1 && match_find == 0) {
+    smart_str _final_url = {0};
+    for (zend_long i = 1; i < array_size; ++i) {
+      smart_str_appends(&_final_url, "/");
+      Bucket *carry = Z_ARRVAL(explode_retval)->arData + i;
+      if (i >= padding_index) {
+        smart_str_appends(&_final_url, "{");
+        zval variable;
+        ZVAL_LONG(&variable, i - padding_index);
+        convert_to_string(&variable);
+        smart_str_appends(&_final_url, Z_STRVAL(variable));
+        smart_str_appends(&_final_url, "}");
+      } else {
+        smart_str_appends(&_final_url, Z_STRVAL(carry->val));
+      }
+    }
+    smart_str_0(&_final_url);
+    TRACE("Final: %s", ZSTR_VAL(_final_url.s));
+    zval final_url;
+    ZVAL_STR(&final_url, _final_url.s);
+    _matched = zend_hash_find(Z_ARRVAL_P(_rules), Z_STR(final_url));
+    zval_ptr_dtor(&final_url);
+    if (_matched) {
+      match_find = 1;
+    }
+    --padding_index;
   }
-  RETURN_ZVAL(&controller, 0, 1);
+  zval_ptr_dtor(&explode_retval);
+  if (match_find == 1) {
+    RETURN_ZVAL(_matched, 1, 0);
+  } else {
+    RETURN_FALSE;
+  }
 }

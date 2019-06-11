@@ -20,6 +20,7 @@ if (
 var_dump(\Vary\Router::$__rules__);
 var_dump(\Vary\Router::handle('/'));
 var_dump(\Vary\Router::handle('/human'));
+var_dump(\Vary\Router::handle('/Human'));
 var_dump(\Vary\Router::handle('/human/1'));
 var_dump(\Vary\Router::handle('/human/A/2'));
 var_dump(\Vary\Router::handle('/pet'));

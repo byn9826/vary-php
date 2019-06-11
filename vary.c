@@ -189,6 +189,10 @@ const zend_function_entry model_funcs[] = {
 
 const zend_function_entry router_funcs[] = {
   PHP_ME(Router, get, arginfo_string_string_string, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+  PHP_ME(Router, post, arginfo_string_string_string, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+  PHP_ME(Router, put, arginfo_string_string_string, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+  PHP_ME(Router, patch, arginfo_string_string_string, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
+  PHP_ME(Router, delete, arginfo_string_string_string, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
   PHP_ME(Router, handle, arginfo_string, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_FINAL)
   PHP_FE_END
 };
@@ -271,8 +275,11 @@ PHP_MINIT_FUNCTION(vary)
   zend_class_entry router_ce;
   INIT_NS_CLASS_ENTRY(router_ce, "Vary", "Router", router_funcs);
   router_handle = zend_register_internal_class(&router_ce TSRMLS_CC);
-  zend_declare_property_null(router_handle, "__rules__", sizeof("__rules__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
-
+  zend_declare_property_null(router_handle, "__get__", sizeof("__get__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_null(router_handle, "__post__", sizeof("__post__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_null(router_handle, "__put__", sizeof("__put__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_null(router_handle, "__patch__", sizeof("__patch__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
+  zend_declare_property_null(router_handle, "__delete__", sizeof("__delete__") - 1, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC TSRMLS_CC);
   return SUCCESS;
 }
 

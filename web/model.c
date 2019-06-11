@@ -8,20 +8,20 @@ static void vary_model_callHooks(zval *this, zend_long type)
   zval model_hook_name, model_hook_retval;
   switch (type)
   {
-  case 0:
-    ZVAL_STRING(&model_hook_name, "beforeCreate");
-    break;
-  case 1:
-    ZVAL_STRING(&model_hook_name, "afterCreate");
-    break;
-  case 2:
-    ZVAL_STRING(&model_hook_name, "beforeUpdate");
-    break;
-  case 3:
-    ZVAL_STRING(&model_hook_name, "afterUpdate");
-    break;
-  default:
-    return;
+    case 0:
+      ZVAL_STRING(&model_hook_name, "beforeCreate");
+      break;
+    case 1:
+      ZVAL_STRING(&model_hook_name, "afterCreate");
+      break;
+    case 2:
+      ZVAL_STRING(&model_hook_name, "beforeUpdate");
+      break;
+    case 3:
+      ZVAL_STRING(&model_hook_name, "afterUpdate");
+      break;
+    default:
+      return;
   }
   
   call_user_function(

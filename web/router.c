@@ -52,7 +52,7 @@ static void vary_router_uriBuildWithVariable(smart_str _final_url, zend_long num
   smart_str_appends(&_final_url, "}");
 }
 
-PHP_METHOD(Router, get)
+static void vary_router_addRule(INTERNAL_FUNCTION_PARAMETERS, zend_long type)
 {
   zend_string *_uri, *_controller, *_method;
   ZEND_PARSE_PARAMETERS_START(3, 3)
@@ -60,7 +60,27 @@ PHP_METHOD(Router, get)
     Z_PARAM_STR(_controller)
     Z_PARAM_STR(_method)
   ZEND_PARSE_PARAMETERS_END();
-  zval *_rules = zend_read_static_property(router_handle, "__rules__", sizeof("__rules__") - 1, 1);
+  zval type_name;
+  switch (type)
+  {
+    case 4:
+      ZVAL_STRING(&type_name, "__delete__");
+      break;
+    case 3:
+      ZVAL_STRING(&type_name, "__patch__");
+      break;
+    case 2:
+      ZVAL_STRING(&type_name, "__put__");
+      break;
+    case 1:
+      ZVAL_STRING(&type_name, "__post__");
+      break;
+    case 0:
+    default:
+      ZVAL_STRING(&type_name, "__get__");
+      break;
+  }
+  zval *_rules = zend_read_static_property(router_handle, Z_STRVAL(type_name), Z_STRLEN(type_name), 1);
   zval rules;
   ZVAL_COPY(&rules, _rules);
   if (ZVAL_IS_NULL(&rules)) {
@@ -97,13 +117,34 @@ PHP_METHOD(Router, get)
     &handler
   );
   zval_ptr_dtor(&final_url);
-  zend_update_static_property(
-    router_handle,
-    "__rules__",
-    sizeof("__rules__") - 1,
-    &rules TSRMLS_CC
-  );
+  zend_update_static_property(router_handle, Z_STRVAL(type_name), Z_STRLEN(type_name), &rules TSRMLS_CC);
   zval_ptr_dtor(&rules);
+  zval_ptr_dtor(&type_name);
+}
+
+PHP_METHOD(Router, get)
+{
+  vary_router_addRule(INTERNAL_FUNCTION_PARAM_PASSTHRU, 0);
+}
+
+PHP_METHOD(Router, post)
+{
+  vary_router_addRule(INTERNAL_FUNCTION_PARAM_PASSTHRU, 1);
+}
+
+PHP_METHOD(Router, put)
+{
+  vary_router_addRule(INTERNAL_FUNCTION_PARAM_PASSTHRU, 2);
+}
+
+PHP_METHOD(Router, patch)
+{
+  vary_router_addRule(INTERNAL_FUNCTION_PARAM_PASSTHRU, 3);
+}
+
+PHP_METHOD(Router, delete)
+{
+  vary_router_addRule(INTERNAL_FUNCTION_PARAM_PASSTHRU, 4);
 }
 
 PHP_METHOD(Router, handle)
@@ -113,7 +154,7 @@ PHP_METHOD(Router, handle)
     Z_PARAM_STR(_uri)
   ZEND_PARSE_PARAMETERS_END();
   zval strtolower_retval = vary_router_uriToLower(_uri);
-  zval *_rules = zend_read_static_property(router_handle, "__rules__", sizeof("__rules__") - 1, 1);
+  zval *_rules = zend_read_static_property(router_handle, "__get__", sizeof("__get__") - 1, 1);
   zval *_matched = zend_hash_find(Z_ARRVAL_P(_rules), Z_STR(strtolower_retval));
   if (_matched) {
     zval_ptr_dtor(&strtolower_retval);
